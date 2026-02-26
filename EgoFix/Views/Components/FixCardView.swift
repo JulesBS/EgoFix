@@ -281,6 +281,7 @@ struct ActionButton: View {
                 .padding(.vertical, 10)
                 .background(isPressed && !isDisabled ? color.opacity(0.15) : Color.clear)
                 .cornerRadius(2)
+                .shadow(color: isDisabled ? .clear : color.opacity(0.4), radius: 4, x: 0, y: 0)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(

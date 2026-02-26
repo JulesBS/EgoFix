@@ -6,24 +6,41 @@ struct ContentView: View {
     @State private var showOnboarding = true
     @State private var selectedTab = 0
     @State private var showCrash = false
+    @State private var showBootSequence = true
+    @State private var bootSequenceChecked = false
+
+    @AppStorage("hasSeenBoot") private var hasSeenBoot = false
 
     var body: some View {
         ZStack {
-            if showOnboarding {
+            if showBootSequence && bootSequenceChecked {
+                BootSequenceView(onComplete: {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        showBootSequence = false
+                        hasSeenBoot = true
+                    }
+                })
+            } else if showOnboarding && !showBootSequence {
                 OnboardingView(
                     viewModel: makeOnboardingViewModel(),
                     onComplete: {
                         showOnboarding = false
                     }
                 )
-            } else {
+            } else if !showBootSequence {
                 mainTabView
+                    .scanlines()
             }
         }
         .preferredColorScheme(.dark)
         .task {
             await loadSeedData()
             await checkOnboarding()
+            bootSequenceChecked = true
+            // If user has seen boot before, skip it (they already saw onboarding too)
+            if hasSeenBoot {
+                showBootSequence = false
+            }
         }
     }
 
@@ -85,18 +102,9 @@ struct ContentView: View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Button(action: { showCrash = true }) {
-                        Text("[ ! ]")
-                            .font(.system(.caption, design: .monospaced))
-                            .fontWeight(.bold)
-                            .foregroundColor(.red)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color.red.opacity(0.1))
-                            .cornerRadius(2)
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 100)
+                    CrashButton(action: { showCrash = true })
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 100)
                 }
             }
         }
@@ -301,5 +309,35 @@ struct ContentView: View {
             userRepository: userRepo,
             bugLifecycleService: bugLifecycleService
         )
+    }
+}
+
+// MARK: - Crash Button with Pulse Animation
+
+private struct CrashButton: View {
+    let action: () -> Void
+    @State private var isPulsing = false
+
+    var body: some View {
+        Button(action: action) {
+            Text("[ ! ]")
+                .font(.system(.caption, design: .monospaced))
+                .fontWeight(.bold)
+                .foregroundColor(.red)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.red.opacity(0.1))
+                .cornerRadius(2)
+                .shadow(color: .red.opacity(0.5), radius: 5, x: 0, y: 0)
+                .scaleEffect(isPulsing ? 1.05 : 1.0)
+        }
+        .onAppear {
+            withAnimation(
+                .easeInOut(duration: 1.5)
+                .repeatForever(autoreverses: true)
+            ) {
+                isPulsing = true
+            }
+        }
     }
 }

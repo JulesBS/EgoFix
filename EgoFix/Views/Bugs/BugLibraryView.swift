@@ -100,14 +100,18 @@ struct BugLibraryRowView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            // Status indicator
-            statusIndicator
+            // ASCII art (compact)
+            BugASCIIArtView(slug: bug.slug)
+                .frame(width: 70)
 
             // Bug info
             VStack(alignment: .leading, spacing: 4) {
-                Text(bug.title)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.white)
+                HStack(spacing: 6) {
+                    statusIndicator
+                    Text(bug.title)
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.white)
+                }
 
                 Text(bug.description)
                     .font(.system(.caption, design: .monospaced))

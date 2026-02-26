@@ -3,6 +3,7 @@ import SwiftUI
 struct JournalInteractionView: View {
     let fix: Fix
     @ObservedObject var interactionManager: FixInteractionManager
+    @FocusState private var isTextFieldFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -30,8 +31,10 @@ struct JournalInteractionView: View {
                 .cornerRadius(2)
                 .overlay(
                     RoundedRectangle(cornerRadius: 2)
-                        .stroke(Color(white: 0.2), lineWidth: 1)
+                        .stroke(isTextFieldFocused ? Color.blue.opacity(0.5) : Color(white: 0.2), lineWidth: 1)
                 )
+                .shadow(color: isTextFieldFocused ? .blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 0)
+                .focused($isTextFieldFocused)
 
             if let comment = fix.inlineComment {
                 Text("// \(comment)")

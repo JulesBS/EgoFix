@@ -361,11 +361,11 @@ struct BugRowView: View {
         .padding(.horizontal, 14)
         .frame(height: 88)
         .background(
-            RoundedRectangle(cornerRadius: 6)
+            RoundedRectangle(cornerRadius: 4)
                 .fill(Color(white: isDragging ? 0.12 : 0.06))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 6)
+            RoundedRectangle(cornerRadius: 4)
                 .stroke(isDragging ? Color.green.opacity(0.5) : Color.clear, lineWidth: 1)
         )
         .scaleEffect(isDragging ? 1.02 : 1.0)

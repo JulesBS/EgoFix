@@ -4,6 +4,8 @@ struct StreakCardView: View {
     let streakData: StreakData
 
     private let barCharCount = 16
+    @State private var displayedStreak: Int = 0
+    @State private var streakScale: CGFloat = 1.0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -20,9 +22,10 @@ struct StreakCardView: View {
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(.green)
 
-                    Text("\(streakData.currentStreak) days current")
+                    Text("\(displayedStreak) days current")
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(.white)
+                        .scaleEffect(streakScale)
                 }
 
                 // Longest streak bar
@@ -45,6 +48,42 @@ struct StreakCardView: View {
         .padding(16)
         .background(Color.black)
         .cornerRadius(2)
+        .onAppear {
+            animateStreakCount()
+        }
+        .onChange(of: streakData.currentStreak) { _, newValue in
+            animateStreakCount()
+        }
+    }
+
+    private func animateStreakCount() {
+        // If streak increased, animate it
+        if displayedStreak < streakData.currentStreak {
+            tickUpStreak()
+        } else {
+            displayedStreak = streakData.currentStreak
+        }
+    }
+
+    private func tickUpStreak() {
+        guard displayedStreak < streakData.currentStreak else { return }
+
+        displayedStreak += 1
+
+        // Scale pulse on each tick
+        withAnimation(.easeOut(duration: 0.15)) {
+            streakScale = 1.2
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            withAnimation(.easeOut(duration: 0.15)) {
+                streakScale = 1.0
+            }
+        }
+
+        // Continue ticking if not done
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            tickUpStreak()
+        }
     }
 
     // MARK: - Private

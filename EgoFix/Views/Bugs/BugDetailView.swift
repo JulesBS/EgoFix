@@ -48,13 +48,21 @@ struct BugDetailView: View {
                 }
             }
 
-            Text(bug.title)
-                .font(.system(.title2, design: .monospaced))
-                .foregroundColor(.white)
+            HStack(alignment: .top, spacing: 16) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(bug.title)
+                        .font(.system(.title2, design: .monospaced))
+                        .foregroundColor(.white)
 
-            Text("// \(bug.slug)")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.6))
+                    Text("// \(bug.slug)")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.gray.opacity(0.6))
+                }
+
+                Spacer()
+
+                BugASCIIArtView(slug: bug.slug)
+            }
         }
     }
 
