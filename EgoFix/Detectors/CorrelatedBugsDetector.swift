@@ -8,7 +8,7 @@ final class CorrelatedBugsDetector: PatternDetector {
     private let correlationThreshold: Double = 0.7
     private let minimumWeeks: Int = 6
 
-    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID) -> DetectedPattern? {
+    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID, bugNames: [UUID: String]) -> DetectedPattern? {
         guard diagnostics.count >= minimumWeeks else { return nil }
 
         // Get all unique bug IDs from diagnostics
@@ -47,12 +47,14 @@ final class CorrelatedBugsDetector: PatternDetector {
                 let correlation = pearsonCorrelation(intensitiesA, intensitiesB)
 
                 if correlation > correlationThreshold {
+                    let bugNameA = bugNames[bugA] ?? "Bug A"
+                    let bugNameB = bugNames[bugB] ?? "Bug B"
                     return DetectedPattern(
                         userId: userId,
                         patternType: .correlatedBugs,
                         severity: .insight,
-                        title: "Correlated Bugs",
-                        body: "These two bugs tend to flare up together. They might share a root cause.",
+                        title: "Traveling together",
+                        body: "'\(bugNameA)' and '\(bugNameB)' flare up in sync. When one's loud, so is the other. Probably the same root.",
                         relatedBugIds: [bugA, bugB],
                         dataPoints: sortedDiagnostics.count
                     )

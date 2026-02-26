@@ -23,6 +23,7 @@ final class PatternSurfacingService {
 
     func shouldShowPatternBeforeFix() async throws -> DetectedPattern? {
         guard !sessionPatternShown else { return nil }
+        guard try await !hasShownPatternToday() else { return nil }
 
         guard let pattern = try await diagnosticEngine.getPatternToSurface(
             for: try await getCurrentUserId()
@@ -36,6 +37,7 @@ final class PatternSurfacingService {
 
     func shouldShowPatternAfterFix() async throws -> DetectedPattern? {
         guard !sessionPatternShown else { return nil }
+        guard try await !hasShownPatternToday() else { return nil }
 
         guard let pattern = try await diagnosticEngine.getPatternToSurface(
             for: try await getCurrentUserId()
@@ -51,6 +53,13 @@ final class PatternSurfacingService {
         sessionPatternShown = true
         try await diagnosticEngine.markPatternViewed(patternId)
 
+        // Update last pattern shown date
+        if let user = try await userRepository.get() {
+            user.lastPatternShownAt = Date()
+            user.updatedAt = Date()
+            try await userRepository.save(user)
+        }
+
         // Log analytics event
         let userId = try await getCurrentUserId()
         let calendar = Calendar.current
@@ -61,6 +70,17 @@ final class PatternSurfacingService {
             hourOfDay: calendar.component(.hour, from: Date())
         )
         try await analyticsEventRepository.save(event)
+    }
+
+    /// Check if a pattern was already shown today to prevent overwhelming users
+    private func hasShownPatternToday() async throws -> Bool {
+        guard let user = try await userRepository.get(),
+              let lastShown = user.lastPatternShownAt else {
+            return false
+        }
+
+        let calendar = Calendar.current
+        return calendar.isDateInToday(lastShown)
     }
 
     func dismissPattern(_ patternId: UUID) async throws {

@@ -9,6 +9,7 @@ final class BugLifecycleService {
     private let bugRepository: BugRepository
     private let weeklyDiagnosticRepository: WeeklyDiagnosticRepository
     private let crashRepository: CrashRepository
+    private let patternRepository: PatternRepository?
 
     /// Number of consecutive quiet weeks required for Active -> Stable transition
     private let weeksForStable = 4
@@ -22,11 +23,13 @@ final class BugLifecycleService {
     init(
         bugRepository: BugRepository,
         weeklyDiagnosticRepository: WeeklyDiagnosticRepository,
-        crashRepository: CrashRepository
+        crashRepository: CrashRepository,
+        patternRepository: PatternRepository? = nil
     ) {
         self.bugRepository = bugRepository
         self.weeklyDiagnosticRepository = weeklyDiagnosticRepository
         self.crashRepository = crashRepository
+        self.patternRepository = patternRepository
     }
 
     // MARK: - Status Transitions
@@ -115,6 +118,7 @@ final class BugLifecycleService {
 
     /// Check if a resolved bug should regress to active.
     /// Triggered by crash spike (3+ crashes in 14 days).
+    /// Also creates a regression DetectedPattern for alert surfacing.
     func checkForRegression(bugId: UUID, userId: UUID) async throws -> Bool {
         guard let bug = try await bugRepository.getById(bugId) else { return false }
         guard bug.status == .resolved else { return false }
@@ -128,6 +132,14 @@ final class BugLifecycleService {
         }
 
         if recentCrashesForBug.count >= crashThresholdForRegression {
+            // Calculate weeks stable before regression
+            let weeksStable: Int
+            if let stableAt = bug.stableAt {
+                weeksStable = calendar.dateComponents([.weekOfYear], from: stableAt, to: Date()).weekOfYear ?? 0
+            } else {
+                weeksStable = 0
+            }
+
             // Regression detected - reactivate
             bug.status = .active
             bug.isActive = true
@@ -135,6 +147,21 @@ final class BugLifecycleService {
             bug.stableAt = nil
             bug.updatedAt = Date()
             try await bugRepository.save(bug)
+
+            // Create a regression pattern for alerting
+            if let repo = patternRepository {
+                let pattern = DetectedPattern(
+                    userId: userId,
+                    patternType: .regression,
+                    severity: .alert,
+                    title: "\(bug.title) crashed again",
+                    body: "\(recentCrashesForBug.count) times in \(regressionWindowDays) days. It was stable for \(weeksStable) weeks.",
+                    relatedBugIds: [bugId],
+                    dataPoints: recentCrashesForBug.count
+                )
+                try await repo.save(pattern)
+            }
+
             return true
         }
 

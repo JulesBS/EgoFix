@@ -51,6 +51,7 @@ final class TodayViewModel: ObservableObject {
     private let userRepository: UserRepository
     private let weeklyDiagnosticService: WeeklyDiagnosticService?
     private let fixCompletionRepository: FixCompletionRepository?
+    private let diagnosticEngine: DiagnosticEngine?
     private let sharedStorage = SharedStorageManager.shared
 
     init(
@@ -63,7 +64,8 @@ final class TodayViewModel: ObservableObject {
         streakService: StreakService,
         userRepository: UserRepository,
         weeklyDiagnosticService: WeeklyDiagnosticService? = nil,
-        fixCompletionRepository: FixCompletionRepository? = nil
+        fixCompletionRepository: FixCompletionRepository? = nil,
+        diagnosticEngine: DiagnosticEngine? = nil
     ) {
         self.dailyFixService = dailyFixService
         self.fixRepository = fixRepository
@@ -75,6 +77,7 @@ final class TodayViewModel: ObservableObject {
         self.userRepository = userRepository
         self.weeklyDiagnosticService = weeklyDiagnosticService
         self.fixCompletionRepository = fixCompletionRepository
+        self.diagnosticEngine = diagnosticEngine
         self.interactionManager = FixInteractionManager(timerService: timerService)
     }
 
@@ -124,9 +127,38 @@ final class TodayViewModel: ObservableObject {
     func onDiagnosticComplete() async {
         showWeeklyDiagnostic = false
 
+        // Run pattern detection after weekly diagnostic
+        await runDiagnosticsIfNeeded()
+
         // Calculate and show weekly summary
         if let summary = await calculateWeeklySummary() {
             weeklySummary = summary
+        }
+    }
+
+    /// Run pattern detection diagnostics if scheduled
+    private func runDiagnosticsIfNeeded() async {
+        guard let engine = diagnosticEngine,
+              let user = try? await userRepository.get() else { return }
+
+        do {
+            _ = try await engine.runDiagnostics(for: user.id)
+        } catch {
+            // Handle silently - pattern detection is non-critical
+        }
+    }
+
+    /// Check if diagnostics should run (>7 days since last) and run if needed
+    private func checkAndRunScheduledDiagnostics() async {
+        guard let engine = diagnosticEngine,
+              let user = try? await userRepository.get() else { return }
+
+        do {
+            if try await engine.shouldRunDiagnostics(for: user.id) {
+                _ = try await engine.runDiagnostics(for: user.id)
+            }
+        } catch {
+            // Handle silently - pattern detection is non-critical
         }
     }
 
@@ -159,6 +191,9 @@ final class TodayViewModel: ObservableObject {
     func loadTodaysFix() async {
         state = .loading
         interactionManager.reset()
+
+        // Run diagnostics on launch if >7 days since last run
+        await checkAndRunScheduledDiagnostics()
 
         do {
             // Check for pattern to show before fix

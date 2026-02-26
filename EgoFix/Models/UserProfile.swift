@@ -34,6 +34,12 @@ final class UserProfile {
     var streakFreezeAvailable: Bool
     var lastFreezeResetDate: Date?
 
+    // Diagnostic tracking
+    var lastDiagnosticsRunAt: Date?
+
+    // Pattern surfacing
+    var lastPatternShownAt: Date?
+
     // Sync-ready
     var syncToken: String?
     var lastSyncedAt: Date?
@@ -60,6 +66,8 @@ final class UserProfile {
         lastEngagementDate: Date? = nil,
         streakFreezeAvailable: Bool = true,
         lastFreezeResetDate: Date? = nil,
+        lastDiagnosticsRunAt: Date? = nil,
+        lastPatternShownAt: Date? = nil,
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
         syncToken: String? = nil,
@@ -73,6 +81,8 @@ final class UserProfile {
         self.lastEngagementDate = lastEngagementDate
         self.streakFreezeAvailable = streakFreezeAvailable
         self.lastFreezeResetDate = lastFreezeResetDate
+        self.lastDiagnosticsRunAt = lastDiagnosticsRunAt
+        self.lastPatternShownAt = lastPatternShownAt
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.syncToken = syncToken

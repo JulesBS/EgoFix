@@ -171,6 +171,8 @@ struct ContentView: View {
             analyticsEventRepository: analyticsRepo,
             weeklyDiagnosticRepository: diagnosticRepo,
             patternRepository: patternRepo,
+            bugRepository: bugRepo,
+            userRepository: userRepo,
             detectors: detectors
         )
 
@@ -190,7 +192,8 @@ struct ContentView: View {
             streakService: streakService,
             userRepository: userRepo,
             weeklyDiagnosticService: weeklyDiagnosticService,
-            fixCompletionRepository: fixCompletionRepo
+            fixCompletionRepository: fixCompletionRepo,
+            diagnosticEngine: diagnosticEngine
         )
     }
 
@@ -274,6 +277,7 @@ struct ContentView: View {
         return PatternsViewModel(
             patternRepository: patternRepo,
             userRepository: userRepo,
+            bugRepository: bugRepo,
             trendAnalysisService: trendAnalysisService
         )
     }
@@ -283,11 +287,13 @@ struct ContentView: View {
         let userRepo = LocalUserRepository(modelContext: modelContext)
         let weeklyDiagnosticRepo = LocalWeeklyDiagnosticRepository(modelContext: modelContext)
         let crashRepo = LocalCrashRepository(modelContext: modelContext)
+        let patternRepo = LocalPatternRepository(modelContext: modelContext)
 
         let bugLifecycleService = BugLifecycleService(
             bugRepository: bugRepo,
             weeklyDiagnosticRepository: weeklyDiagnosticRepo,
-            crashRepository: crashRepo
+            crashRepository: crashRepo,
+            patternRepository: patternRepo
         )
 
         return BugLibraryViewModel(

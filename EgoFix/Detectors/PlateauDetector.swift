@@ -8,7 +8,7 @@ final class PlateauDetector: PatternDetector {
     private let minimumStagnantWeeks: Int = 4
     private let minimumFixesApplied: Int = 6
 
-    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID) -> DetectedPattern? {
+    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID, bugNames: [UUID: String]) -> DetectedPattern? {
         guard diagnostics.count >= minimumStagnantWeeks else { return nil }
 
         // Get applied fix counts per bug
@@ -42,12 +42,13 @@ final class PlateauDetector: PatternDetector {
             }
 
             if stagnantWeeks >= minimumStagnantWeeks {
+                let bugName = bugNames[bugId] ?? "this bug"
                 return DetectedPattern(
                     userId: userId,
                     patternType: .plateau,
                     severity: .alert,
-                    title: "Progress Plateau",
-                    body: "You've applied \(appliedCount) fixes, but this bug has been present or loud for \(stagnantWeeks) straight weeks. The current approach might not be working.",
+                    title: "Stuck",
+                    body: "\(appliedCount) fixes for '\(bugName).' \(stagnantWeeks) weeks still loud. What you're doing isn't working.",
                     relatedBugIds: [bugId],
                     dataPoints: appliedCount
                 )

@@ -8,6 +8,7 @@ final class AvoidanceDetectorTests: XCTestCase {
     func test_AvoidanceDetector_triggersAt50Percent() {
         let userId = UUID()
         let bugId = UUID()
+        let bugNames: [UUID: String] = [bugId: "Need to be right"]
 
         // Create events with >50% skip rate, minimum 4 skips
         var events: [AnalyticsEvent] = []
@@ -32,15 +33,18 @@ final class AvoidanceDetectorTests: XCTestCase {
             ))
         }
 
-        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId)
+        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId, bugNames: bugNames)
 
         XCTAssertNotNil(pattern)
         XCTAssertEqual(pattern?.patternType, .avoidance)
+        XCTAssertEqual(pattern?.title, "Dodging the hard ones")
+        XCTAssertTrue(pattern?.body.contains("Need to be right") ?? false)
     }
 
     func test_AvoidanceDetector_ignoresBelowThreshold() {
         let userId = UUID()
         let bugId = UUID()
+        let bugNames: [UUID: String] = [bugId: "Need to be right"]
 
         // Create events with <50% skip rate
         var events: [AnalyticsEvent] = []
@@ -65,7 +69,7 @@ final class AvoidanceDetectorTests: XCTestCase {
             ))
         }
 
-        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId)
+        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId, bugNames: bugNames)
 
         XCTAssertNil(pattern)
     }
@@ -73,6 +77,7 @@ final class AvoidanceDetectorTests: XCTestCase {
     func test_AvoidanceDetector_requiresMinimumSkips() {
         let userId = UUID()
         let bugId = UUID()
+        let bugNames: [UUID: String] = [bugId: "Need to be right"]
 
         // Create events with high skip rate but below minimum count
         var events: [AnalyticsEvent] = []
@@ -95,7 +100,7 @@ final class AvoidanceDetectorTests: XCTestCase {
             hourOfDay: 10
         ))
 
-        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId)
+        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId, bugNames: bugNames)
 
         XCTAssertNil(pattern)
     }

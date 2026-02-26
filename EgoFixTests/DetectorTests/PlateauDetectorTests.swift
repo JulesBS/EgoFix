@@ -8,6 +8,7 @@ final class PlateauDetectorTests: XCTestCase {
     func test_PlateauDetector_requiresFixesApplied() {
         let userId = UUID()
         let bugId = UUID()
+        let bugNames: [UUID: String] = [bugId: "Need to control"]
 
         // Create events with enough fixes applied
         var events: [AnalyticsEvent] = []
@@ -38,15 +39,18 @@ final class PlateauDetectorTests: XCTestCase {
             ))
         }
 
-        let pattern = detector.analyze(events: events, diagnostics: diagnostics, userId: userId)
+        let pattern = detector.analyze(events: events, diagnostics: diagnostics, userId: userId, bugNames: bugNames)
 
         XCTAssertNotNil(pattern)
         XCTAssertEqual(pattern?.patternType, .plateau)
+        XCTAssertEqual(pattern?.title, "Stuck")
+        XCTAssertTrue(pattern?.body.contains("Need to control") ?? false)
     }
 
     func test_PlateauDetector_noPatternIfQuiet() {
         let userId = UUID()
         let bugId = UUID()
+        let bugNames: [UUID: String] = [bugId: "Need to control"]
 
         // Create events with enough fixes applied
         var events: [AnalyticsEvent] = []
@@ -77,7 +81,7 @@ final class PlateauDetectorTests: XCTestCase {
             ))
         }
 
-        let pattern = detector.analyze(events: events, diagnostics: diagnostics, userId: userId)
+        let pattern = detector.analyze(events: events, diagnostics: diagnostics, userId: userId, bugNames: bugNames)
 
         XCTAssertNil(pattern)
     }

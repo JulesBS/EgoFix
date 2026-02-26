@@ -8,7 +8,7 @@ final class AvoidanceDetector: PatternDetector {
     private let skipRateThreshold: Double = 0.5
     private let minimumSkips: Int = 4
 
-    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID) -> DetectedPattern? {
+    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID, bugNames: [UUID: String]) -> DetectedPattern? {
         // Group events by bug
         var bugSkipCounts: [UUID: Int] = [:]
         var bugTotalCounts: [UUID: Int] = [:]
@@ -36,12 +36,13 @@ final class AvoidanceDetector: PatternDetector {
             let skipRate = Double(skipCount) / Double(totalCount)
 
             if skipRate > skipRateThreshold {
+                let bugName = bugNames[bugId] ?? "this bug"
                 return DetectedPattern(
                     userId: userId,
                     patternType: .avoidance,
                     severity: .insight,
-                    title: "Avoidance Pattern",
-                    body: "You've skipped \(skipCount) of \(totalCount) fixes for this bug. Avoidance is often a sign the bug is particularly active.",
+                    title: "Dodging the hard ones",
+                    body: "You've skipped \(skipCount) of \(totalCount) fixes for '\(bugName).' The ones you avoid are usually the ones that matter.",
                     relatedBugIds: [bugId],
                     dataPoints: totalCount
                 )

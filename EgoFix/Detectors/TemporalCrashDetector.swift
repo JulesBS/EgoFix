@@ -10,25 +10,25 @@ final class TemporalCrashDetector: PatternDetector {
     private let timeThreshold: Double = 0.5
     private let minimumCrashes: Int = 3
 
-    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID) -> DetectedPattern? {
+    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID, bugNames: [UUID: String]) -> DetectedPattern? {
         let crashEvents = events.filter { $0.eventType == .crashLogged }
 
         guard crashEvents.count >= minimumCrashes else { return nil }
 
         // Check for day patterns
-        if let dayPattern = detectDayPattern(crashEvents, userId: userId) {
+        if let dayPattern = detectDayPattern(crashEvents, userId: userId, bugNames: bugNames) {
             return dayPattern
         }
 
         // Check for time patterns
-        if let timePattern = detectTimePattern(crashEvents, userId: userId) {
+        if let timePattern = detectTimePattern(crashEvents, userId: userId, bugNames: bugNames) {
             return timePattern
         }
 
         return nil
     }
 
-    private func detectDayPattern(_ events: [AnalyticsEvent], userId: UUID) -> DetectedPattern? {
+    private func detectDayPattern(_ events: [AnalyticsEvent], userId: UUID, bugNames: [UUID: String]) -> DetectedPattern? {
         var dayCounts: [Int: Int] = [:]
 
         for event in events {
@@ -44,13 +44,16 @@ final class TemporalCrashDetector: PatternDetector {
 
             if rate > dayThreshold {
                 let dayName = dayOfWeekName(day)
+                let relatedBugIds = events.compactMap { $0.bugId }
+                let bugNamesList = relatedBugIds.compactMap { bugNames[$0] }.joined(separator: ", ")
+                let bugContext = bugNamesList.isEmpty ? "" : " Related: \(bugNamesList)."
                 return DetectedPattern(
                     userId: userId,
                     patternType: .temporalCrash,
                     severity: .alert,
-                    title: "\(dayName) Crashes",
-                    body: "\(count) of your \(totalCrashes) crashes happened on \(dayName)s. Something about that day triggers you.",
-                    relatedBugIds: events.compactMap { $0.bugId },
+                    title: "\(dayName)s are rough",
+                    body: "\(count) of \(totalCrashes) crashes happened on \(dayName)s. Something about that day gets you.\(bugContext)",
+                    relatedBugIds: relatedBugIds,
                     dataPoints: totalCrashes
                 )
             }
@@ -59,7 +62,7 @@ final class TemporalCrashDetector: PatternDetector {
         return nil
     }
 
-    private func detectTimePattern(_ events: [AnalyticsEvent], userId: UUID) -> DetectedPattern? {
+    private func detectTimePattern(_ events: [AnalyticsEvent], userId: UUID, bugNames: [UUID: String]) -> DetectedPattern? {
         // Group hours into buckets: morning (6-12), afternoon (12-18), evening (18-24), night (0-6)
         var bucketCounts: [String: Int] = [:]
 
@@ -76,13 +79,14 @@ final class TemporalCrashDetector: PatternDetector {
             let rate = Double(count) / Double(totalCrashes)
 
             if rate > timeThreshold {
+                let relatedBugIds = events.compactMap { $0.bugId }
                 return DetectedPattern(
                     userId: userId,
                     patternType: .temporalCrash,
                     severity: .insight,
-                    title: "\(bucket.capitalized) Crashes",
-                    body: "\(count) of your \(totalCrashes) crashes happened in the \(bucket). Worth noticing.",
-                    relatedBugIds: events.compactMap { $0.bugId },
+                    title: "\(bucket.capitalized) slips",
+                    body: "\(count) of \(totalCrashes) crashes in the \(bucket). Your defenses drop then.",
+                    relatedBugIds: relatedBugIds,
                     dataPoints: totalCrashes
                 )
             }

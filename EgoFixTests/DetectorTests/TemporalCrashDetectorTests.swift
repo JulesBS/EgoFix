@@ -4,6 +4,7 @@ import XCTest
 final class TemporalCrashDetectorTests: XCTestCase {
 
     let detector = TemporalCrashDetector()
+    let bugNames: [UUID: String] = [:]
 
     func test_TemporalDetector_findsDayClusters() {
         let userId = UUID()
@@ -30,10 +31,11 @@ final class TemporalCrashDetectorTests: XCTestCase {
             ))
         }
 
-        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId)
+        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId, bugNames: bugNames)
 
         XCTAssertNotNil(pattern)
         XCTAssertEqual(pattern?.patternType, .temporalCrash)
+        XCTAssertEqual(pattern?.title, "Mondays are rough")
     }
 
     func test_TemporalDetector_findsTimeClusters() {
@@ -65,10 +67,11 @@ final class TemporalCrashDetectorTests: XCTestCase {
             hourOfDay: 20 // Evening
         ))
 
-        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId)
+        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId, bugNames: bugNames)
 
         XCTAssertNotNil(pattern)
         XCTAssertEqual(pattern?.patternType, .temporalCrash)
+        XCTAssertEqual(pattern?.title, "Morning slips")
     }
 
     func test_TemporalDetector_requiresMinimumCrashes() {
@@ -90,7 +93,7 @@ final class TemporalCrashDetectorTests: XCTestCase {
             )
         ]
 
-        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId)
+        let pattern = detector.analyze(events: events, diagnostics: [], userId: userId, bugNames: bugNames)
 
         XCTAssertNil(pattern)
     }

@@ -7,7 +7,7 @@ final class ImprovementDetector: PatternDetector {
     // Triggers when downward trend ending in quiet over 4+ weeks
     private let minimumWeeks: Int = 4
 
-    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID) -> DetectedPattern? {
+    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID, bugNames: [UUID: String]) -> DetectedPattern? {
         guard diagnostics.count >= minimumWeeks else { return nil }
 
         // Sort diagnostics by date (oldest first)
@@ -32,12 +32,13 @@ final class ImprovementDetector: PatternDetector {
             let recentIntensities = Array(intensities.suffix(minimumWeeks))
 
             if isDownwardTrendEndingQuiet(recentIntensities) {
+                let bugName = bugNames[bugId] ?? "This bug"
                 return DetectedPattern(
                     userId: userId,
                     patternType: .improvement,
                     severity: .observation,
-                    title: "Progress Detected",
-                    body: "This bug has been getting quieter over the last \(minimumWeeks) weeks. Something's working.",
+                    title: "Still running",
+                    body: "'\(bugName)' has been quiet for \(minimumWeeks) weeks. Whatever you're doing, keep doing it.",
                     relatedBugIds: [bugId],
                     dataPoints: intensities.count
                 )

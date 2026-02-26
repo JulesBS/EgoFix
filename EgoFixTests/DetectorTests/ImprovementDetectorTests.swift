@@ -8,6 +8,7 @@ final class ImprovementDetectorTests: XCTestCase {
     func test_ImprovementDetector_requiresDownwardTrend() {
         let userId = UUID()
         let bugId = UUID()
+        let bugNames: [UUID: String] = [bugId: "Need to compare"]
 
         // Create diagnostics showing downward trend ending in quiet
         var diagnostics: [WeeklyDiagnostic] = []
@@ -29,15 +30,18 @@ final class ImprovementDetectorTests: XCTestCase {
             ))
         }
 
-        let pattern = detector.analyze(events: [], diagnostics: diagnostics, userId: userId)
+        let pattern = detector.analyze(events: [], diagnostics: diagnostics, userId: userId, bugNames: bugNames)
 
         XCTAssertNotNil(pattern)
         XCTAssertEqual(pattern?.patternType, .improvement)
+        XCTAssertEqual(pattern?.title, "Still running")
+        XCTAssertTrue(pattern?.body.contains("Need to compare") ?? false)
     }
 
     func test_ImprovementDetector_noPatternIfNotEndingQuiet() {
         let userId = UUID()
         let bugId = UUID()
+        let bugNames: [UUID: String] = [bugId: "Need to compare"]
 
         // Create diagnostics NOT ending in quiet
         var diagnostics: [WeeklyDiagnostic] = []
@@ -59,7 +63,7 @@ final class ImprovementDetectorTests: XCTestCase {
             ))
         }
 
-        let pattern = detector.analyze(events: [], diagnostics: diagnostics, userId: userId)
+        let pattern = detector.analyze(events: [], diagnostics: diagnostics, userId: userId, bugNames: bugNames)
 
         XCTAssertNil(pattern)
     }
@@ -67,6 +71,7 @@ final class ImprovementDetectorTests: XCTestCase {
     func test_ImprovementDetector_noPatternIfUpwardTrend() {
         let userId = UUID()
         let bugId = UUID()
+        let bugNames: [UUID: String] = [bugId: "Need to compare"]
 
         // Create diagnostics showing upward trend
         var diagnostics: [WeeklyDiagnostic] = []
@@ -88,7 +93,7 @@ final class ImprovementDetectorTests: XCTestCase {
             ))
         }
 
-        let pattern = detector.analyze(events: [], diagnostics: diagnostics, userId: userId)
+        let pattern = detector.analyze(events: [], diagnostics: diagnostics, userId: userId, bugNames: bugNames)
 
         // Pattern may or may not be detected depending on exact trend calculation
         // The key is it shouldn't be detected for clearly upward trends

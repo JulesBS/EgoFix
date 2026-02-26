@@ -4,23 +4,52 @@ final class DiagnosticEngine {
     private let analyticsEventRepository: AnalyticsEventRepository
     private let weeklyDiagnosticRepository: WeeklyDiagnosticRepository
     private let patternRepository: PatternRepository
+    private let bugRepository: BugRepository
+    private let userRepository: UserRepository
     private let detectors: [PatternDetector]
+
+    /// Days since last run before triggering diagnostics on app launch
+    private let daysSinceLastRunThreshold = 7
 
     init(
         analyticsEventRepository: AnalyticsEventRepository,
         weeklyDiagnosticRepository: WeeklyDiagnosticRepository,
         patternRepository: PatternRepository,
+        bugRepository: BugRepository,
+        userRepository: UserRepository,
         detectors: [PatternDetector]
     ) {
         self.analyticsEventRepository = analyticsEventRepository
         self.weeklyDiagnosticRepository = weeklyDiagnosticRepository
         self.patternRepository = patternRepository
+        self.bugRepository = bugRepository
+        self.userRepository = userRepository
         self.detectors = detectors
+    }
+
+    /// Check if diagnostics should run based on time since last run.
+    /// Returns true if never run or >7 days since last run.
+    func shouldRunDiagnostics(for userId: UUID) async throws -> Bool {
+        guard let user = try await userRepository.get() else { return false }
+
+        guard let lastRun = user.lastDiagnosticsRunAt else {
+            // Never run before
+            return true
+        }
+
+        let calendar = Calendar.current
+        let daysSinceLastRun = calendar.dateComponents([.day], from: lastRun, to: Date()).day ?? 0
+
+        return daysSinceLastRun >= daysSinceLastRunThreshold
     }
 
     func runDiagnostics(for userId: UUID) async throws -> [DetectedPattern] {
         let events = try await analyticsEventRepository.getForUser(userId)
         let diagnostics = try await weeklyDiagnosticRepository.getForUser(userId)
+
+        // Build bug names dictionary for personal copy
+        let bugs = try await bugRepository.getAll()
+        let bugNames: [UUID: String] = Dictionary(uniqueKeysWithValues: bugs.map { ($0.id, $0.title) })
 
         var detectedPatterns: [DetectedPattern] = []
 
@@ -37,10 +66,17 @@ final class DiagnosticEngine {
             guard recentPatterns.isEmpty else { continue }
 
             // Run detector
-            if let pattern = detector.analyze(events: events, diagnostics: diagnostics, userId: userId) {
+            if let pattern = detector.analyze(events: events, diagnostics: diagnostics, userId: userId, bugNames: bugNames) {
                 detectedPatterns.append(pattern)
                 try await patternRepository.save(pattern)
             }
+        }
+
+        // Update last diagnostics run timestamp
+        if let user = try await userRepository.get() {
+            user.lastDiagnosticsRunAt = Date()
+            user.updatedAt = Date()
+            try await userRepository.save(user)
         }
 
         return detectedPatterns

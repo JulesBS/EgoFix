@@ -8,7 +8,7 @@ final class ContextSpikeDetector: PatternDetector {
     private let loudThreshold: Double = 0.6
     private let minimumLoudResponses: Int = 3
 
-    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID) -> DetectedPattern? {
+    func analyze(events: [AnalyticsEvent], diagnostics: [WeeklyDiagnostic], userId: UUID, bugNames: [UUID: String]) -> DetectedPattern? {
         // Analyze weekly diagnostic responses for context spikes
         var contextLoudCounts: [EventContext: Int] = [:]
         var contextTotalCounts: [EventContext: Int] = [:]
@@ -37,13 +37,16 @@ final class ContextSpikeDetector: PatternDetector {
 
             if loudRate > loudThreshold {
                 let contextName = contextDisplayName(context)
+                let relatedBugIds = Array(bugIdsWithSpikes)
+                let bugNamesList = relatedBugIds.compactMap { bugNames[$0] }.joined(separator: ", ")
+                let bugContext = bugNamesList.isEmpty ? "" : " Bugs involved: \(bugNamesList)."
                 return DetectedPattern(
                     userId: userId,
                     patternType: .contextualSpike,
                     severity: .insight,
-                    title: "\(contextName) Spike",
-                    body: "Your bugs are loudest at \(contextName.lowercased()). \(loudCount) of \(totalCount) responses there were 'loud'.",
-                    relatedBugIds: Array(bugIdsWithSpikes),
+                    title: "\(contextName) is a minefield",
+                    body: "\(loudCount) of \(totalCount) check-ins at \(contextName.lowercased()) were loud. That environment's got your number.\(bugContext)",
+                    relatedBugIds: relatedBugIds,
                     dataPoints: totalCount
                 )
             }
