@@ -1,0 +1,44 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "slug": "need-to-be-right",
+    "title": "Need to be right",
+    "description": "Correcting others, winning arguments, having the last word. The inability to let an error — especially someone else's — go unchallenged."
+  },
+  {
+    "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "slug": "need-to-be-liked",
+    "title": "Need to be liked",
+    "description": "Adjusting your opinions, tone, and behavior to match what you think others want. Performing agreeability at the cost of authenticity."
+  },
+  {
+    "id": "e5f6a7b8-c9d0-1234-ef01-345678901234",
+    "slug": "need-to-control",
+    "title": "Need to control",
+    "description": "Micromanaging, difficulty letting others do things their way, anxiety when plans change. A compulsive grip on outcomes."
+  },
+  {
+    "id": "d0e1f2a3-b4c5-6789-3456-890123456789",
+    "slug": "need-to-compare",
+    "title": "Need to compare",
+    "description": "Measuring yourself against others. Needing to know where you rank. Feeling threatened by others' success or validated by their failure."
+  },
+  {
+    "id": "f1a2b3c4-d5e6-7890-abcd-123456789abc",
+    "slug": "need-to-impress",
+    "title": "Need to impress",
+    "description": "Steering conversations toward your achievements, expertise, or status. Performing a version of yourself that will be admired."
+  },
+  {
+    "id": "a2b3c4d5-e6f7-8901-bcde-234567890bcd",
+    "slug": "need-to-deflect",
+    "title": "Need to deflect",
+    "description": "Using humor, intellect, or subject changes to avoid being truly seen. Keeping people at arm's length while appearing open."
+  },
+  {
+    "id": "b3c4d5e6-f7a8-9012-cdef-345678901cde",
+    "slug": "need-to-narrate",
+    "title": "Need to narrate",
+    "description": "Constructing and rehearsing stories about yourself — especially stories of being wronged, unappreciated, or uniquely burdened. Complaining as identity."
+  }
+]

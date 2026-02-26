@@ -1,0 +1,55 @@
+import SwiftUI
+import SwiftData
+
+@main
+struct EgoFixApp: App {
+    let modelContainer: ModelContainer
+
+    init() {
+        do {
+            let schema = Schema([
+                UserProfile.self,
+                Bug.self,
+                Fix.self,
+                FixCompletion.self,
+                TimerSession.self,
+                Crash.self,
+                VersionEntry.self,
+                AnalyticsEvent.self,
+                DetectedPattern.self,
+                WeeklyDiagnostic.self,
+                MicroEducation.self
+            ])
+
+            let modelConfiguration = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false
+            )
+
+            do {
+                modelContainer = try ModelContainer(
+                    for: schema,
+                    configurations: [modelConfiguration]
+                )
+            } catch {
+                // If schema changed, try to delete and recreate (development only)
+                print("Schema changed, attempting to recreate database: \(error)")
+                let url = URL.applicationSupportDirectory.appending(path: "default.store")
+                try? FileManager.default.removeItem(at: url)
+                modelContainer = try ModelContainer(
+                    for: schema,
+                    configurations: [modelConfiguration]
+                )
+            }
+        } catch {
+            fatalError("Could not initialize ModelContainer: \(error)")
+        }
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .modelContainer(modelContainer)
+        }
+    }
+}

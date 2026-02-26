@@ -1,0 +1,632 @@
+[
+  {
+    "id": "me-right-01",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postApply",
+    "body": "The urge to correct is a status signal, not an accuracy signal. Your brain treats being wrong as a threat to your social position."
+  },
+  {
+    "id": "me-right-02",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postSkip",
+    "body": "Skipping a fix about being right often means the pattern is active right now. The ego protects itself by avoiding the mirror."
+  },
+  {
+    "id": "me-right-03",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postCrash",
+    "body": "Arguments activate your amygdala the same way physical threats do. Your brain literally cannot tell the difference between being wrong and being in danger."
+  },
+  {
+    "id": "me-right-04",
+    "bugSlug": "need-to-be-right",
+    "trigger": "general",
+    "body": "Research shows people who admit uncertainty are perceived as more credible, not less. The need to be right often backfires."
+  },
+  {
+    "id": "me-right-05",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postApply",
+    "body": "Every time you let someone be wrong without correcting them, you weaken the automatic reflex. It's neuroplasticity, not willpower."
+  },
+  {
+    "id": "me-liked-01",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postApply",
+    "body": "People-pleasing is a survival strategy from childhood. It worked then. It's costing you now."
+  },
+  {
+    "id": "me-liked-02",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postSkip",
+    "body": "Avoiding fixes about approval-seeking is itself a form of approval-seeking. You're protecting the pattern."
+  },
+  {
+    "id": "me-liked-03",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postCrash",
+    "body": "The dopamine hit from approval is real but brief. The anxiety of maintaining it is constant. You're running on a treadmill."
+  },
+  {
+    "id": "me-liked-04",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "general",
+    "body": "Studies show that people respect authenticity more than agreeableness. The version of you that everyone likes isn't you."
+  },
+  {
+    "id": "me-liked-05",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postApply",
+    "body": "Saying no without explanation is a complete social transaction. The discomfort you feel is withdrawal, not danger."
+  },
+  {
+    "id": "me-control-01",
+    "bugSlug": "need-to-control",
+    "trigger": "postApply",
+    "body": "Control is anxiety wearing a productivity mask. When you delegate without instructions, you're treating the anxiety, not the task."
+  },
+  {
+    "id": "me-control-02",
+    "bugSlug": "need-to-control",
+    "trigger": "postSkip",
+    "body": "Skipping a control fix often means the anxiety is high today. The pattern gets louder when you feel uncertain."
+  },
+  {
+    "id": "me-control-03",
+    "bugSlug": "need-to-control",
+    "trigger": "postCrash",
+    "body": "The illusion of control collapses under stress. That's not failure — it's the pattern revealing its limits."
+  },
+  {
+    "id": "me-control-04",
+    "bugSlug": "need-to-control",
+    "trigger": "general",
+    "body": "Research on delegation shows that micromanagers produce lower-quality outcomes than those who specify results and step back."
+  },
+  {
+    "id": "me-control-05",
+    "bugSlug": "need-to-control",
+    "trigger": "postApply",
+    "body": "Uncertainty tolerance is a trainable skill. Each time you sit with chaos without fixing it, your threshold increases."
+  },
+  {
+    "id": "me-compare-01",
+    "bugSlug": "need-to-compare",
+    "trigger": "postApply",
+    "body": "Social comparison activates the same brain regions as physical pain. Your jealousy is literally hurting you."
+  },
+  {
+    "id": "me-compare-02",
+    "bugSlug": "need-to-compare",
+    "trigger": "postSkip",
+    "body": "Comparison fixes feel pointless because the pattern insists comparison is useful. It's not. It's a habit disguised as strategy."
+  },
+  {
+    "id": "me-compare-03",
+    "bugSlug": "need-to-compare",
+    "trigger": "postCrash",
+    "body": "Upward comparison triggers cortisol. Downward comparison triggers brief relief followed by guilt. Neither produces growth."
+  },
+  {
+    "id": "me-compare-04",
+    "bugSlug": "need-to-compare",
+    "trigger": "general",
+    "body": "You compare yourself to a curated highlight reel. Your behind-the-scenes vs. their greatest hits. The game is rigged."
+  },
+  {
+    "id": "me-compare-05",
+    "bugSlug": "need-to-compare",
+    "trigger": "postApply",
+    "body": "Celebrating someone else's win without internal scorekeeping rewires the comparison circuit. Joy for others is free."
+  },
+  {
+    "id": "me-impress-01",
+    "bugSlug": "need-to-impress",
+    "trigger": "postApply",
+    "body": "Name-dropping and humble-bragging are performance anxiety wearing success clothes. The audience you're performing for is usually imaginary."
+  },
+  {
+    "id": "me-impress-02",
+    "bugSlug": "need-to-impress",
+    "trigger": "postSkip",
+    "body": "The performer skips the fix that threatens the performance. If this feels irrelevant, the pattern is working."
+  },
+  {
+    "id": "me-impress-03",
+    "bugSlug": "need-to-impress",
+    "trigger": "postCrash",
+    "body": "Impression management crashes when the stakes get real. The gap between the performance and the person is where the anxiety lives."
+  },
+  {
+    "id": "me-impress-04",
+    "bugSlug": "need-to-impress",
+    "trigger": "general",
+    "body": "People who signal less status are often perceived as having more. The truly impressive don't need to impress."
+  },
+  {
+    "id": "me-impress-05",
+    "bugSlug": "need-to-impress",
+    "trigger": "postApply",
+    "body": "Every conversation where you only asked questions is a rep against the performance reflex. The muscle is building."
+  },
+  {
+    "id": "me-deflect-01",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postApply",
+    "body": "Deflection is emotional armor. Taking it off in safe moments trains you to recognize when you actually need it."
+  },
+  {
+    "id": "me-deflect-02",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postSkip",
+    "body": "Skipping a deflection fix is itself a deflection. The pattern protects itself by avoiding examination."
+  },
+  {
+    "id": "me-deflect-03",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postCrash",
+    "body": "Humor under pressure is a defense mechanism, not a personality trait. The joke is the exit door from vulnerability."
+  },
+  {
+    "id": "me-deflect-04",
+    "bugSlug": "need-to-deflect",
+    "trigger": "general",
+    "body": "Deflection works because vulnerability feels dangerous. But connection requires exactly the exposure deflection prevents."
+  },
+  {
+    "id": "me-deflect-05",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postApply",
+    "body": "Accepting a compliment without deflecting is a micro-practice in receiving. Most deflectors are better at giving than receiving."
+  },
+  {
+    "id": "me-narrate-01",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postApply",
+    "body": "The urge to narrate turns experience into content. When you resist it, the experience stays yours. That's the difference."
+  },
+  {
+    "id": "me-narrate-02",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postSkip",
+    "body": "The narrator skips the fix that threatens the narrative. Silence feels like non-existence to this pattern."
+  },
+  {
+    "id": "me-narrate-03",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postCrash",
+    "body": "Narrating a moment while living it splits your attention. You're simultaneously the actor and the audience. Neither gets the full experience."
+  },
+  {
+    "id": "me-narrate-04",
+    "bugSlug": "need-to-narrate",
+    "trigger": "general",
+    "body": "Social media has industrialized the narration instinct. The platform didn't create the urge — it exploited one that was already there."
+  },
+  {
+    "id": "me-narrate-05",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postApply",
+    "body": "An unshared experience is not a wasted one. The moment doesn't need an audience to be real."
+  },
+  {
+    "id": "me-right-06",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postApply",
+    "body": "Letting someone be wrong without intervening activates the anterior cingulate cortex — the same region that processes physical pain. You just sat with that. It gets easier."
+  },
+  {
+    "id": "me-right-07",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postSkip",
+    "body": "The corrector skips the fix when the stakes feel too high. Translation: the pattern is especially active today."
+  },
+  {
+    "id": "me-right-08",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postCrash",
+    "body": "The need to be right hijacks the prefrontal cortex mid-argument. Literally: your rational brain goes offline while defending its rationality."
+  },
+  {
+    "id": "me-right-09",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postCrash",
+    "body": "Correcting someone releases a micro-dose of dopamine. The crash isn't a failure of character. It's a neurochemical habit."
+  },
+  {
+    "id": "me-right-10",
+    "bugSlug": "need-to-be-right",
+    "trigger": "general",
+    "body": "In studies on persuasion, being corrected makes people hold their original position more firmly. The correction doesn't work. It just feels like it should."
+  },
+  {
+    "id": "me-right-11",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postApply",
+    "body": "The gap between knowing the answer and not saying it is where the pattern weakens. You just widened that gap."
+  },
+  {
+    "id": "me-right-12",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postSkip",
+    "body": "When the fix feels pointless, the corrector is speaking. It says: why practice something I already understand? That's the pattern talking."
+  },
+  {
+    "id": "me-right-13",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postCrash",
+    "body": "Psychologists call it 'epistemic arrogance' — the gap between what you think you know and what you actually know. The correction impulse lives in that gap."
+  },
+  {
+    "id": "me-right-14",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postApply",
+    "body": "Biting your tongue when you know you're right builds distress tolerance. That skill transfers to every other pattern."
+  },
+  {
+    "id": "me-right-15",
+    "bugSlug": "need-to-be-right",
+    "trigger": "general",
+    "body": "The Dunning-Kruger effect cuts both ways. The people most certain they're right are often the least calibrated. Certainty is a feeling, not a fact."
+  },
+  {
+    "id": "me-liked-06",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postApply",
+    "body": "Each time you express a genuine preference instead of deferring, you train your nervous system that authenticity isn't dangerous. The discomfort is the recalibration."
+  },
+  {
+    "id": "me-liked-07",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postSkip",
+    "body": "The chameleon skips fixes that risk disapproval. Even hypothetical disapproval from an app. That's how deep the wiring goes."
+  },
+  {
+    "id": "me-liked-08",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postCrash",
+    "body": "Fawning — the fourth trauma response after fight, flight, and freeze — looks like agreeableness. It's not politeness. It's a survival mechanism running on autopilot."
+  },
+  {
+    "id": "me-liked-09",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postCrash",
+    "body": "The chameleon changes color so fast it forgets what its original color was. The crash is the moment you caught yourself mid-shift."
+  },
+  {
+    "id": "me-liked-10",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "general",
+    "body": "Mirror neurons make social mimicry automatic. The chameleon pattern exploits a feature of the brain that evolved for empathy, not people-pleasing."
+  },
+  {
+    "id": "me-liked-11",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postApply",
+    "body": "Disagreeing without catastrophe rewrites an old prediction. Your nervous system expected rejection. It got something more nuanced."
+  },
+  {
+    "id": "me-liked-12",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postSkip",
+    "body": "The pattern convinced you this fix wasn't worth the social risk. There was no actual social risk. That's the point."
+  },
+  {
+    "id": "me-liked-13",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postCrash",
+    "body": "Over-apologizing triggers a feedback loop: apologize, feel briefly safe, then scan for the next potential offense. The safety never lasts because it was never real."
+  },
+  {
+    "id": "me-liked-14",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postApply",
+    "body": "Choosing your own restaurant without polling the group is a micro-act of selfhood. Small, but the pattern noticed."
+  },
+  {
+    "id": "me-liked-15",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "general",
+    "body": "Research on attachment styles shows that anxious attachment in childhood predicts people-pleasing in adulthood. The pattern was installed before you could choose."
+  },
+  {
+    "id": "me-impress-06",
+    "bugSlug": "need-to-impress",
+    "trigger": "postApply",
+    "body": "A conversation where you only listened is a rep against the performance instinct. The performer hates an empty stage."
+  },
+  {
+    "id": "me-impress-07",
+    "bugSlug": "need-to-impress",
+    "trigger": "postSkip",
+    "body": "The performer skips fixes that threaten the image. If this felt beneath you, that's the pattern's signature."
+  },
+  {
+    "id": "me-impress-08",
+    "bugSlug": "need-to-impress",
+    "trigger": "postCrash",
+    "body": "Name-dropping and credential-flashing activate the brain's reward system the same way gambling does. Variable social reinforcement. You're pulling a slot machine."
+  },
+  {
+    "id": "me-impress-09",
+    "bugSlug": "need-to-impress",
+    "trigger": "postCrash",
+    "body": "The humble-brag is the performer's stealth mode. It disguises status-signaling as self-deprecation. The crash is the disguise slipping."
+  },
+  {
+    "id": "me-impress-10",
+    "bugSlug": "need-to-impress",
+    "trigger": "general",
+    "body": "Status anxiety correlates with cortisol levels more strongly than financial stress does. The need to impress is literally more stressful than being broke."
+  },
+  {
+    "id": "me-impress-11",
+    "bugSlug": "need-to-impress",
+    "trigger": "postApply",
+    "body": "Not mentioning your credentials when you could have is like holding a breath. The exhale afterward tells you how automatic the impulse was."
+  },
+  {
+    "id": "me-impress-12",
+    "bugSlug": "need-to-impress",
+    "trigger": "postSkip",
+    "body": "When the fix felt irrelevant, the performer was directing. It only values exercises that might produce an impressive result."
+  },
+  {
+    "id": "me-impress-13",
+    "bugSlug": "need-to-impress",
+    "trigger": "postCrash",
+    "body": "Social psychologists call it 'self-enhancement bias.' You steer conversations to your strengths without noticing. The crash is the noticing."
+  },
+  {
+    "id": "me-impress-14",
+    "bugSlug": "need-to-impress",
+    "trigger": "postApply",
+    "body": "Asking a question you don't know the answer to, in front of people, is the performer's nightmare. If you did it, the pattern took a hit."
+  },
+  {
+    "id": "me-impress-15",
+    "bugSlug": "need-to-impress",
+    "trigger": "general",
+    "body": "Studies on 'impression management' show it consumes significant cognitive resources. You're literally thinking less clearly when performing."
+  },
+  {
+    "id": "me-control-06",
+    "bugSlug": "need-to-control",
+    "trigger": "postApply",
+    "body": "Letting someone do a task their way — even poorly — trains your nervous system that imperfect outcomes are survivable. That's the actual skill."
+  },
+  {
+    "id": "me-control-07",
+    "bugSlug": "need-to-control",
+    "trigger": "postSkip",
+    "body": "The controller skips the fix because chaos feels dangerous today. The skip is the pattern choosing safety over growth."
+  },
+  {
+    "id": "me-control-08",
+    "bugSlug": "need-to-control",
+    "trigger": "postCrash",
+    "body": "Micromanagement activates the same neural pathways as compulsive checking. It's not about the task. It's about managing intolerable uncertainty."
+  },
+  {
+    "id": "me-control-09",
+    "bugSlug": "need-to-control",
+    "trigger": "postCrash",
+    "body": "The controller crashes hardest when plans change last-minute. The intensity of your reaction is a direct measure of the pattern's grip."
+  },
+  {
+    "id": "me-control-10",
+    "bugSlug": "need-to-control",
+    "trigger": "general",
+    "body": "Paradox of control: the tighter your grip on outcomes, the more anxious you become. Control doesn't reduce anxiety. It feeds it."
+  },
+  {
+    "id": "me-control-11",
+    "bugSlug": "need-to-control",
+    "trigger": "postApply",
+    "body": "Sitting with an unfinished task without intervening builds the exact muscle the pattern is weakest at. Tolerance of incompleteness."
+  },
+  {
+    "id": "me-control-12",
+    "bugSlug": "need-to-control",
+    "trigger": "postSkip",
+    "body": "The controller convinced you there wasn't time for this fix. There was. The pattern just had higher-priority items on its agenda."
+  },
+  {
+    "id": "me-control-13",
+    "bugSlug": "need-to-control",
+    "trigger": "postCrash",
+    "body": "Redoing someone else's work feels like quality control. It's actually a trust deficit that has nothing to do with their competence."
+  },
+  {
+    "id": "me-control-14",
+    "bugSlug": "need-to-control",
+    "trigger": "postApply",
+    "body": "Delegating without follow-up instructions is an act of faith the controller finds physically uncomfortable. That discomfort is the rewiring."
+  },
+  {
+    "id": "me-control-15",
+    "bugSlug": "need-to-control",
+    "trigger": "general",
+    "body": "Neuroscience shows that perceived loss of control activates the amygdala identically to threat detection. Your brain treats chaos like a predator."
+  },
+  {
+    "id": "me-compare-06",
+    "bugSlug": "need-to-compare",
+    "trigger": "postApply",
+    "body": "Celebrating someone else's success without calculating your position relative to it breaks the comparison loop. The scorekeeper didn't get its data point."
+  },
+  {
+    "id": "me-compare-07",
+    "bugSlug": "need-to-compare",
+    "trigger": "postSkip",
+    "body": "The scorekeeper skips fixes that don't have a measurable outcome. If you can't win at it, the pattern doesn't see the point."
+  },
+  {
+    "id": "me-compare-08",
+    "bugSlug": "need-to-compare",
+    "trigger": "postCrash",
+    "body": "Social comparison is a cognitive shortcut the brain uses to assess status. It evolved for small tribes, not Instagram feeds. The hardware is running outdated software."
+  },
+  {
+    "id": "me-compare-09",
+    "bugSlug": "need-to-compare",
+    "trigger": "postCrash",
+    "body": "The pang you felt when someone succeeded at something you care about has a name: 'benign envy.' Except it's not benign. It erodes your baseline satisfaction."
+  },
+  {
+    "id": "me-compare-10",
+    "bugSlug": "need-to-compare",
+    "trigger": "general",
+    "body": "Festinger's social comparison theory from 1954 predicted everything about modern social media. We evaluate ourselves through others. The platforms just removed the friction."
+  },
+  {
+    "id": "me-compare-11",
+    "bugSlug": "need-to-compare",
+    "trigger": "postApply",
+    "body": "Not checking how your post performed is a withdrawal from the comparison drug. The itch to check is the pattern requesting its data."
+  },
+  {
+    "id": "me-compare-12",
+    "bugSlug": "need-to-compare",
+    "trigger": "postSkip",
+    "body": "The scorekeeper dismissed this fix as irrelevant. Irrelevance is what the pattern calls anything it can't rank."
+  },
+  {
+    "id": "me-compare-13",
+    "bugSlug": "need-to-compare",
+    "trigger": "postCrash",
+    "body": "One-upping is the scorekeeper's reflex action. The other person's story activated your ranking system before you could think."
+  },
+  {
+    "id": "me-compare-14",
+    "bugSlug": "need-to-compare",
+    "trigger": "postApply",
+    "body": "Asking about someone's achievement without relating it back to yourself is the scorekeeper's equivalent of a cold shower. Uncomfortable and clarifying."
+  },
+  {
+    "id": "me-compare-15",
+    "bugSlug": "need-to-compare",
+    "trigger": "general",
+    "body": "Research shows that reducing social media use by 30 minutes a day significantly decreases comparison-driven loneliness. The scoreboard is optional."
+  },
+  {
+    "id": "me-deflect-06",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postApply",
+    "body": "Answering a personal question directly — without a joke, a redirect, or an abstraction — is exposure therapy for the deflector. The vulnerability didn't kill you."
+  },
+  {
+    "id": "me-deflect-07",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postSkip",
+    "body": "The deflector skipped the fix by telling itself it wasn't the right time. There's never a right time for vulnerability. That's the pattern's design."
+  },
+  {
+    "id": "me-deflect-08",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postCrash",
+    "body": "Intellectualizing emotions is the deflector's most sophisticated move. You described the feeling instead of feeling it. The analysis replaced the experience."
+  },
+  {
+    "id": "me-deflect-09",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postCrash",
+    "body": "The joke that landed when things got serious wasn't spontaneous. It was an automatic defense response. Your nervous system pulled the emergency brake on intimacy."
+  },
+  {
+    "id": "me-deflect-10",
+    "bugSlug": "need-to-deflect",
+    "trigger": "general",
+    "body": "Avoidant attachment in adults correlates strongly with emotional deflection. The pattern was a childhood adaptation that became a personality trait by mistake."
+  },
+  {
+    "id": "me-deflect-11",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postApply",
+    "body": "Asking for help when you didn't need to proves the pattern wrong. The deflector predicted rejection. Reality was more nuanced."
+  },
+  {
+    "id": "me-deflect-12",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postSkip",
+    "body": "The deflector's favorite reason to skip: 'I already know this about myself.' Knowing and doing are different skills. The pattern prefers the one that doesn't require exposure."
+  },
+  {
+    "id": "me-deflect-13",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postCrash",
+    "body": "Changing the subject when it gets personal is a microsecond decision. The deflector moves faster than conscious thought. The crash is what happens when you're too slow to redirect."
+  },
+  {
+    "id": "me-deflect-14",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postApply",
+    "body": "Sitting in silence after someone said something vulnerable, without filling the gap, is the deflector's hardest exercise. You let the moment be real."
+  },
+  {
+    "id": "me-deflect-15",
+    "bugSlug": "need-to-deflect",
+    "trigger": "general",
+    "body": "Neuroimaging shows that emotional suppression increases amygdala activity rather than decreasing it. Deflection doesn't reduce the feeling. It just hides it from the room."
+  },
+  {
+    "id": "me-narrate-06",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postApply",
+    "body": "Experiencing something without turning it into a story breaks the narration loop. The moment existed without an audience. That's enough."
+  },
+  {
+    "id": "me-narrate-07",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postSkip",
+    "body": "The narrator skipped the fix because silence felt like non-existence. If you don't tell it, it didn't happen. That's the lie the pattern sells."
+  },
+  {
+    "id": "me-narrate-08",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postCrash",
+    "body": "Venting produces a brief dopamine hit followed by cortisol elevation. You felt better for thirty seconds, then the grievance settled deeper. That's the trap."
+  },
+  {
+    "id": "me-narrate-09",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postCrash",
+    "body": "Rehearsing a grievance in your head strengthens the neural pathway each time. Rumination isn't processing. It's rehearsal for a show that never opens."
+  },
+  {
+    "id": "me-narrate-10",
+    "bugSlug": "need-to-narrate",
+    "trigger": "general",
+    "body": "Psychologists distinguish between 'co-rumination' (repeatedly discussing problems) and actual processing. Most venting is the former. It feels productive but isn't."
+  },
+  {
+    "id": "me-narrate-11",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postApply",
+    "body": "Not complaining for an entire conversation rewires the default. The narrator's opening monologue got cut. You led with something else."
+  },
+  {
+    "id": "me-narrate-12",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postSkip",
+    "body": "The narrator dismissed this fix as trivial. Grievances feel important. That's the pattern's pitch: my suffering is significant, therefore I am significant."
+  },
+  {
+    "id": "me-narrate-13",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postCrash",
+    "body": "Telling the same complaint to multiple people isn't seeking advice. It's seeking validation for a story you've already committed to. The narrator needs witnesses."
+  },
+  {
+    "id": "me-narrate-14",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postApply",
+    "body": "A day without complaints doesn't mean nothing bad happened. It means you didn't need the story to feel real. That distinction matters."
+  },
+  {
+    "id": "me-narrate-15",
+    "bugSlug": "need-to-narrate",
+    "trigger": "general",
+    "body": "Identity fusion with personal narratives is measurable in brain scans. The story of who you are activates the same regions as your actual self-concept. Loosen the story, loosen the grip."
+  }
+]

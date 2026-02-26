@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EgoFix - Product Overview</title>
+    <style>
+        @page {
+            margin: 1in;
+            size: letter;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 40px;
+            background: #fff;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #00ff00;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            color: #000;
+        }
+
+        h1:first-of-type {
+            margin-top: 0;
+            text-align: center;
+            font-size: 3em;
+            border-bottom: none;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-top: 30px;
+            border-left: 4px solid #00ff00;
+            padding-left: 15px;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #444;
+            margin-top: 25px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1a1a1a;
+            color: #00ff00;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        code, pre {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace;
+            background-color: #1a1a1a;
+            color: #00ff00;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            line-height: 1.4;
+        }
+
+        blockquote {
+            border-left: 4px solid #00ff00;
+            margin: 20px 0;
+            padding: 15px 20px;
+            background: #f5f5f5;
+            font-style: italic;
+        }
+
+        blockquote p {
+            margin: 0;
+        }
+
+        .section {
+            page-break-inside: avoid;
+            margin-bottom: 30px;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .highlight {
+            background: linear-gradient(180deg, transparent 60%, #00ff0033 60%);
+        }
+
+        .terminal-box {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Monaco', monospace;
+            margin: 20px 0;
+            white-space: pre;
+            line-height: 1.5;
+        }
+
+        .check {
+            color: #00aa00;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #eee;
+            margin: 40px 0;
+        }
+
+        .tagline {
+            text-align: center;
+            font-size: 1.5em;
+            font-style: italic;
+            color: #666;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid #00ff00;
+        }
+    </style>
+</head>
+<body>
+
+<h1>EgoFix</h1>
+<p class="subtitle">Product Concept & Feature Overview</p>
+
+<hr>
+
+<h1>1. CONCEPT</h1>
+
+<div class="section">
+<h2>The Problem</h2>
+<p>Traditional self-help apps fail because they:</p>
+<ul>
+    <li>Offer empty validation ("You're doing great!")</li>
+    <li>Create dopamine loops (streaks, badges, gamification)</li>
+    <li>Treat ego work as wellness content</li>
+    <li>Never show you what you can't see about yourself</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>The Solution</h2>
+<p>EgoFix treats ego like <span class="highlight">buggy code</span>. Your defensive patterns are legacy software—poorly documented functions that fire when they shouldn't. The app helps you debug yourself through daily micro-missions called "Fixes."</p>
+</div>
+
+<div class="section">
+<h2>Core Hook</h2>
+<p><strong>Self-knowledge</strong>: The app surfaces patterns users don't consciously notice about themselves. It's not about feeling good—it's about seeing clearly.</p>
+</div>
+
+<hr>
+
+<h1 class="page-break">2. DESIGN PHILOSOPHY</h1>
+
+<div class="section">
+<h2>Metaphor: Ego as Buggy Code</h2>
+<table>
+    <tr><th>Real Concept</th><th>EgoFix Term</th></tr>
+    <tr><td>Ego pattern</td><td>Bug</td></tr>
+    <tr><td>Daily mission</td><td>Fix</td></tr>
+    <tr><td>Completing a challenge</td><td>Applied (like a code patch)</td></tr>
+    <tr><td>Progress milestone</td><td>Version (e.g., v1.3)</td></tr>
+    <tr><td>Bad ego day</td><td>Crash</td></tr>
+    <tr><td>Starting fresh</td><td>Reboot</td></tr>
+    <tr><td>Old pattern returning</td><td>Regression</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Visual Language</h2>
+<ul>
+    <li><strong>Aesthetic</strong>: Brutalist, utility-first—like a terminal or IDE</li>
+    <li><strong>Typography</strong>: Monospace fonts throughout</li>
+    <li><strong>Colors</strong>: Dark mode palette with muted syntax-highlighting accents</li>
+    <li><strong>No</strong>: Gradients, soft purples, nature imagery, wellness vibes</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Tone</h2>
+<ul>
+    <li>Deadpan, dry, matter-of-fact</li>
+    <li>Slightly antagonistic coach—doesn't coddle</li>
+    <li>Self-aware about the irony</li>
+</ul>
+
+<h3>Example Copy</h3>
+<blockquote>
+    <p><strong>FIX APPLIED</strong></p>
+    <p>No fanfare. You did the thing.</p>
+</blockquote>
+
+<blockquote>
+    <p>Congrats on the humility challenge. No, you don't get a badge.</p>
+</blockquote>
+</div>
+
+<hr>
+
+<h1 class="page-break">3. ANTI-PATTERNS</h1>
+
+<div class="section">
+<p>What EgoFix <strong>explicitly avoids</strong>:</p>
+<table>
+    <tr><th>Avoided Pattern</th><th>Why</th></tr>
+    <tr><td>Streaks</td><td>Creates anxiety, not growth</td></tr>
+    <tr><td>Badges</td><td>External validation defeats the purpose</td></tr>
+    <tr><td>"You're doing great!"</td><td>Empty affirmation</td></tr>
+    <tr><td>Share buttons</td><td>Progress is private</td></tr>
+    <tr><td>Leaderboards</td><td>Ego work isn't competition</td></tr>
+    <tr><td>Gentle reminders</td><td>The app earns the right to be quiet</td></tr>
+</table>
+</div>
+
+<hr>
+
+<h1 class="page-break">4. CORE FEATURES</h1>
+
+<div class="section">
+<h2>4.1 Bug Library</h2>
+<p>Users identify their "bugs"—recurring ego patterns:</p>
+<table>
+    <tr><th>Bug</th><th>Description</th></tr>
+    <tr><td>Need to be right</td><td>Compulsion to correct others, win arguments, have the last word</td></tr>
+    <tr><td>Need to be liked</td><td>Adjusting opinions/behavior for approval</td></tr>
+    <tr><td>Need to impress</td><td>Steering conversations toward achievements</td></tr>
+    <tr><td>Need to be busy</td><td>Using busyness as status or identity</td></tr>
+    <tr><td>Fear of being ordinary</td><td>Discomfort with being average</td></tr>
+    <tr><td>Comparison loop</td><td>Measuring self against others</td></tr>
+</table>
+<p>Users select a <strong>primary bug</strong> during onboarding, can add more over time.</p>
+</div>
+
+<div class="section">
+<h2>4.2 Daily Fixes</h2>
+<p>Each day, users receive one micro-mission targeting their active bug(s).</p>
+
+<h3>Example Fixes</h3>
+<p><strong>For "Need to be right":</strong></p>
+<ul>
+    <li>Let someone else have the last word today.</li>
+    <li>Notice when you're about to correct someone. Don't.</li>
+    <li>In your next disagreement, say "You might be right."</li>
+</ul>
+
+<p><strong>For "Need to be liked":</strong></p>
+<ul>
+    <li>Share an opinion you think might be unpopular.</li>
+    <li>Say no to something you'd normally say yes to.</li>
+    <li>Don't explain yourself when you decline.</li>
+</ul>
+
+<p><strong>Outcomes</strong>: Applied | Skipped | Failed</p>
+<p>No judgment on any outcome. Failure is data.</p>
+</div>
+
+<div class="section">
+<h2>4.3 Crash System</h2>
+<p>When ego takes over, users log a "Crash"—a moment when old patterns resurface.</p>
+
+<p><strong>Flow:</strong></p>
+<ol>
+    <li>Tap crash button (always accessible)</li>
+    <li>Select which bug resurfaced</li>
+    <li>Optional: add a note</li>
+    <li>Receive a "Quick Fix" to address it</li>
+</ol>
+<p>This creates awareness without shame.</p>
+</div>
+
+<div class="section">
+<h2>4.4 Version System</h2>
+<p>Progress is tracked as software versions:</p>
+<ul>
+    <li><strong>Minor update (1.0 → 1.1)</strong>: Every 7 fixes applied</li>
+    <li><strong>Major update (1.9 → 2.0)</strong>: Significant milestones</li>
+    <li><strong>Crash</strong>: Logged in version history</li>
+    <li><strong>Reboot</strong>: Starting fresh after crash</li>
+</ul>
+<p>Users can view their "changelog"—a history of their development.</p>
+</div>
+
+<div class="section">
+<h2>4.5 Weekly Diagnostic</h2>
+<p>A 30-second check-in each Sunday:</p>
+<p>For each active bug (max 3):</p>
+<ol>
+    <li>"This week, [bug] felt..." → Quiet / Present / Loud</li>
+    <li>If not Quiet: "Where was it loudest?" → Work / Home / Social / Family / Online</li>
+</ol>
+<p>This data feeds the pattern detection engine.</p>
+</div>
+
+<hr>
+
+<h1 class="page-break">5. ENGAGEMENT TACTICS</h1>
+
+<div class="section">
+<h2>5.1 Timer System</h2>
+<p>Many fixes include embedded timers:</p>
+<blockquote>
+    <p>"Sit with that feeling for 5 minutes."</p>
+    <p>"Go an entire conversation without..."</p>
+    <p>"Wait 30 seconds before responding."</p>
+</blockquote>
+
+<p><strong>Timer Features:</strong></p>
+<ul>
+    <li>Auto-detected from fix prompts (regex parsing)</li>
+    <li>Start/Pause/Reset controls</li>
+    <li>Visual countdown in app</li>
+    <li>Background tracking</li>
+    <li>Completion notification</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>5.2 iOS Widget</h2>
+<p>Home screen and lock screen widgets showing:</p>
+
+<p><strong>Small Widget:</strong></p>
+<ul>
+    <li>Current fix number</li>
+    <li>Fix prompt (truncated)</li>
+    <li>Timer status if active</li>
+</ul>
+
+<p><strong>Lock Screen Widget:</strong></p>
+<ul>
+    <li>Compact timer display</li>
+    <li>Circular progress indicator</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>5.3 Live Activities & Dynamic Island</h2>
+<p>When a timer is running:</p>
+
+<p><strong>Dynamic Island (Compact):</strong></p>
+<ul>
+    <li>Terminal icon + countdown timer</li>
+</ul>
+
+<p><strong>Dynamic Island (Expanded):</strong></p>
+<ul>
+    <li>"EGOFIX #1234"</li>
+    <li>Fix prompt</li>
+    <li>Progress bar</li>
+    <li>Live countdown</li>
+</ul>
+
+<p><strong>Lock Screen Banner:</strong></p>
+<ul>
+    <li>Full fix context</li>
+    <li>Timer with play/pause state</li>
+</ul>
+
+<p>This keeps the mission visible without requiring app open.</p>
+</div>
+
+<div class="section">
+<h2>5.4 Notification Strategy</h2>
+
+<p><strong>Daily Fix Reminder:</strong></p>
+<ul>
+    <li>Once per day, configurable time</li>
+    <li>"New fix available"</li>
+</ul>
+
+<p><strong>Timer Completion:</strong></p>
+<ul>
+    <li>"Timer complete. How did it go?"</li>
+</ul>
+
+<p><strong>Anti-Notification:</strong></p>
+<ul>
+    <li>After stable period: "Still running smoothly?"</li>
+    <li>Earned silence—more stability = less contact</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>5.5 Pattern Detection</h2>
+<p>The app analyzes behavior to surface insights users miss:</p>
+
+<table>
+    <tr><th>Detector</th><th>Trigger</th></tr>
+    <tr><td>Avoidance</td><td>&gt;50% skip rate on a bug (min 4 skips)</td></tr>
+    <tr><td>Temporal</td><td>&gt;40% crashes on same weekday</td></tr>
+    <tr><td>Context Spike</td><td>&gt;60% "loud" responses in one context</td></tr>
+    <tr><td>Correlated Bugs</td><td>Two bugs move together (r &gt; 0.7)</td></tr>
+    <tr><td>Plateau</td><td>4+ weeks stuck despite fixes applied</td></tr>
+    <tr><td>Improvement</td><td>Sustained downward trend to "quiet"</td></tr>
+</table>
+
+<p><strong>Surfacing Rules:</strong></p>
+<ul>
+    <li>Max one pattern per session</li>
+    <li>Same pattern not shown within 14 days</li>
+    <li>Priority: Alert &gt; Insight &gt; Observation</li>
+</ul>
+
+<div class="terminal-box">PATTERN DETECTED
+
+You've skipped 4 of 7 fixes about listening.
+When "Need to be right" is loud, listening goes first.
+
+[ Noted ]</div>
+</div>
+
+<hr>
+
+<h1 class="page-break">6. USER JOURNEY</h1>
+
+<div class="section">
+<h2>Onboarding</h2>
+<ol>
+    <li>Brief explanation of the "ego as code" metaphor</li>
+    <li>Present bug library</li>
+    <li>User selects primary bug</li>
+    <li>First fix assigned immediately</li>
+    <li>No account creation required (local-first)</li>
+</ol>
+</div>
+
+<div class="section">
+<h2>Daily Loop</h2>
+<ol>
+    <li>Open app → See today's fix</li>
+    <li>If timer required → Start timer</li>
+    <li>Complete mission in real world</li>
+    <li>Return → Mark outcome (Applied/Skipped/Failed)</li>
+    <li>Optional: Add private reflection</li>
+</ol>
+</div>
+
+<div class="section">
+<h2>Weekly Loop</h2>
+<ol>
+    <li>Sunday prompt for diagnostic</li>
+    <li>Rate each bug's intensity</li>
+    <li>Note contexts where loudest</li>
+    <li>See if version incremented</li>
+</ol>
+</div>
+
+<div class="section">
+<h2>Growth Loop</h2>
+<ol>
+    <li>Patterns surface over time</li>
+    <li>New bugs can be added</li>
+    <li>Bugs progress: Identified → Active → Stable → Resolved</li>
+    <li>Version number reflects journey</li>
+    <li>Changelog shows evolution</li>
+</ol>
+</div>
+
+<hr>
+
+<h1 class="page-break">7. TECHNICAL ARCHITECTURE</h1>
+
+<div class="section">
+<h2>Stack</h2>
+<ul>
+    <li><strong>Platform</strong>: iOS only (Swift 5.9+, SwiftUI)</li>
+    <li><strong>Persistence</strong>: SwiftData (local-first)</li>
+    <li><strong>Architecture</strong>: Repository pattern (sync-ready)</li>
+    <li><strong>Testing</strong>: TDD approach</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Key Components</h2>
+<ul>
+    <li><strong>TimerService</strong>: Parse prompts, manage timer state</li>
+    <li><strong>FixTimerManager</strong>: Observable state for UI</li>
+    <li><strong>LiveActivityService</strong>: Dynamic Island integration</li>
+    <li><strong>NotificationService</strong>: Local notifications</li>
+    <li><strong>WidgetStorageManager</strong>: App Group data sharing</li>
+    <li><strong>DiagnosticEngine</strong>: Pattern detection</li>
+    <li><strong>PatternSurfacingService</strong>: Display logic</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Data Models</h2>
+<ul>
+    <li>UserProfile (version tracking)</li>
+    <li>Bug (ego patterns)</li>
+    <li>Fix (missions)</li>
+    <li>FixCompletion (outcomes)</li>
+    <li>Crash (bad days)</li>
+    <li>TimerSession (engagement tracking)</li>
+    <li>WeeklyDiagnostic (check-ins)</li>
+    <li>DetectedPattern (insights)</li>
+    <li>AnalyticsEvent (behavior data)</li>
+</ul>
+</div>
+
+<hr>
+
+<h1 class="page-break">8. DEVELOPMENT PHASES</h1>
+
+<div class="section">
+<table>
+    <tr><th>Phase</th><th>Features</th><th>Status</th></tr>
+    <tr>
+        <td><strong>Phase 1: Core Loop (MVP)</strong></td>
+        <td>Onboarding, Daily fix, Outcome marking, Crash logging, Quick fix, Version tracking</td>
+        <td class="check">✓</td>
+    </tr>
+    <tr>
+        <td><strong>Phase 2: Depth</strong></td>
+        <td>Multiple bugs, Bug lifecycle, Weekly diagnostic, Version history, Reboot</td>
+        <td class="check">✓</td>
+    </tr>
+    <tr>
+        <td><strong>Phase 3: Intelligence</strong></td>
+        <td>Pattern detection engine, Pattern surfacing, All six detectors, Regression testing</td>
+        <td class="check">✓</td>
+    </tr>
+    <tr>
+        <td><strong>Phase 4: Engagement</strong></td>
+        <td>Timer system, iOS widgets, Live Activities, Dynamic Island, Notifications</td>
+        <td class="check">✓</td>
+    </tr>
+    <tr>
+        <td><strong>Phase 5: Polish</strong></td>
+        <td>Debug mode (7-day silence), Diminishing prompts, Custom bugs, Export changelog</td>
+        <td>Planned</td>
+    </tr>
+</table>
+</div>
+
+<hr>
+
+<h1 class="page-break">9. COMPETITIVE DIFFERENTIATION</h1>
+
+<div class="section">
+<table>
+    <tr><th>Feature</th><th>EgoFix</th><th>Typical Self-Help App</th></tr>
+    <tr><td>Gamification</td><td>None</td><td>Heavy</td></tr>
+    <tr><td>Tone</td><td>Deadpan, direct</td><td>Gentle, encouraging</td></tr>
+    <tr><td>Progress display</td><td>Version numbers</td><td>Streaks, badges</td></tr>
+    <tr><td>Failure handling</td><td>Data, not shame</td><td>Streak-breaking guilt</td></tr>
+    <tr><td>Pattern detection</td><td>Algorithmic insights</td><td>None</td></tr>
+    <tr><td>Visual design</td><td>Terminal/IDE</td><td>Soft gradients</td></tr>
+    <tr><td>Notification style</td><td>Earned silence</td><td>Constant engagement</td></tr>
+</table>
+</div>
+
+<hr>
+
+<h1 class="page-break">10. SUCCESS METRICS</h1>
+
+<div class="section">
+<h2>User Value (Not Vanity)</h2>
+<ul>
+    <li><strong>Fix completion rate</strong> (not streak length)</li>
+    <li><strong>Pattern acknowledgment</strong> (users finding value in insights)</li>
+    <li><strong>Bug progression</strong> (moving from Active to Stable)</li>
+    <li><strong>Crash-to-reboot time</strong> (recovery speed)</li>
+    <li><strong>Voluntary diagnostic completion</strong> (weekly engagement)</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Anti-Metrics</h2>
+<ul>
+    <li>No DAU optimization</li>
+    <li>No time-in-app goals</li>
+    <li>No notification click rates</li>
+    <li><strong>Success = users needing the app less over time</strong></li>
+</ul>
+</div>
+
+<hr>
+
+<h1 class="page-break">APPENDIX: UI SAMPLES</h1>
+
+<div class="section">
+<h2>Fix Card</h2>
+<div class="terminal-box">┌──────────────────────────────────────┐
+│ FIX #037                             │
+│ Severity: Medium                     │
+│                                      │
+│ Let someone else have the last word. │
+│                                      │
+│ // This is harder when you're sure   │
+│ // you're right. That's the point.   │
+│                                      │
+│ ┌─────────┐ ┌─────────┐ ┌─────────┐ │
+│ │ Applied │ │ Skipped │ │ Failed  │ │
+│ └─────────┘ └─────────┘ └─────────┘ │
+└──────────────────────────────────────┘</div>
+</div>
+
+<div class="section">
+<h2>Timer View</h2>
+<div class="terminal-box">┌──────────────────────────────────────┐
+│            04:32                     │
+│         ━━━━━━━━○━━                  │
+│                                      │
+│    ┌───────┐        ┌───────┐       │
+│    │ Pause │        │ Reset │       │
+│    └───────┘        └───────┘       │
+└──────────────────────────────────────┘</div>
+</div>
+
+<div class="section">
+<h2>Pattern Alert</h2>
+<div class="terminal-box">┌──────────────────────────────────────┐
+│ PATTERN DETECTED                     │
+│                                      │
+│ You've skipped 4 of 7 fixes about    │
+│ listening. When "Need to be right"   │
+│ is loud, listening goes first.       │
+│                                      │
+│              ┌─────────┐             │
+│              │  Noted  │             │
+│              └─────────┘             │
+└──────────────────────────────────────┘</div>
+</div>
+
+<p class="tagline">EgoFix: Debug yourself.</p>
+
+</body>
+</html>
