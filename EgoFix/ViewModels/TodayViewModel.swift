@@ -10,12 +10,36 @@ enum TodayViewState {
     case pattern(DetectedPattern)
 }
 
+struct WeeklySummaryData: Identifiable {
+    let id = UUID()
+    let applied: Int
+    let skipped: Int
+    let failed: Int
+
+    var total: Int { applied + skipped + failed }
+
+    var comment: String {
+        if failed > applied {
+            return "// Rough week. The data doesn't judge."
+        } else if applied > skipped + failed {
+            return "// Solid week. Keep going."
+        } else if skipped > applied {
+            return "// A lot of skips. No judgment — sometimes you're not ready."
+        } else {
+            return "// Logged. Patterns emerge over time."
+        }
+    }
+}
+
 @MainActor
 final class TodayViewModel: ObservableObject {
     @Published var state: TodayViewState = .loading
     @Published var currentFix: Fix?
     @Published var currentCompletion: FixCompletion?
+    @Published var currentBugTitle: String?
     @Published private(set) var interactionManager: FixInteractionManager
+    @Published var showWeeklyDiagnostic = false
+    @Published var weeklySummary: WeeklySummaryData?
 
     private let dailyFixService: DailyFixService
     private let fixRepository: FixRepository
@@ -25,6 +49,8 @@ final class TodayViewModel: ObservableObject {
     private let microEducationService: MicroEducationService
     private let streakService: StreakService
     private let userRepository: UserRepository
+    private let weeklyDiagnosticService: WeeklyDiagnosticService?
+    private let fixCompletionRepository: FixCompletionRepository?
     private let sharedStorage = SharedStorageManager.shared
 
     init(
@@ -35,7 +61,9 @@ final class TodayViewModel: ObservableObject {
         timerService: TimerService,
         microEducationService: MicroEducationService,
         streakService: StreakService,
-        userRepository: UserRepository
+        userRepository: UserRepository,
+        weeklyDiagnosticService: WeeklyDiagnosticService? = nil,
+        fixCompletionRepository: FixCompletionRepository? = nil
     ) {
         self.dailyFixService = dailyFixService
         self.fixRepository = fixRepository
@@ -45,6 +73,8 @@ final class TodayViewModel: ObservableObject {
         self.microEducationService = microEducationService
         self.streakService = streakService
         self.userRepository = userRepository
+        self.weeklyDiagnosticService = weeklyDiagnosticService
+        self.fixCompletionRepository = fixCompletionRepository
         self.interactionManager = FixInteractionManager(timerService: timerService)
     }
 
@@ -80,6 +110,52 @@ final class TodayViewModel: ObservableObject {
         }
     }
 
+    func checkWeeklyDiagnostic() async {
+        guard let service = weeklyDiagnosticService else { return }
+        do {
+            if try await service.shouldPromptDiagnostic() {
+                showWeeklyDiagnostic = true
+            }
+        } catch {
+            // Handle silently
+        }
+    }
+
+    func onDiagnosticComplete() async {
+        showWeeklyDiagnostic = false
+
+        // Calculate and show weekly summary
+        if let summary = await calculateWeeklySummary() {
+            weeklySummary = summary
+        }
+    }
+
+    func dismissWeeklySummary() {
+        weeklySummary = nil
+    }
+
+    private func calculateWeeklySummary() async -> WeeklySummaryData? {
+        guard let repo = fixCompletionRepository,
+              let user = try? await userRepository.get() else { return nil }
+
+        do {
+            let completions = try await repo.getForUser(user.id)
+
+            // Filter to this week
+            let calendar = Calendar.current
+            let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: Date()))!
+            let thisWeekCompletions = completions.filter { $0.completedAt ?? $0.assignedAt >= startOfWeek }
+
+            let applied = thisWeekCompletions.filter { $0.outcome == .applied }.count
+            let skipped = thisWeekCompletions.filter { $0.outcome == .skipped }.count
+            let failed = thisWeekCompletions.filter { $0.outcome == .failed }.count
+
+            return WeeklySummaryData(applied: applied, skipped: skipped, failed: failed)
+        } catch {
+            return nil
+        }
+    }
+
     func loadTodaysFix() async {
         state = .loading
         interactionManager.reset()
@@ -96,6 +172,7 @@ final class TodayViewModel: ObservableObject {
                 if let fix = try await fixRepository.getById(completion.fixId) {
                     currentCompletion = completion
                     currentFix = fix
+                    currentBugTitle = await fetchBugTitle(for: fix.bugId)
                     await interactionManager.setup(for: fix, fixCompletionId: completion.id)
                     state = .fixAvailable(completion, fix)
                     syncWidgetState()
@@ -108,6 +185,7 @@ final class TodayViewModel: ObservableObject {
                 if let fix = try await fixRepository.getById(completion.fixId) {
                     currentCompletion = completion
                     currentFix = fix
+                    currentBugTitle = await fetchBugTitle(for: fix.bugId)
                     await interactionManager.setup(for: fix, fixCompletionId: completion.id)
                     state = .fixAvailable(completion, fix)
                     syncWidgetState()
@@ -180,5 +258,10 @@ final class TodayViewModel: ObservableObject {
         } catch {
             // Handle error silently
         }
+    }
+
+    private func fetchBugTitle(for bugId: UUID) async -> String? {
+        guard let bug = try? await bugRepository.getById(bugId) else { return nil }
+        return bug.title
     }
 }

@@ -77,34 +77,33 @@ struct ActivityCalendarView: View {
     }
 
     private var legendView: some View {
-        HStack(spacing: 16) {
-            Spacer()
-            legendItem(intensity: .none, label: "none")
-            legendItem(intensity: .low, label: "low")
-            legendItem(intensity: .medium, label: "med")
-            legendItem(intensity: .high, label: "high")
-            Spacer()
+        VStack(spacing: 12) {
+            // Outcome colors
+            HStack(spacing: 16) {
+                Spacer()
+                outcomeLegendItem(color: .green, label: "applied")
+                outcomeLegendItem(color: .yellow, label: "skipped")
+                outcomeLegendItem(color: .red, label: "crash")
+                outcomeLegendItem(color: Color(white: 0.3), label: "opened")
+                Spacer()
+            }
+
+            // Intensity explanation
+            Text("// darker = more depth")
+                .font(.system(.caption2, design: .monospaced))
+                .foregroundColor(Color(white: 0.3))
         }
     }
 
-    private func legendItem(intensity: ActivityIntensity, label: String) -> some View {
+    private func outcomeLegendItem(color: Color, label: String) -> some View {
         HStack(spacing: 4) {
             Rectangle()
-                .fill(colorForIntensity(intensity))
+                .fill(color)
                 .frame(width: 12, height: 12)
                 .cornerRadius(2)
             Text(label)
                 .font(.system(.caption2, design: .monospaced))
                 .foregroundColor(Color(white: 0.4))
-        }
-    }
-
-    private func colorForIntensity(_ intensity: ActivityIntensity) -> Color {
-        switch intensity {
-        case .none: return Color(white: 0.1)
-        case .low: return Color.green.opacity(0.3)
-        case .medium: return Color.green.opacity(0.6)
-        case .high: return Color.green
         }
     }
 

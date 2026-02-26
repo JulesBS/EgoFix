@@ -2,10 +2,12 @@ import SwiftUI
 
 struct FixCardView: View {
     let fix: Fix
+    var bugTitle: String?
     @ObservedObject var interactionManager: FixInteractionManager
     let onApplied: () -> Void
     let onSkipped: () -> Void
     let onFailed: () -> Void
+    var onShare: (() -> Void)?
 
     @State private var appeared = false
     @State private var showValidation = false
@@ -13,20 +15,40 @@ struct FixCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Header (FIXED - always visible at top)
-            HStack(alignment: .top) {
-                Text("FIX #\(fixNumber)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray)
-
-                Spacer()
-
-                // Show compact timer status in header when timer is running/paused
-                if fix.interactionType == .timed && (interactionManager.isTimerRunning || interactionManager.isTimerPaused) {
-                    CompactInteractionTimerView(interactionManager: interactionManager)
-                } else {
-                    Text("Severity: \(severityLabel)")
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top) {
+                    Text("FIX #\(fixNumber)")
                         .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(severityColor)
+                        .foregroundColor(.gray)
+
+                    // Share button
+                    if let onShare = onShare {
+                        Button(action: onShare) {
+                            Text("[ share ]")
+                                .font(.system(.caption2, design: .monospaced))
+                                .foregroundColor(.gray.opacity(0.6))
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .padding(.leading, 8)
+                    }
+
+                    Spacer()
+
+                    // Show compact timer status in header when timer is running/paused
+                    if fix.interactionType == .timed && (interactionManager.isTimerRunning || interactionManager.isTimerPaused) {
+                        CompactInteractionTimerView(interactionManager: interactionManager)
+                    } else {
+                        Text("Severity: \(severityLabel)")
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(severityColor)
+                    }
+                }
+
+                // Bug badge
+                if let bugTitle = bugTitle {
+                    Text("// \(bugTitle)")
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.red.opacity(0.7))
                 }
             }
             .padding(.bottom, 24)

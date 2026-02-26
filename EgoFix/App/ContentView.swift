@@ -30,7 +30,10 @@ struct ContentView: View {
     private var mainTabView: some View {
         ZStack {
             TabView(selection: $selectedTab) {
-                TodayView(viewModel: makeTodayViewModel())
+                TodayView(
+                    viewModel: makeTodayViewModel(),
+                    makeWeeklyDiagnosticViewModel: makeWeeklyDiagnosticViewModel
+                )
                     .tabItem {
                         Label("Today", systemImage: "terminal")
                     }
@@ -48,7 +51,7 @@ struct ContentView: View {
                     }
                     .tag(2)
 
-                DocsView()
+                DocsView(makeBugLibraryViewModel: makeBugLibraryViewModel)
                     .tabItem {
                         Label("Docs", systemImage: "book")
                     }
@@ -148,6 +151,13 @@ struct ContentView: View {
         let microEducationService = MicroEducationService(repository: microEducationRepo)
         let streakService = StreakService(userRepository: userRepo)
 
+        let weeklyDiagnosticService = WeeklyDiagnosticService(
+            weeklyDiagnosticRepository: diagnosticRepo,
+            bugRepository: bugRepo,
+            userRepository: userRepo,
+            analyticsEventRepository: analyticsRepo
+        )
+
         let detectors: [PatternDetector] = [
             AvoidanceDetector(),
             TemporalCrashDetector(),
@@ -178,8 +188,26 @@ struct ContentView: View {
             timerService: timerService,
             microEducationService: microEducationService,
             streakService: streakService,
-            userRepository: userRepo
+            userRepository: userRepo,
+            weeklyDiagnosticService: weeklyDiagnosticService,
+            fixCompletionRepository: fixCompletionRepo
         )
+    }
+
+    private func makeWeeklyDiagnosticViewModel() -> WeeklyDiagnosticViewModel {
+        let diagnosticRepo = LocalWeeklyDiagnosticRepository(modelContext: modelContext)
+        let bugRepo = LocalBugRepository(modelContext: modelContext)
+        let userRepo = LocalUserRepository(modelContext: modelContext)
+        let analyticsRepo = LocalAnalyticsEventRepository(modelContext: modelContext)
+
+        let weeklyDiagnosticService = WeeklyDiagnosticService(
+            weeklyDiagnosticRepository: diagnosticRepo,
+            bugRepository: bugRepo,
+            userRepository: userRepo,
+            analyticsEventRepository: analyticsRepo
+        )
+
+        return WeeklyDiagnosticViewModel(weeklyDiagnosticService: weeklyDiagnosticService)
     }
 
     private func makeHistoryViewModel() -> HistoryViewModel {
@@ -247,6 +275,25 @@ struct ContentView: View {
             patternRepository: patternRepo,
             userRepository: userRepo,
             trendAnalysisService: trendAnalysisService
+        )
+    }
+
+    private func makeBugLibraryViewModel() -> BugLibraryViewModel {
+        let bugRepo = LocalBugRepository(modelContext: modelContext)
+        let userRepo = LocalUserRepository(modelContext: modelContext)
+        let weeklyDiagnosticRepo = LocalWeeklyDiagnosticRepository(modelContext: modelContext)
+        let crashRepo = LocalCrashRepository(modelContext: modelContext)
+
+        let bugLifecycleService = BugLifecycleService(
+            bugRepository: bugRepo,
+            weeklyDiagnosticRepository: weeklyDiagnosticRepo,
+            crashRepository: crashRepo
+        )
+
+        return BugLibraryViewModel(
+            bugRepository: bugRepo,
+            userRepository: userRepo,
+            bugLifecycleService: bugLifecycleService
         )
     }
 }

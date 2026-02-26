@@ -17,6 +17,8 @@ final class Bug {
     var isActive: Bool
     var status: BugStatus
     var activatedAt: Date?
+    var stableAt: Date?
+    var resolvedAt: Date?
     var createdAt: Date
     var updatedAt: Date
     var deletedAt: Date?
@@ -29,6 +31,8 @@ final class Bug {
         isActive: Bool = false,
         status: BugStatus = .identified,
         activatedAt: Date? = nil,
+        stableAt: Date? = nil,
+        resolvedAt: Date? = nil,
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
         deletedAt: Date? = nil
@@ -40,6 +44,8 @@ final class Bug {
         self.isActive = isActive
         self.status = status
         self.activatedAt = activatedAt
+        self.stableAt = stableAt
+        self.resolvedAt = resolvedAt
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.deletedAt = deletedAt

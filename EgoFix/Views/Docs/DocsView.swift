@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct DocsView: View {
+    let makeBugLibraryViewModel: () -> BugLibraryViewModel
+    @State private var showBugLibrary = false
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
@@ -14,6 +17,31 @@ struct DocsView: View {
                     Text("// Pull-based education. Read when ready.")
                         .font(.system(.caption, design: .monospaced))
                         .foregroundColor(.gray.opacity(0.6))
+
+                    Divider()
+                        .background(Color.gray.opacity(0.3))
+
+                    // Bug Library link
+                    Button(action: { showBugLibrary = true }) {
+                        HStack {
+                            Text("BUG LIBRARY")
+                                .font(.system(.body, design: .monospaced))
+                                .foregroundColor(.red)
+
+                            Spacer()
+
+                            Text(">")
+                                .font(.system(.body, design: .monospaced))
+                                .foregroundColor(.gray.opacity(0.4))
+                        }
+                        .padding()
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(2)
+                    }
+
+                    Text("// View all 7 ego patterns and their lifecycle status")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.gray.opacity(0.5))
 
                     Divider()
                         .background(Color.gray.opacity(0.3))
@@ -45,6 +73,9 @@ struct DocsView: View {
                 }
                 .padding()
             }
+        }
+        .sheet(isPresented: $showBugLibrary) {
+            BugLibraryView(viewModel: makeBugLibraryViewModel())
         }
     }
 }
