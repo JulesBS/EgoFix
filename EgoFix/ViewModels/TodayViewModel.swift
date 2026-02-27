@@ -11,6 +11,20 @@ enum TodayViewState {
     case completed(FixOutcome, String?)  // outcome + optional micro-education tidbit
     case doneForToday                    // resting state after outcome
     case pattern(DetectedPattern)
+
+    /// Stable key for animating transitions between states.
+    var stateKey: String {
+        switch self {
+        case .loading: return "loading"
+        case .diagnostic: return "diagnostic"
+        case .diagnosticComplete: return "diagnosticComplete"
+        case .noFix: return "noFix"
+        case .fixAvailable: return "fixAvailable"
+        case .completed: return "completed"
+        case .doneForToday: return "doneForToday"
+        case .pattern: return "pattern"
+        }
+    }
 }
 
 struct WeeklySummaryData: Identifiable {
@@ -52,6 +66,9 @@ final class TodayViewModel: ObservableObject {
 
     // Status line — set once per session
     @Published var statusLine: String = "// System initializing..."
+
+    // Soul reaction (visible before completion view appears)
+    @Published var soulReaction: SoulReaction?
 
     // Done-for-today state
     @Published var lastOutcome: FixOutcome?
@@ -440,6 +457,13 @@ final class TodayViewModel: ObservableObject {
 
     func markOutcome(_ outcome: FixOutcome) async {
         guard let completion = currentCompletion else { return }
+
+        // Trigger soul reaction (soul stays on screen during transition)
+        switch outcome {
+        case .applied: soulReaction = .applied
+        case .failed: soulReaction = .failed
+        default: soulReaction = nil
+        }
 
         do {
             // Generate outcome data from interaction manager

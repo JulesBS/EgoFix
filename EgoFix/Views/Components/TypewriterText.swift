@@ -19,7 +19,7 @@ struct TypewriterText: View {
                 .font(font)
                 .foregroundColor(color)
 
-            if showCursor && !completed {
+            if showCursor {
                 Text("_")
                     .font(font)
                     .foregroundColor(color)
@@ -28,6 +28,9 @@ struct TypewriterText: View {
         }
         .onAppear {
             startTyping()
+            if showCursor {
+                startCursorBlink()
+            }
         }
     }
 
@@ -55,5 +58,15 @@ struct TypewriterText: View {
     private func finish() {
         completed = true
         onComplete?()
+    }
+
+    private func startCursorBlink() {
+        func blink() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                cursorVisible.toggle()
+                blink()
+            }
+        }
+        blink()
     }
 }

@@ -38,11 +38,12 @@ struct TodayView: View {
                         headerBar
                             .padding(.bottom, 16)
 
-                        // SOUL (hero)
+                        // SOUL (hero) — reacts to outcomes, never disappears
                         BugSoulView(
                             slug: viewModel.currentBugSlug ?? "need-to-be-right",
                             intensity: viewModel.currentIntensity,
-                            size: .large
+                            size: .large,
+                            reaction: viewModel.soulReaction
                         )
                         .frame(height: 200)
                         .padding(.bottom, 8)
@@ -53,8 +54,9 @@ struct TodayView: View {
                             .foregroundColor(.gray)
                             .padding(.bottom, 24)
 
-                        // MAIN CONTENT
+                        // MAIN CONTENT — transitions between states
                         mainContent
+                            .animation(.easeOut(duration: 0.25), value: viewModel.state.stateKey)
 
                         // CRASH BUTTON
                         crashButton
@@ -111,24 +113,29 @@ struct TodayView: View {
         case .history:
             if let makeVM = makeHistoryViewModel {
                 HistoryView(viewModel: makeVM())
+                    .terminalBackButton()
             }
         case .patterns:
             if let makeVM = makePatternsViewModel {
                 PatternsView(viewModel: makeVM())
+                    .terminalBackButton()
             }
         case .bugLibrary:
             if let makeVM = makeBugLibraryViewModel {
                 BugLibraryView(viewModel: makeVM())
+                    .terminalBackButton()
             }
         case .docs:
             if let makeVM = makeBugLibraryViewModel {
                 DocsView(makeBugLibraryViewModel: makeVM)
+                    .terminalBackButton()
             }
         case .settings:
             SettingsView(
                 progressTracker: progressTracker,
                 bugRepository: nil
             )
+            .terminalBackButton()
         }
     }
 
@@ -173,9 +180,11 @@ struct TodayView: View {
 
         case .diagnostic:
             inlineDiagnosticContent
+                .transition(.opacity)
 
         case .diagnosticComplete:
             inlineDiagnosticCompleteContent
+                .transition(.opacity)
 
         case .noFix:
             NoFixView()
@@ -189,6 +198,7 @@ struct TodayView: View {
                 onSkipped: { Task { await viewModel.markOutcome(.skipped) } },
                 onFailed: { Task { await viewModel.markOutcome(.failed) } }
             )
+            .transition(.move(edge: .bottom).combined(with: .opacity))
 
         case .completed(let outcome, let tidbit):
             InlineCompletionView(
@@ -198,9 +208,11 @@ struct TodayView: View {
                     viewModel.transitionToDone()
                 }
             )
+            .transition(.opacity)
 
         case .doneForToday:
             doneForTodayContent
+                .transition(.opacity)
 
         case .pattern(let pattern):
             PatternAlertView(
@@ -208,6 +220,7 @@ struct TodayView: View {
                 onAcknowledge: { Task { await viewModel.acknowledgePattern(pattern.id) } },
                 onDismiss: { Task { await viewModel.dismissPattern(pattern.id) } }
             )
+            .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }
 
@@ -313,6 +326,7 @@ struct TodayView: View {
             }
         }
         .padding(.top, 8)
+        .animation(.easeOut(duration: 0.25), value: viewModel.diagnosticBugIndex)
     }
 
     private func diagnosticContextButton(_ label: String, context: EventContext) -> some View {

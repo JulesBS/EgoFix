@@ -7,6 +7,7 @@ struct PatternAlertView: View {
 
     @State private var appeared = false
     @State private var shake = false
+    @State private var borderPulse = false
 
     var body: some View {
         VStack(spacing: 24) {
@@ -28,7 +29,14 @@ struct PatternAlertView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
-            .offset(y: appeared ? 0 : -50)
+            .padding()
+            .background(Color(white: 0.05))
+            .overlay(
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(severityColor.opacity(borderPulse ? 0.6 : 0), lineWidth: 1)
+            )
+            .cornerRadius(2)
+            .offset(y: appeared ? 0 : 40)
             .opacity(appeared ? 1 : 0)
             .modifier(ShakeEffect(shakes: shake ? 2 : 0))
 
@@ -61,6 +69,17 @@ struct PatternAlertView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 withAnimation(.easeInOut(duration: 0.4)) {
                     shake = true
+                }
+            }
+            // Single border pulse
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    borderPulse = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    withAnimation(.easeOut(duration: 0.4)) {
+                        borderPulse = false
+                    }
                 }
             }
         }

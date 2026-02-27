@@ -5,6 +5,22 @@ enum BugIntensity: String, Codable {
     case quiet
     case present
     case loud
+
+    var quieter: BugIntensity {
+        switch self {
+        case .quiet: return .quiet
+        case .present: return .quiet
+        case .loud: return .present
+        }
+    }
+
+    var louder: BugIntensity {
+        switch self {
+        case .quiet: return .present
+        case .present: return .loud
+        case .loud: return .loud
+        }
+    }
 }
 
 struct BugDiagnosticResponse: Codable {

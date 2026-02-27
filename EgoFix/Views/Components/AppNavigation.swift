@@ -1,5 +1,32 @@
 import SwiftUI
 
+// MARK: - Terminal Back Button
+
+/// Replaces the default iOS back chevron with a monospaced `[ ← today ]` button.
+private struct TerminalBackButton: ViewModifier {
+    @Environment(\.dismiss) private var dismiss
+
+    func body(content: Content) -> some View {
+        content
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { dismiss() }) {
+                        Text("[ \u{2190} today ]")
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.gray)
+                    }
+                }
+            }
+    }
+}
+
+extension View {
+    func terminalBackButton() -> some View {
+        modifier(TerminalBackButton())
+    }
+}
+
 /// Navigation destinations for the progressive disclosure system.
 enum AppDestination: Hashable {
     case history
@@ -157,32 +184,38 @@ struct FooterLinks: View {
     }
 }
 
-/// One-time unlock prompt with comment + link, animated on appearance.
-private struct UnlockPromptView: View {
+/// One-time unlock prompt with typing comment + delayed link fade-in.
+struct UnlockPromptView: View {
     let comment: String
     let linkLabel: String
     let onTap: () -> Void
 
-    @State private var appeared = false
+    @State private var showLink = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(comment)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.35))
+            TypewriterText(
+                text: comment,
+                characterDelay: 0.025,
+                color: Color(white: 0.35),
+                font: .system(.caption, design: .monospaced),
+                onComplete: {
+                    // Link fades in 0.5s after comment finishes typing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            showLink = true
+                        }
+                    }
+                }
+            )
 
-            Button(action: onTap) {
-                Text(linkLabel)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.green)
-            }
-            .opacity(appeared ? 1 : 0)
-        }
-        .opacity(appeared ? 1 : 0)
-        .offset(y: appeared ? 0 : 10)
-        .onAppear {
-            withAnimation(.easeOut(duration: 0.3)) {
-                appeared = true
+            if showLink {
+                Button(action: onTap) {
+                    Text(linkLabel)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.green)
+                }
+                .transition(.opacity)
             }
         }
     }

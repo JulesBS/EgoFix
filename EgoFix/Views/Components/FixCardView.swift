@@ -143,10 +143,10 @@ struct ActionButton: View {
         }) {
             Text("[ \(label) ]")
                 .font(.system(.subheadline, design: .monospaced))
-                .foregroundColor(isDisabled ? Color(white: 0.3) : color)
+                .foregroundColor(isPressed && !isDisabled ? .black : (isDisabled ? Color(white: 0.3) : color))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
-                .background(isPressed && !isDisabled ? color.opacity(0.15) : Color.clear)
+                .background(isPressed && !isDisabled ? color : Color.clear)
                 .cornerRadius(2)
                 .shadow(color: isDisabled ? .clear : color.opacity(0.4), radius: 4, x: 0, y: 0)
         }

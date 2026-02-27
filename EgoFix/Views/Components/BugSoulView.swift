@@ -1,11 +1,18 @@
 import SwiftUI
 
+/// Reaction the soul plays when the user marks a fix outcome.
+enum SoulReaction: Equatable {
+    case applied    // brief quiet shift + brightness pulse
+    case failed     // glitch flicker + loud shift
+}
+
 /// Animated ASCII soul for a bug. Uses `TimelineView` to drive frame advancement
 /// so timers are managed by SwiftUI and never leak.
 struct BugSoulView: View {
     let slug: String
     let intensity: BugIntensity
     var size: SoulSize = .large
+    var reaction: SoulReaction? = nil
 
     enum SoulSize {
         case small   // 11pt, for lists
@@ -13,24 +20,88 @@ struct BugSoulView: View {
         case large   // 16pt, for Today screen hero
     }
 
+    @State private var reactionActive = false
+    @State private var brightnessPulse = false
+    @State private var glitchOffset: CGFloat = 0
+
+    private var effectiveIntensity: BugIntensity {
+        guard reactionActive, let reaction else { return intensity }
+        switch reaction {
+        case .applied: return intensity.quieter
+        case .failed: return intensity.louder
+        }
+    }
+
     var body: some View {
-        let frames = BugSoulFrames.frames(for: slug, intensity: intensity)
+        let frames = BugSoulFrames.frames(for: slug, intensity: effectiveIntensity)
         let count = max(frames.count, 1)
 
         TimelineView(.periodic(from: .now, by: frameRate)) { timeline in
             let index = frameIndex(for: timeline.date, frameCount: count)
             Text(frames.isEmpty ? "" : frames[index])
                 .font(.system(size: fontSize, design: .monospaced))
-                .foregroundColor(BugColors.color(for: slug).opacity(colorOpacity))
+                .foregroundColor(BugColors.color(for: slug).opacity(effectiveColorOpacity))
                 .multilineTextAlignment(.center)
                 .lineSpacing(1)
+                .offset(x: glitchOffset)
+        }
+        .onChange(of: reaction) { _, newValue in
+            if let newValue {
+                triggerReaction(newValue)
+            }
+        }
+    }
+
+    // MARK: - Reaction
+
+    private func triggerReaction(_ reaction: SoulReaction) {
+        reactionActive = true
+
+        switch reaction {
+        case .applied:
+            // Brightness pulse
+            withAnimation(.easeOut(duration: 0.15)) {
+                brightnessPulse = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    brightnessPulse = false
+                }
+            }
+            // Return to normal intensity after 2 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    reactionActive = false
+                }
+            }
+
+        case .failed:
+            // Glitch flicker (rapid horizontal jitter)
+            performGlitch(steps: 6, step: 0)
+            // Return to normal intensity after 2 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    reactionActive = false
+                }
+            }
+        }
+    }
+
+    private func performGlitch(steps: Int, step: Int) {
+        guard step < steps else {
+            glitchOffset = 0
+            return
+        }
+        glitchOffset = CGFloat.random(in: -4...4)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            performGlitch(steps: steps, step: step + 1)
         }
     }
 
     // MARK: - Frame timing
 
     private var frameRate: Double {
-        switch intensity {
+        switch effectiveIntensity {
         case .quiet: return 1.2
         case .present: return 0.5
         case .loud: return 0.2
@@ -57,8 +128,13 @@ struct BugSoulView: View {
 
     // MARK: - Color intensity
 
+    private var effectiveColorOpacity: Double {
+        if brightnessPulse { return 1.0 }
+        return colorOpacity
+    }
+
     private var colorOpacity: Double {
-        switch intensity {
+        switch effectiveIntensity {
         case .quiet: return 0.5
         case .present: return 0.75
         case .loud: return 1.0
