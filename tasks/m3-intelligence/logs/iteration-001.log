@@ -1,0 +1,41 @@
+M3 Intelligence is complete. Here's a summary of what was accomplished:
+
+## M3 Intelligence - Complete
+
+**All 6 phases completed successfully:**
+
+### Phase 1: Personal Insight Copy
+- Verified all 6 detectors already have personal, specific copy with bug names
+- PatternDetector protocol and DiagnosticEngine properly pass bug names to detectors
+- RecommendationEngine has EgoFix tone ("It happens", "Still running", etc.)
+
+### Phase 2: Detection Pipeline Integration
+- Added `lastDiagnosticsRunAt` to UserProfile for scheduling
+- DiagnosticEngine.shouldRunDiagnostics() checks 7-day threshold
+- TodayViewModel runs diagnostics on launch if overdue and after weekly diagnostic
+- BugLifecycleService creates regression DetectedPatterns when bugs regress
+
+### Phase 3: Cooldown & Surfacing Polish
+- Added `lastPatternShownAt` to UserProfile for daily limits
+- PatternSurfacingService.hasShownPatternToday() prevents overwhelming users
+- Combined with sessionPatternShown and 14-day type cooldown
+- Observations never interrupt daily flow - only shown in Patterns tab
+
+### Phase 4: Patterns History View Enhancement
+- Added filtering by bug with pattern count summary
+- Added filtering by severity (ALL/ALERTS/INSIGHTS/OBSERVATIONS)
+- Relative time display ("3 days ago" instead of "02/24")
+- Status badges: UNREAD (yellow), NOTED (green), DISMISSED (gray)
+- Updated empty state: "// No patterns yet. They emerge from data."
+
+### Phase 5: Regression Alerts
+- Verified BugLifecycleService creates regression patterns with severity .alert
+- Pattern includes bug name in title and crash count in body
+- RecommendationEngine has regression-specific recommendations
+
+### Phase 6: Tests & Verification
+- Created DiagnosticEngineTests.swift (scheduling, cooldown, priority tests)
+- Created RegressionPatternTests.swift (regression pipeline tests)
+- All 296 tests pass, project builds with 0 errors
+
+**Files modified:** 25 files, +1020/-107 lines

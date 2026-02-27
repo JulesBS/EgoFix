@@ -1,0 +1,51 @@
+M4 Visual Polish is complete. Here's a summary of what was implemented:
+
+## M4 Visual Polish - Complete
+
+### Phase 1: Boot Sequence
+- Created `BootSequenceView.swift` with terminal-style animation
+- Green monospaced text appearing line-by-line
+- Three animated progress bars for `bugs.db`, `fixes.db`, `patterns.db`
+- Blinking cursor at the end
+- Integrated into `ContentView.swift` with `hasSeenBoot` persistence
+
+### Phase 2: Scanline & CRT Effect
+- Created `ScanlineOverlay.swift` with:
+  - Subtle horizontal scanlines (opacity 0.04)
+  - Radial vignette (dark corners)
+  - `.scanlines()` ViewModifier for easy application
+- Applied to main tab view
+
+### Phase 3: Glow Effects
+- Action buttons (Apply/Skip/Fail) have colored shadow glow
+- Crash button has red glow
+- Pattern alert header has severity-colored glow
+- Journal and observation text fields glow when focused
+
+### Phase 4: ASCII Art
+- Created `BugASCIIArt.swift` with unique 5-8 line ASCII art for each bug:
+  - need-to-be-right: exclamation/finger
+  - need-to-impress: spotlight/stage
+  - need-to-be-liked: mask/mirror
+  - need-to-control: grid/ctrl
+  - need-to-compare: scale/balance
+  - need-to-deflect: shield/bouncing arrow
+  - need-to-narrate: speech bubble/mic
+- Displayed in bug library rows and detail view headers
+
+### Phase 5: Transitions & Micro-interactions
+- Completion view: typing animation for message, outcome color flash
+- Crash button: subtle pulse animation (1.0 → 1.05 → 1.0)
+- Pattern alert: slide-in from top with shake effect
+- Streak counter: tick-up animation with scale pulse
+
+### Phase 6: Typography & Spacing Audit
+- Fixed 2 cornerRadius values from 6pt to 4pt in OnboardingView.swift
+- All fonts confirmed monospaced
+- All corner radii ≤ 4pt
+
+### Phase 7: Tests & Verification
+- All 296 tests pass
+- Build succeeds with 0 errors
+
+The app now has the brutalist IDE aesthetic described in CLAUDE.md — it feels like terminal software debugging yourself, not a standard dark-mode wellness app.

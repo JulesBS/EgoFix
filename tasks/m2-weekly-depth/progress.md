@@ -1,10 +1,10 @@
 # Task: M2 — Weekly Depth — Progress
 
 <!-- CHECKPOINT
-phase: complete
+phase: done
 active_task: none
-last_completed: "Phase 6: Tests & Verification"
-next_step: "M2 milestone complete. Ready to commit."
+last_completed: "M2 milestone verified and committed"
+next_step: "M2 complete. Ready for M3."
 blockers: none
 files_modified:
   - EgoFix/Views/History/ActivityCalendarView.swift
@@ -30,6 +30,7 @@ files_modified:
 - **2026-02-26 23:30** — Phase 4 complete. Added weekly diagnostic integration to TodayViewModel (checkWeeklyDiagnostic, onDiagnosticComplete, calculateWeeklySummary). Created WeeklySummaryView with applied/skipped/failed counts and contextual comments. Updated TodayView to present diagnostic and summary sheets. Updated ContentView with makeWeeklyDiagnosticViewModel factory. Build successful (0 errors, 62 pre-existing Swift 6 warnings).
 - **2026-02-26 23:45** — Phase 5 complete. Verified existing multi-bug support: onboarding activates all ranked bugs, DailyFixService uses weighted priorities. Added bug title display to FixCardView (shows // Bug Title in header). Bug management is handled by BugLibraryView from Phase 2. Build successful (0 errors, 62 pre-existing Swift 6 warnings).
 - **2026-02-27 00:45** — Phase 6 complete. Ran full test suite: 278 tests passed. Created BugLifecycleServiceTests.swift with 18 comprehensive tests covering all lifecycle transitions (activate, resolve, reactivate, deactivate), stability transition checks (4 quiet weeks), regression detection (3+ crashes in 14 days), and runLifecycleChecks integration. Final test run: 296 tests, all passing. Build successful (0 errors).
+- **2026-02-27 00:50** — M2 milestone verified. Build: 0 errors. Tests: 296 passed. All code committed (1cc6720).
 
 ## M2 Milestone Complete
 

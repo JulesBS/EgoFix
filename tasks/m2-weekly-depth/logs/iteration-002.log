@@ -1,0 +1,17 @@
+**M2 Milestone: Complete**
+
+All verification checks pass:
+- **Build**: 0 errors ✓
+- **Tests**: 296 tests, all passing ✓
+- **Commit**: `1cc6720` (M2 complete: weekly depth features with bug lifecycle and share)
+
+**What was delivered:**
+
+1. **Contribution Graph** — Legend shows outcome colors (green/yellow/red/gray) with intensity
+2. **Bug Library & Lifecycle** — BugLibraryView + BugDetailView with full state machine (Identified → Active → Stable → Resolved)
+3. **Share-a-Fix UI** — Share button on FixCardView with system share sheet
+4. **Weekly Diagnostic Integration** — WeeklySummaryView triggers on Sundays with applied/skipped/failed counts
+5. **Multiple Active Bugs** — Bug title display, weighted priority rotation works
+6. **Tests** — 18 new BugLifecycleService tests added
+
+The M2 milestone is done. Ready for M3 (Intelligence: pattern detection + surfacing).

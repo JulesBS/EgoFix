@@ -1,0 +1,18 @@
+M2 milestone is complete and committed. Here's a summary:
+
+## M2 — Weekly Depth — Complete
+
+**All 6 phases implemented and verified:**
+
+| Phase | Feature | Files |
+|-------|---------|-------|
+| 1 | **Contribution Graph** | ActivityCalendarView.swift — legend shows outcome colors with intensity |
+| 2 | **Bug Library & Lifecycle** | BugLifecycleService.swift, BugLibraryViewModel.swift, BugLibraryView.swift, BugDetailView.swift |
+| 3 | **Share-a-Fix UI** | FixCardView.swift, TodayView.swift — share button with UIActivityViewController |
+| 4 | **Weekly Diagnostic** | WeeklySummaryView.swift, TodayViewModel.swift — applied/skipped/failed summary |
+| 5 | **Multiple Active Bugs** | FixCardView.swift — bug title display, existing weighted rotation |
+| 6 | **Tests & Verification** | BugLifecycleServiceTests.swift — 18 new tests |
+
+**Test Results:** 296 tests, all passing (18 new)  
+**Build:** 0 errors  
+**Commit:** `1cc6720` on branch `m2-weekly-depth`

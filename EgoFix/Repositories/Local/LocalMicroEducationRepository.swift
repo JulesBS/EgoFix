@@ -30,11 +30,12 @@ final class LocalMicroEducationRepository: MicroEducationRepository {
     }
 
     func getByBugSlugAndTrigger(_ bugSlug: String, trigger: EducationTrigger) async throws -> [MicroEducation] {
-        let triggerRaw = trigger.rawValue
+        // SwiftData #Predicate can't traverse enum .rawValue, so fetch by slug and filter in memory
         let descriptor = FetchDescriptor<MicroEducation>(
-            predicate: #Predicate { $0.bugSlug == bugSlug && $0.trigger.rawValue == triggerRaw && $0.deletedAt == nil }
+            predicate: #Predicate { $0.bugSlug == bugSlug && $0.deletedAt == nil }
         )
-        return try modelContext.fetch(descriptor)
+        let results = try modelContext.fetch(descriptor)
+        return results.filter { $0.trigger == trigger }
     }
 
     func save(_ education: MicroEducation) async throws {
