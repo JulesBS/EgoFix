@@ -3,6 +3,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @StateObject private var progressTracker = AppProgressTracker()
     @State private var showOnboarding = true
     @State private var showBootSequence = true
     @State private var bootSequenceChecked = false
@@ -32,7 +33,6 @@ struct ContentView: View {
                     }
                 )
                 .onAppear {
-                    // Start the scan after boot completes
                     if vm.state == .boot {
                         vm.beginScan()
                     }
@@ -41,8 +41,12 @@ struct ContentView: View {
                 NavigationStack {
                     TodayView(
                         viewModel: makeTodayViewModel(),
+                        progressTracker: progressTracker,
                         makeWeeklyDiagnosticViewModel: makeWeeklyDiagnosticViewModel,
-                        makeCrashViewModel: makeCrashViewModel
+                        makeCrashViewModel: makeCrashViewModel,
+                        makeHistoryViewModel: makeHistoryViewModel,
+                        makePatternsViewModel: makePatternsViewModel,
+                        makeBugLibraryViewModel: makeBugLibraryViewModel
                     )
                 }
                 .scanlines()
@@ -57,11 +61,9 @@ struct ContentView: View {
                 showBootSequence = false
                 showOnboarding = false
             } else if hasSeenBoot && !hasCompletedOnboarding {
-                // Seen boot but didn't finish onboarding — skip boot, show onboarding
                 showBootSequence = false
                 showOnboarding = true
             } else if !hasSeenBoot {
-                // First launch — show boot then onboarding
                 showBootSequence = true
                 showOnboarding = true
             }
@@ -175,7 +177,8 @@ struct ContentView: View {
             weeklyDiagnosticService: weeklyDiagnosticService,
             fixCompletionRepository: fixCompletionRepo,
             diagnosticEngine: diagnosticEngine,
-            bugIntensityProvider: bugIntensityProvider
+            bugIntensityProvider: bugIntensityProvider,
+            progressTracker: progressTracker
         )
     }
 
@@ -216,6 +219,72 @@ struct ContentView: View {
             crashService: crashService,
             bugRepository: bugRepo,
             fixRepository: fixRepo
+        )
+    }
+
+    private func makeHistoryViewModel() -> HistoryViewModel {
+        let userRepo = LocalUserRepository(modelContext: modelContext)
+        let versionEntryRepo = LocalVersionEntryRepository(modelContext: modelContext)
+        let fixCompletionRepo = LocalFixCompletionRepository(modelContext: modelContext)
+        let timerSessionRepo = LocalTimerSessionRepository(modelContext: modelContext)
+
+        let versionService = VersionService(
+            userRepository: userRepo,
+            versionEntryRepository: versionEntryRepo,
+            fixCompletionRepository: fixCompletionRepo
+        )
+
+        let statsService = StatsService(
+            fixCompletionRepository: fixCompletionRepo,
+            timerSessionRepository: timerSessionRepo,
+            userRepository: userRepo
+        )
+
+        return HistoryViewModel(
+            versionService: versionService,
+            versionEntryRepository: versionEntryRepo,
+            userRepository: userRepo,
+            statsService: statsService
+        )
+    }
+
+    private func makePatternsViewModel() -> PatternsViewModel {
+        let patternRepo = LocalPatternRepository(modelContext: modelContext)
+        let userRepo = LocalUserRepository(modelContext: modelContext)
+        let bugRepo = LocalBugRepository(modelContext: modelContext)
+        let diagnosticRepo = LocalWeeklyDiagnosticRepository(modelContext: modelContext)
+
+        let trendService = TrendAnalysisService(
+            weeklyDiagnosticRepository: diagnosticRepo,
+            bugRepository: bugRepo
+        )
+
+        return PatternsViewModel(
+            patternRepository: patternRepo,
+            userRepository: userRepo,
+            bugRepository: bugRepo,
+            trendAnalysisService: trendService
+        )
+    }
+
+    private func makeBugLibraryViewModel() -> BugLibraryViewModel {
+        let bugRepo = LocalBugRepository(modelContext: modelContext)
+        let userRepo = LocalUserRepository(modelContext: modelContext)
+        let diagnosticRepo = LocalWeeklyDiagnosticRepository(modelContext: modelContext)
+        let crashRepo = LocalCrashRepository(modelContext: modelContext)
+        let patternRepo = LocalPatternRepository(modelContext: modelContext)
+
+        let lifecycleService = BugLifecycleService(
+            bugRepository: bugRepo,
+            weeklyDiagnosticRepository: diagnosticRepo,
+            crashRepository: crashRepo,
+            patternRepository: patternRepo
+        )
+
+        return BugLibraryViewModel(
+            bugRepository: bugRepo,
+            userRepository: userRepo,
+            bugLifecycleService: lifecycleService
         )
     }
 }

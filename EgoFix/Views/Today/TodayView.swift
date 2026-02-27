@@ -2,57 +2,89 @@ import SwiftUI
 
 struct TodayView: View {
     @StateObject private var viewModel: TodayViewModel
+    @ObservedObject var progressTracker: AppProgressTracker
     @State private var shareContent: ShareContent?
     @State private var showCrash = false
+    @State private var navigationPath = NavigationPath()
     let makeWeeklyDiagnosticViewModel: (() -> WeeklyDiagnosticViewModel)?
     let makeCrashViewModel: (() -> CrashViewModel)?
+    let makeHistoryViewModel: (() -> HistoryViewModel)?
+    let makePatternsViewModel: (() -> PatternsViewModel)?
+    let makeBugLibraryViewModel: (() -> BugLibraryViewModel)?
 
     init(
         viewModel: TodayViewModel,
+        progressTracker: AppProgressTracker,
         makeWeeklyDiagnosticViewModel: (() -> WeeklyDiagnosticViewModel)? = nil,
-        makeCrashViewModel: (() -> CrashViewModel)? = nil
+        makeCrashViewModel: (() -> CrashViewModel)? = nil,
+        makeHistoryViewModel: (() -> HistoryViewModel)? = nil,
+        makePatternsViewModel: (() -> PatternsViewModel)? = nil,
+        makeBugLibraryViewModel: (() -> BugLibraryViewModel)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.progressTracker = progressTracker
         self.makeWeeklyDiagnosticViewModel = makeWeeklyDiagnosticViewModel
         self.makeCrashViewModel = makeCrashViewModel
+        self.makeHistoryViewModel = makeHistoryViewModel
+        self.makePatternsViewModel = makePatternsViewModel
+        self.makeBugLibraryViewModel = makeBugLibraryViewModel
     }
 
     var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
+        VStack(spacing: 0) {
+            ZStack {
+                Color.black.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 0) {
-                    // HEADER BAR
-                    headerBar
-                        .padding(.bottom, 16)
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // HEADER BAR
+                        headerBar
+                            .padding(.bottom, 16)
 
-                    // SOUL (hero)
-                    BugSoulView(
-                        slug: viewModel.currentBugSlug ?? "need-to-be-right",
-                        intensity: viewModel.currentIntensity,
-                        size: .large
-                    )
-                    .frame(height: 200)
-                    .padding(.bottom, 8)
+                        // SOUL (hero)
+                        BugSoulView(
+                            slug: viewModel.currentBugSlug ?? "need-to-be-right",
+                            intensity: viewModel.currentIntensity,
+                            size: .large
+                        )
+                        .frame(height: 200)
+                        .padding(.bottom, 8)
 
-                    // STATUS LINE
-                    Text(viewModel.statusLine)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray)
-                        .padding(.bottom, 24)
+                        // STATUS LINE
+                        Text(viewModel.statusLine)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.gray)
+                            .padding(.bottom, 24)
 
-                    // MAIN CONTENT
-                    mainContent
+                        // MAIN CONTENT
+                        mainContent
 
-                    // CRASH BUTTON
-                    crashButton
-                        .padding(.top, 32)
-                        .padding(.bottom, 24)
+                        // CRASH BUTTON
+                        crashButton
+                            .padding(.top, 32)
+                            .padding(.bottom, 24)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
             }
+
+            // NAV BAR (appears after full nav unlock)
+            if progressTracker.isFullNavUnlocked {
+                AppNavBar(
+                    activeDestination: nil,
+                    isHistoryUnlocked: progressTracker.isHistoryUnlocked,
+                    isPatternsUnlocked: progressTracker.isPatternsUnlocked,
+                    onSelect: { dest in
+                        if let dest {
+                            navigationPath.append(dest)
+                        }
+                    }
+                )
+            }
+        }
+        .navigationDestination(for: AppDestination.self) { destination in
+            destinationView(for: destination)
         }
         .task {
             await viewModel.loadHeaderData()
@@ -78,6 +110,35 @@ struct TodayView: View {
             WeeklySummaryView(summary: summary, onDismiss: {
                 viewModel.dismissWeeklySummary()
             })
+        }
+    }
+
+    // MARK: - Navigation Destinations
+
+    @ViewBuilder
+    private func destinationView(for destination: AppDestination) -> some View {
+        switch destination {
+        case .history:
+            if let makeVM = makeHistoryViewModel {
+                HistoryView(viewModel: makeVM())
+            }
+        case .patterns:
+            if let makeVM = makePatternsViewModel {
+                PatternsView(viewModel: makeVM())
+            }
+        case .bugLibrary:
+            if let makeVM = makeBugLibraryViewModel {
+                BugLibraryView(viewModel: makeVM())
+            }
+        case .docs:
+            if let makeVM = makeBugLibraryViewModel {
+                DocsView(makeBugLibraryViewModel: makeVM)
+            }
+        case .settings:
+            SettingsView(
+                progressTracker: progressTracker,
+                bugRepository: nil
+            )
         }
     }
 
@@ -172,6 +233,14 @@ struct TodayView: View {
                         .foregroundColor(Color(white: 0.3))
                 }
                 .padding(.top, 8)
+            }
+
+            // Progressive footer links
+            if progressTracker.isHistoryUnlocked || progressTracker.isPatternsUnlocked || progressTracker.isBugLibraryUnlocked {
+                FooterLinks(tracker: progressTracker) { destination in
+                    navigationPath.append(destination)
+                }
+                .padding(.top, 16)
             }
         }
         .padding(.top, 24)

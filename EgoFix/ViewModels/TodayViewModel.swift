@@ -69,6 +69,7 @@ final class TodayViewModel: ObservableObject {
     private let diagnosticEngine: DiagnosticEngine?
     private let bugIntensityProvider: BugIntensityProvider?
     private let sharedStorage = SharedStorageManager.shared
+    private let progressTracker: AppProgressTracker?
 
     init(
         dailyFixService: DailyFixService,
@@ -83,7 +84,8 @@ final class TodayViewModel: ObservableObject {
         weeklyDiagnosticService: WeeklyDiagnosticService? = nil,
         fixCompletionRepository: FixCompletionRepository? = nil,
         diagnosticEngine: DiagnosticEngine? = nil,
-        bugIntensityProvider: BugIntensityProvider? = nil
+        bugIntensityProvider: BugIntensityProvider? = nil,
+        progressTracker: AppProgressTracker? = nil
     ) {
         self.dailyFixService = dailyFixService
         self.fixRepository = fixRepository
@@ -98,6 +100,7 @@ final class TodayViewModel: ObservableObject {
         self.fixCompletionRepository = fixCompletionRepository
         self.diagnosticEngine = diagnosticEngine
         self.bugIntensityProvider = bugIntensityProvider
+        self.progressTracker = progressTracker
         self.interactionManager = FixInteractionManager(timerService: timerService)
     }
 
@@ -105,6 +108,9 @@ final class TodayViewModel: ObservableObject {
 
     /// Load version, streak, and intensity on appear.
     func loadHeaderData() async {
+        // Track day active
+        progressTracker?.recordDayActive()
+
         do {
             // Version
             currentVersion = (try? await versionService.getCurrentVersion()) ?? "1.0"
@@ -198,6 +204,9 @@ final class TodayViewModel: ObservableObject {
     func onDiagnosticComplete() async {
         showWeeklyDiagnostic = false
 
+        // Track diagnostic completion
+        progressTracker?.recordDiagnosticCompleted()
+
         // Run pattern detection after weekly diagnostic
         await runDiagnosticsIfNeeded()
 
@@ -271,6 +280,7 @@ final class TodayViewModel: ObservableObject {
         do {
             // Check for pattern to show before fix
             if let pattern = try await patternSurfacingService.shouldShowPatternBeforeFix() {
+                progressTracker?.recordPatternDetected()
                 state = .pattern(pattern)
                 return
             }
@@ -368,8 +378,12 @@ final class TodayViewModel: ObservableObject {
             lastOutcome = outcome
             sharedStorage.updateCompleted(outcome: outcome)
 
+            // Track progression
+            progressTracker?.recordFixCompletion()
+
             // Check for pattern to show after fix
             if let pattern = try await patternSurfacingService.shouldShowPatternAfterFix() {
+                progressTracker?.recordPatternDetected()
                 state = .pattern(pattern)
                 return
             }
