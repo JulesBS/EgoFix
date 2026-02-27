@@ -73,6 +73,7 @@ struct OnboardingView: View {
         }
         .task {
             await viewModel.loadBugs()
+            viewModel.beginScan()
         }
         .onChange(of: viewModel.isComplete) { _, isComplete in
             if isComplete {
