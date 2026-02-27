@@ -32,11 +32,6 @@ struct ContentView: View {
                         showOnboarding = false
                     }
                 )
-                .onAppear {
-                    if vm.state == .boot {
-                        vm.beginScan()
-                    }
-                }
             } else if !showBootSequence {
                 NavigationStack {
                     TodayView(
