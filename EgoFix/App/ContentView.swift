@@ -13,6 +13,8 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
+            Color.black.ignoresSafeArea()
+
             if showBootSequence && bootSequenceChecked {
                 BootSequenceView(
                     isFirstLaunch: !hasSeenBoot,
