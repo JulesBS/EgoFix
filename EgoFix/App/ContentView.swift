@@ -42,7 +42,6 @@ struct ContentView: View {
                     TodayView(
                         viewModel: makeTodayViewModel(),
                         progressTracker: progressTracker,
-                        makeWeeklyDiagnosticViewModel: makeWeeklyDiagnosticViewModel,
                         makeCrashViewModel: makeCrashViewModel,
                         makeHistoryViewModel: makeHistoryViewModel,
                         makePatternsViewModel: makePatternsViewModel,

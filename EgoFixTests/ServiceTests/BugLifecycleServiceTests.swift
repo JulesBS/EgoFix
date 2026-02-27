@@ -560,6 +560,6 @@ final class BugLifecycleServiceTests: XCTestCase {
         XCTAssertEqual(info.stableAt, stableAt)
         XCTAssertNil(info.resolvedAt)
         XCTAssertEqual(info.statusLabel, "STABLE")
-        XCTAssertEqual(info.statusComment, "// Consistently quiet. Consider resolving.")
+        XCTAssertEqual(info.statusComment, "// Hasn't fired in a while. Don't get comfortable.")
     }
 }

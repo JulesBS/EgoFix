@@ -4,6 +4,8 @@ import Combine
 
 enum TodayViewState {
     case loading
+    case diagnostic                      // weekly diagnostic inline
+    case diagnosticComplete              // diagnostic just finished, show summary
     case noFix
     case fixAvailable(FixCompletion, Fix)
     case completed(FixOutcome, String?)  // outcome + optional micro-education tidbit
@@ -54,6 +56,12 @@ final class TodayViewModel: ObservableObject {
     // Done-for-today state
     @Published var lastOutcome: FixOutcome?
     @Published var doneStatusLine: String = ""
+
+    // Inline diagnostic state
+    @Published var diagnosticBugs: [DiagnosticBugState] = []
+    @Published var diagnosticBugIndex: Int = 0
+    @Published var diagnosticNeedsContext: Bool = false
+    @Published var diagnosticResults: [(bugTitle: String, intensity: BugIntensity)] = []
 
     private let dailyFixService: DailyFixService
     private let fixRepository: FixRepository
@@ -131,7 +139,7 @@ final class TodayViewModel: ObservableObject {
                     if let bug = try? await bugRepository.getById(bugId) {
                         currentBugSlug = bug.slug
                         if currentBugTitle == nil {
-                            currentBugTitle = bug.title
+                            currentBugTitle = bug.nickname
                         }
                     }
                 }
@@ -194,11 +202,105 @@ final class TodayViewModel: ObservableObject {
         guard let service = weeklyDiagnosticService else { return }
         do {
             if try await service.shouldPromptDiagnostic() {
-                showWeeklyDiagnostic = true
+                let bugs = try await service.getBugsForDiagnostic()
+                diagnosticBugs = bugs.map { DiagnosticBugState(id: $0.id, bug: $0) }
+                diagnosticBugIndex = 0
+                diagnosticNeedsContext = false
+                diagnosticResults = []
+                state = .diagnostic
             }
         } catch {
             // Handle silently
         }
+    }
+
+    var currentDiagnosticBug: DiagnosticBugState? {
+        guard diagnosticBugIndex < diagnosticBugs.count else { return nil }
+        return diagnosticBugs[diagnosticBugIndex]
+    }
+
+    var diagnosticRemainingCount: Int {
+        max(0, diagnosticBugs.count - diagnosticBugIndex - 1)
+    }
+
+    func setDiagnosticIntensity(_ intensity: BugIntensity) {
+        guard diagnosticBugIndex < diagnosticBugs.count else { return }
+        diagnosticBugs[diagnosticBugIndex].intensity = intensity
+
+        if intensity == .quiet {
+            // Skip context for quiet bugs
+            advanceDiagnostic()
+        } else {
+            diagnosticNeedsContext = true
+        }
+    }
+
+    func setDiagnosticContext(_ context: EventContext) {
+        guard diagnosticBugIndex < diagnosticBugs.count else { return }
+        diagnosticBugs[diagnosticBugIndex].context = context
+        diagnosticNeedsContext = false
+        advanceDiagnostic()
+    }
+
+    func skipDiagnosticContext() {
+        guard diagnosticBugIndex < diagnosticBugs.count else { return }
+        diagnosticBugs[diagnosticBugIndex].context = .unknown
+        diagnosticNeedsContext = false
+        advanceDiagnostic()
+    }
+
+    private func advanceDiagnostic() {
+        // Record result for summary
+        if let current = currentDiagnosticBug, let intensity = current.intensity {
+            diagnosticResults.append((bugTitle: current.bug.nickname, intensity: intensity))
+        }
+
+        if diagnosticBugIndex < diagnosticBugs.count - 1 {
+            diagnosticBugIndex += 1
+        } else {
+            Task { await submitDiagnostic() }
+        }
+    }
+
+    func skipDiagnostic() async {
+        guard let service = weeklyDiagnosticService else { return }
+        do {
+            try await service.skipDiagnostic()
+        } catch { }
+        await loadTodaysFix()
+    }
+
+    private func submitDiagnostic() async {
+        guard let service = weeklyDiagnosticService else { return }
+
+        let responses = diagnosticBugs.compactMap { bug -> BugDiagnosticResponse? in
+            guard let intensity = bug.intensity else { return nil }
+            return BugDiagnosticResponse(
+                bugId: bug.id,
+                intensity: intensity,
+                primaryContext: bug.context
+            )
+        }
+
+        do {
+            try await service.submitDiagnostic(responses: responses)
+        } catch { }
+
+        // Track diagnostic completion
+        progressTracker?.recordDiagnosticCompleted()
+
+        // Run pattern detection after weekly diagnostic
+        await runDiagnosticsIfNeeded()
+
+        state = .diagnosticComplete
+    }
+
+    func continuePastDiagnostic() async {
+        // Calculate and show weekly summary
+        if let summary = await calculateWeeklySummary() {
+            weeklySummary = summary
+        }
+        await loadTodaysFix()
     }
 
     func onDiagnosticComplete() async {
@@ -425,7 +527,7 @@ final class TodayViewModel: ObservableObject {
 
     private func fetchBugTitle(for bugId: UUID) async -> String? {
         guard let bug = try? await bugRepository.getById(bugId) else { return nil }
-        return bug.title
+        return bug.nickname
     }
 
     private func doneStatusMessage(for outcome: FixOutcome) -> String {

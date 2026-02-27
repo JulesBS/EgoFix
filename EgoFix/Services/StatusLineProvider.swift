@@ -93,7 +93,10 @@ enum StatusLineProvider {
         switch days {
         case 7: return "// This metric is meaningless."
         case 14: return "// You're still here."
-        case 30: return "// The app should be getting quieter."
+        case 21: return "// Consistency is just a pattern. Like the others."
+        case 30: return "// The app should be getting quieter by now."
+        case 60: return "// Two months. You've outlasted most."
+        case 90: return "// At this point, you're debugging the debugger."
         default: return nil
         }
     }

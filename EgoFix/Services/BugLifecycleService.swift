@@ -250,10 +250,10 @@ struct BugLifecycleInfo {
 
     var statusComment: String {
         switch status {
-        case .identified: return "// Not yet tracked"
-        case .active: return "// Currently being worked on"
-        case .stable: return "// Consistently quiet. Consider resolving."
-        case .resolved: return "// No longer active"
+        case .identified: return "// Detected but not yet under active monitoring."
+        case .active: return "// The app is tracking this. Fixes are calibrated."
+        case .stable: return "// Hasn't fired in a while. Don't get comfortable."
+        case .resolved: return "// Marked resolved. The app will check back in 30 days."
         }
     }
 

@@ -48,16 +48,8 @@ final class OnboardingViewModel: ObservableObject {
     /// All 7 bugs in display order
     private(set) var allBugs: [Bug] = []
 
-    /// Slug-to-nickname mapping
-    static let nicknames: [String: String] = [
-        "need-to-be-right": "The Corrector",
-        "need-to-impress": "The Performer",
-        "need-to-be-liked": "The Chameleon",
-        "need-to-control": "The Controller",
-        "need-to-compare": "The Scorekeeper",
-        "need-to-deflect": "The Deflector",
-        "need-to-narrate": "The Narrator",
-    ]
+    /// Slug-to-nickname mapping (delegates to Bug.slugNicknames)
+    static var nicknames: [String: String] { Bug.slugNicknames }
 
     /// Inline comments for each bug during scan
     static let inlineComments: [String: String] = [

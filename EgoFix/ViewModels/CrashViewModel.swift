@@ -3,23 +3,29 @@ import SwiftUI
 import Combine
 
 enum CrashFlowState {
-    case initial
     case selectBug
-    case crashed(Crash)
+    case crashed(Crash, Bug?)
     case quickFix(FixCompletion, Fix)
 }
 
 @MainActor
 final class CrashViewModel: ObservableObject {
-    @Published var state: CrashFlowState = .initial
+    @Published var state: CrashFlowState = .selectBug
     @Published var availableBugs: [Bug] = []
-    @Published var selectedBug: Bug?
     @Published var note: String = ""
     @Published var isLoading = false
 
     private let crashService: CrashService
     private let bugRepository: BugRepository
     private let fixRepository: FixRepository
+
+    /// Pool of crash confirmation messages, rotated randomly.
+    static let crashMessages: [String] = [
+        "// It happens. That's the whole point of logging.",
+        "// Crash logged. You caught it. That's progress.",
+        "// The bug won this round. You'll get another.",
+        "// Noted. No judgment. Just data.",
+    ]
 
     init(
         crashService: CrashService,
@@ -43,30 +49,23 @@ final class CrashViewModel: ObservableObject {
         isLoading = false
     }
 
-    func startCrashLog() {
-        state = .selectBug
-    }
-
-    func selectBug(_ bug: Bug) {
-        selectedBug = bug
-    }
-
-    func confirmCrash() async {
+    /// Tapping a bug immediately logs the crash.
+    func selectAndLogCrash(_ bug: Bug) async {
         isLoading = true
 
         do {
             let crash = try await crashService.logCrash(
-                bugId: selectedBug?.id,
+                bugId: bug.id,
                 note: note.isEmpty ? nil : note
             )
 
             if let crash = crash {
-                state = .crashed(crash)
-
                 // Try to assign a quick fix
                 if let completion = try await crashService.assignQuickFix(for: crash.id),
                    let fix = try await fixRepository.getById(completion.fixId) {
                     state = .quickFix(completion, fix)
+                } else {
+                    state = .crashed(crash, bug)
                 }
             }
         } catch {
@@ -77,7 +76,7 @@ final class CrashViewModel: ObservableObject {
     }
 
     func reboot() async {
-        guard case .crashed(let crash) = state else { return }
+        guard case .crashed(let crash, _) = state else { return }
 
         do {
             try await crashService.reboot(crashId: crash.id)
@@ -88,8 +87,12 @@ final class CrashViewModel: ObservableObject {
     }
 
     func reset() {
-        state = .initial
-        selectedBug = nil
+        state = .selectBug
         note = ""
+    }
+
+    /// Returns a random crash confirmation message.
+    static func randomCrashMessage() -> String {
+        crashMessages.randomElement() ?? "// It happens."
     }
 }

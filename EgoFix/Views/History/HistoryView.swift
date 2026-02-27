@@ -24,7 +24,9 @@ struct HistoryView: View {
                 // Content based on selected tab
                 if viewModel.isLoading {
                     Spacer()
-                    ProgressView().tint(.green)
+                    Text("> loading...")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.gray)
                     Spacer()
                 } else {
                     switch viewModel.selectedView {
@@ -82,14 +84,19 @@ struct HistoryView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 // Current version header
-                HStack {
-                    Text("CURRENT VERSION")
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text("CHANGELOG")
+                            .font(.system(.headline, design: .monospaced))
+                            .foregroundColor(.white)
+                        Spacer()
+                        Text("v\(viewModel.currentVersion)")
+                            .font(.system(.title, design: .monospaced))
+                            .foregroundColor(.green)
+                    }
+                    Text("// v1.0 \u{2192} v\(viewModel.currentVersion)")
                         .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray)
-                    Spacer()
-                    Text("v\(viewModel.currentVersion)")
-                        .font(.system(.title, design: .monospaced))
-                        .foregroundColor(.green)
+                        .foregroundColor(.gray.opacity(0.5))
                 }
                 .padding(.horizontal)
 
@@ -102,7 +109,7 @@ struct HistoryView: View {
                 }
 
                 if viewModel.versionGroups.isEmpty {
-                    Text("// No changelog entries yet")
+                    Text("// Nothing here yet. That changes tomorrow.")
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(.gray.opacity(0.6))
                         .padding()

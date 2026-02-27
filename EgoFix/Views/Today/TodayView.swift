@@ -6,7 +6,6 @@ struct TodayView: View {
     @State private var shareContent: ShareContent?
     @State private var showCrash = false
     @State private var navigationPath = NavigationPath()
-    let makeWeeklyDiagnosticViewModel: (() -> WeeklyDiagnosticViewModel)?
     let makeCrashViewModel: (() -> CrashViewModel)?
     let makeHistoryViewModel: (() -> HistoryViewModel)?
     let makePatternsViewModel: (() -> PatternsViewModel)?
@@ -15,7 +14,6 @@ struct TodayView: View {
     init(
         viewModel: TodayViewModel,
         progressTracker: AppProgressTracker,
-        makeWeeklyDiagnosticViewModel: (() -> WeeklyDiagnosticViewModel)? = nil,
         makeCrashViewModel: (() -> CrashViewModel)? = nil,
         makeHistoryViewModel: (() -> HistoryViewModel)? = nil,
         makePatternsViewModel: (() -> PatternsViewModel)? = nil,
@@ -23,7 +21,6 @@ struct TodayView: View {
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.progressTracker = progressTracker
-        self.makeWeeklyDiagnosticViewModel = makeWeeklyDiagnosticViewModel
         self.makeCrashViewModel = makeCrashViewModel
         self.makeHistoryViewModel = makeHistoryViewModel
         self.makePatternsViewModel = makePatternsViewModel
@@ -93,13 +90,6 @@ struct TodayView: View {
         }
         .sheet(item: $shareContent) { content in
             ShareSheet(items: [content.text])
-        }
-        .sheet(isPresented: $viewModel.showWeeklyDiagnostic, onDismiss: {
-            Task { await viewModel.onDiagnosticComplete() }
-        }) {
-            if let makeVM = makeWeeklyDiagnosticViewModel {
-                WeeklyDiagnosticView(viewModel: makeVM())
-            }
         }
         .sheet(isPresented: $showCrash) {
             if let makeVM = makeCrashViewModel {
@@ -174,9 +164,18 @@ struct TodayView: View {
     private var mainContent: some View {
         switch viewModel.state {
         case .loading:
-            ProgressView()
-                .tint(.green)
-                .padding(.top, 40)
+            VStack(spacing: 8) {
+                Text("> loading...")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.gray)
+            }
+            .padding(.top, 40)
+
+        case .diagnostic:
+            inlineDiagnosticContent
+
+        case .diagnosticComplete:
+            inlineDiagnosticCompleteContent
 
         case .noFix:
             NoFixView()
@@ -254,6 +253,123 @@ struct TodayView: View {
             Text(label)
                 .font(.system(.caption2, design: .monospaced))
                 .foregroundColor(Color(white: 0.4))
+        }
+    }
+
+    // MARK: - Inline Diagnostic
+
+    private var inlineDiagnosticContent: some View {
+        VStack(spacing: 24) {
+            Text("WEEKLY DIAGNOSTIC")
+                .font(.system(.headline, design: .monospaced))
+                .foregroundColor(.green)
+
+            if let current = viewModel.currentDiagnosticBug {
+                if viewModel.diagnosticNeedsContext {
+                    // Context question
+                    Text("Where was it loudest?")
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.white)
+
+                    VStack(spacing: 8) {
+                        diagnosticContextButton("Work", context: .work)
+                        diagnosticContextButton("Home", context: .home)
+                        diagnosticContextButton("Social", context: .social)
+                        diagnosticContextButton("Family", context: .family)
+                        diagnosticContextButton("Online", context: .online)
+                        Button(action: { viewModel.skipDiagnosticContext() }) {
+                            Text("[ Unsure ]")
+                                .font(.system(.body, design: .monospaced))
+                                .foregroundColor(.gray.opacity(0.6))
+                                .padding(.vertical, 8)
+                        }
+                    }
+                } else {
+                    // Intensity question
+                    Text("This week, \(current.bug.nickname) felt...")
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+
+                    VStack(spacing: 12) {
+                        IntensityButton(label: "Quiet", color: .green, action: { viewModel.setDiagnosticIntensity(.quiet) })
+                        IntensityButton(label: "Present", color: .yellow, action: { viewModel.setDiagnosticIntensity(.present) })
+                        IntensityButton(label: "Loud", color: .red, action: { viewModel.setDiagnosticIntensity(.loud) })
+                    }
+                }
+
+                if viewModel.diagnosticRemainingCount > 0 {
+                    Text("// \(viewModel.diagnosticRemainingCount) more \(viewModel.diagnosticRemainingCount == 1 ? "bug" : "bugs") to check")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(Color(white: 0.3))
+                        .padding(.top, 8)
+                }
+            }
+
+            Button(action: { Task { await viewModel.skipDiagnostic() } }) {
+                Text("[ skip \u{2192} ]")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.gray.opacity(0.5))
+            }
+        }
+        .padding(.top, 8)
+    }
+
+    private func diagnosticContextButton(_ label: String, context: EventContext) -> some View {
+        Button(action: { viewModel.setDiagnosticContext(context) }) {
+            Text("[ \(label) ]")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(.gray)
+                .padding(.vertical, 8)
+        }
+    }
+
+    private var inlineDiagnosticCompleteContent: some View {
+        VStack(spacing: 16) {
+            Text("DIAGNOSTIC COMPLETE")
+                .font(.system(.headline, design: .monospaced))
+                .foregroundColor(.green)
+
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(viewModel.diagnosticResults, id: \.bugTitle) { result in
+                    HStack {
+                        Text(result.bugTitle)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.white)
+                        Spacer()
+                        Text(result.intensity.rawValue)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(intensityColor(result.intensity))
+                    }
+                }
+            }
+            .padding(.horizontal, 32)
+
+            VStack(spacing: 4) {
+                Text("// Data logged.")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(Color(white: 0.3))
+                Text("// Tomorrow's fix will account for this.")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(Color(white: 0.3))
+            }
+            .padding(.top, 8)
+
+            Button(action: { Task { await viewModel.continuePastDiagnostic() } }) {
+                Text("[ Continue \u{2192} ]")
+                    .font(.system(.body, design: .monospaced))
+                    .foregroundColor(.gray)
+                    .padding()
+            }
+        }
+        .padding(.top, 8)
+    }
+
+    private func intensityColor(_ intensity: BugIntensity) -> Color {
+        switch intensity {
+        case .quiet: return .green
+        case .present: return .yellow
+        case .loud: return .red
         }
     }
 

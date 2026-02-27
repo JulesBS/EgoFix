@@ -737,7 +737,8 @@
     "severity": "medium",
     "interactionType": "standard",
     "prompt": "Respond to a text or email you disagree with. Your reply must contain zero counter-arguments. Only acknowledgment.",
-    "validation": "Reread your sent message. Does it contain 'but', 'however', 'that said', or any rebuttal? If clean, mark Applied."
+    "validation": "Reread your sent message. Does it contain 'but', 'however', 'that said', or any rebuttal? If clean, mark Applied.",
+    "inlineComment": "The urge to correct isn't about accuracy. It's about status."
   },
   {
     "id": "10000000-0000-0000-0000-100000000003",
@@ -770,7 +771,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Every draft is an argument you almost had. Count the ones you won by not sending."
   },
   {
     "id": "10000000-0000-0000-0000-100000000005",
@@ -803,7 +805,8 @@
         "minTarget": null,
         "maxTarget": 3
       }
-    }
+    },
+    "inlineComment": "The last word isn't a prize. It's a tell."
   },
   {
     "id": "10000000-0000-0000-0000-100000000007",
@@ -847,7 +850,8 @@
       "timed": {
         "durationSeconds": 120
       }
-    }
+    },
+    "inlineComment": "The delay is the fix. What you do with the silence tells you everything."
   },
   {
     "id": "10000000-0000-0000-0000-100000000010",
@@ -891,7 +895,8 @@
       "observation": {
         "reportPrompt": "Describe your immediate physical or emotional reaction when you were corrected today. Not the second reaction — the first one."
       }
-    }
+    },
+    "inlineComment": "The body knows before the ego does. Learn to read it."
   },
   {
     "id": "10000000-0000-0000-0000-100000000013",
@@ -989,7 +994,8 @@
         ],
         "debrief": "The urge to correct in public isn't about accuracy. It's about being seen as the one who knows."
       }
-    }
+    },
+    "inlineComment": "Being wrong in public is where the bug gets loud. That's exactly why this matters."
   },
   {
     "id": "10000000-0000-0000-0000-100000000016",
@@ -1050,7 +1056,8 @@
     "severity": "medium",
     "interactionType": "journal",
     "prompt": "Describe a time you were wrong about something important. How long did it take you to admit it? What happened in the gap between knowing and saying it?",
-    "validation": "Write 2-3 sentences. Focus on the delay between knowing and admitting."
+    "validation": "Write 2-3 sentences. Focus on the delay between knowing and admitting.",
+    "inlineComment": "The gap between knowing and admitting is where the ego lives."
   },
   {
     "id": "10000000-0000-0000-0000-100000000019",
@@ -1091,7 +1098,8 @@
         "durationDescription": "Entire weekend without fact-checking to win an argument",
         "endTime": null
       }
-    }
+    },
+    "inlineComment": "If the fact doesn't get cited, does the knowledge still matter to you?"
   },
   {
     "id": "10000000-0000-0000-0000-100000000022",
@@ -1132,7 +1140,8 @@
         ],
         "explanationAfter": "What you do AFTER the argument tells you more than the argument itself."
       }
-    }
+    },
+    "inlineComment": "What you do after an argument reveals more than what you said during it."
   },
   {
     "id": "10000000-0000-0000-0000-100000000023",
@@ -1225,7 +1234,8 @@
         "triggerBehavior": "Typing a correction in a message or email",
         "replacementBehavior": "Delete and type 'Interesting, tell me more' instead"
       }
-    }
+    },
+    "inlineComment": "Curiosity and correction look similar. Only one of them is about the other person."
   },
   {
     "id": "10000000-0000-0000-0000-100000000028",
@@ -1256,7 +1266,8 @@
         "predictionPrompt": "If I say 'You might be right' daily for a week, I predict people will...",
         "observationPrompt": "The week is over. What actually changed in your conversations? In you?"
       }
-    }
+    },
+    "inlineComment": "The prediction says more about you than the experiment will."
   },
   {
     "id": "10000000-0000-0000-0000-100000000030",
@@ -1365,7 +1376,8 @@
           }
         ]
       }
-    }
+    },
+    "inlineComment": "Saying it gets easier. The discomfort doesn't disappear — it just stops running the show."
   },
   {
     "id": "20000000-0000-0000-0000-200000000001",
@@ -1384,7 +1396,8 @@
     "severity": "medium",
     "interactionType": "standard",
     "prompt": "Disagree with someone you usually agree with today. Only if you actually disagree — this isn't contrarianism. It's honesty.",
-    "validation": "Did you voice a genuine disagreement instead of nodding along? Mark Applied if the words came out without a softener attached."
+    "validation": "Did you voice a genuine disagreement instead of nodding along? Mark Applied if the words came out without a softener attached.",
+    "inlineComment": "Agreement is easy. Honesty is where the relationship actually is."
   },
   {
     "id": "20000000-0000-0000-0000-200000000003",
@@ -1417,7 +1430,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Each shift is a small betrayal of yourself. Count them without judgment."
   },
   {
     "id": "20000000-0000-0000-0000-200000000005",
@@ -1450,7 +1464,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "A fake laugh is a transaction. You're buying approval with authenticity."
   },
   {
     "id": "20000000-0000-0000-0000-200000000007",
@@ -1496,7 +1511,8 @@
       "timed": {
         "durationSeconds": 180
       }
-    }
+    },
+    "inlineComment": "The distance between who you are and who you perform is the bug's territory."
   },
   {
     "id": "20000000-0000-0000-0000-200000000010",
@@ -1525,7 +1541,8 @@
       "timed": {
         "durationSeconds": 60
       }
-    }
+    },
+    "inlineComment": "Their face isn't your scoreboard. Sit with not knowing."
   },
   {
     "id": "20000000-0000-0000-0000-200000000012",
@@ -1554,7 +1571,8 @@
       "observation": {
         "reportPrompt": "How many versions of yourself did you present today? What changed between audiences, and what stayed the same?"
       }
-    }
+    },
+    "inlineComment": "The versions aren't strategy. They're survival. Notice which one feels closest to real."
   },
   {
     "id": "20000000-0000-0000-0000-200000000014",
@@ -1652,7 +1670,8 @@
         ],
         "debrief": "Flattery feels like kindness. But it's actually a form of disrespect — you assumed they couldn't handle the truth."
       }
-    }
+    },
+    "inlineComment": "Honest feedback is a gift you're afraid to give because you might not be liked for it."
   },
   {
     "id": "20000000-0000-0000-0000-200000000017",
@@ -1671,7 +1690,8 @@
     "severity": "medium",
     "interactionType": "journal",
     "prompt": "What is an opinion you hold that you've never said out loud? Write it down. You don't have to share it. Just admit it exists.",
-    "validation": "Write 2-3 sentences. The opinion must be one you've actively hidden, not one you just haven't mentioned."
+    "validation": "Write 2-3 sentences. The opinion must be one you've actively hidden, not one you just haven't mentioned.",
+    "inlineComment": "The opinions you hide are the ones that define you. The rest is curation."
   },
   {
     "id": "20000000-0000-0000-0000-200000000019",
@@ -1712,7 +1732,8 @@
         "durationDescription": "One full week without unnecessary apologies",
         "endTime": null
       }
-    }
+    },
+    "inlineComment": "Most apologies aren't remorse. They're preemptive conflict avoidance."
   },
   {
     "id": "20000000-0000-0000-0000-200000000022",
@@ -1805,7 +1826,8 @@
         "triggerBehavior": "About to agree or nod along with something I don't believe",
         "replacementBehavior": "Say 'I see it differently' and briefly state my actual view"
       }
-    }
+    },
+    "inlineComment": "Disagreement isn't aggression. It's presence."
   },
   {
     "id": "20000000-0000-0000-0000-200000000027",
@@ -1840,7 +1862,8 @@
     "severity": "low",
     "interactionType": "body",
     "prompt": "You just agreed with something you don't believe. Freeze. Scan from throat to stomach. What's there?",
-    "validation": "Did you pause and scan your body immediately after the false agreement? Mark Applied if you noticed a sensation and named it."
+    "validation": "Did you pause and scan your body immediately after the false agreement? Mark Applied if you noticed a sensation and named it.",
+    "inlineComment": "The body keeps score of every time you abandon yourself for approval."
   },
   {
     "id": "20000000-0000-0000-0000-200000000030",
@@ -1934,7 +1957,8 @@
           }
         ]
       }
-    }
+    },
+    "inlineComment": "Knowing what you actually want is harder than it should be. That's the bug talking."
   },
   {
     "id": "30000000-0000-0000-0000-300000000001",
@@ -1953,7 +1977,8 @@
     "severity": "low",
     "interactionType": "standard",
     "prompt": "The next time someone asks 'what do you do?', give the shortest possible answer. Don't elaborate. Don't add context. Don't mention the interesting part.",
-    "validation": "Did your answer fit in one sentence without qualifiers or humble additions? Mark Applied if you resisted the expansion pack."
+    "validation": "Did your answer fit in one sentence without qualifiers or humble additions? Mark Applied if you resisted the expansion pack.",
+    "inlineComment": "The elaboration isn't for them. It's for the version of you that needs to be impressive."
   },
   {
     "id": "30000000-0000-0000-0000-300000000003",
@@ -1972,7 +1997,8 @@
     "severity": "medium",
     "interactionType": "standard",
     "prompt": "Don't mention anything you own, have done, or know in your next social interaction. Nothing about possessions, travel, credentials, or experiences.",
-    "validation": "Did you make it through without a single flex? Even subtle ones count. Mark Applied only if you kept it completely clean."
+    "validation": "Did you make it through without a single flex? Even subtle ones count. Mark Applied only if you kept it completely clean.",
+    "inlineComment": "What's left when you remove the resume? That's the person underneath."
   },
   {
     "id": "30000000-0000-0000-0000-300000000005",
@@ -1991,7 +2017,8 @@
     "severity": "medium",
     "interactionType": "standard",
     "prompt": "You're about to drop a name. Don't. Rephrase the sentence without the person's name or their association with you.",
-    "validation": "Did you catch the name-drop before it landed and reroute the sentence? Mark Applied if the name stayed in your head."
+    "validation": "Did you catch the name-drop before it landed and reroute the sentence? Mark Applied if the name stayed in your head.",
+    "inlineComment": "Name-dropping borrows someone else's status. You're paying interest on it."
   },
   {
     "id": "30000000-0000-0000-0000-300000000007",
@@ -2010,7 +2037,8 @@
     "severity": "high",
     "interactionType": "standard",
     "prompt": "Post something on social media that isn't about an achievement, trip, milestone, or accomplishment. Something mundane. Something that makes you look exactly as ordinary as you are.",
-    "validation": "Did you post something that wouldn't impress anyone? Mark Applied if it had zero brag factor."
+    "validation": "Did you post something that wouldn't impress anyone? Mark Applied if it had zero brag factor.",
+    "inlineComment": "The mundane post reveals who you are without the highlight reel."
   },
   {
     "id": "30000000-0000-0000-0000-300000000009",
@@ -2043,7 +2071,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Every check is asking: 'Did they see me?' The answer doesn't change anything."
   },
   {
     "id": "30000000-0000-0000-0000-300000000011",
@@ -2076,7 +2105,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "A humble brag is a brag that's embarrassed about itself. Count them honestly."
   },
   {
     "id": "30000000-0000-0000-0000-300000000013",
@@ -2105,7 +2135,8 @@
       "timed": {
         "durationSeconds": 180
       }
-    }
+    },
+    "inlineComment": "If the achievement needs an audience, it was never about the achievement."
   },
   {
     "id": "30000000-0000-0000-0000-300000000015",
@@ -2119,7 +2150,8 @@
       "timed": {
         "durationSeconds": 60
       }
-    }
+    },
+    "inlineComment": "The silence after a name-drop is where the need lives. Listen to it."
   },
   {
     "id": "30000000-0000-0000-0000-300000000016",
@@ -2163,7 +2195,8 @@
       "observation": {
         "reportPrompt": "What specific situations triggered the urge to name-drop or credential-flash today? Who were you with? What were you feeling right before?"
       }
-    }
+    },
+    "inlineComment": "The trigger is the insecurity. The name-drop is just the symptom."
   },
   {
     "id": "30000000-0000-0000-0000-300000000019",
@@ -2261,7 +2294,8 @@
         ],
         "debrief": "Someone else's achievement isn't a threat to yours. Unless your achievements only exist when witnessed."
       }
-    }
+    },
+    "inlineComment": "Professional branding and ego performance share a zip code. Know which one you're in."
   },
   {
     "id": "30000000-0000-0000-0000-300000000022",
@@ -2302,7 +2336,8 @@
         ],
         "debrief": "Knowledge shared to help looks different from knowledge deployed to impress. You can feel which one it was."
       }
-    }
+    },
+    "inlineComment": "Being the expert feels good. Being helpful and being impressive aren't the same thing."
   },
   {
     "id": "30000000-0000-0000-0000-300000000023",
@@ -2321,7 +2356,8 @@
     "severity": "medium",
     "interactionType": "journal",
     "prompt": "Describe a time you felt valued for who you are, not what you've done. If you can't remember one, write about why that might be.",
-    "validation": "Write 2-3 sentences. Be honest about whether this memory came easily or not."
+    "validation": "Write 2-3 sentences. Be honest about whether this memory came easily or not.",
+    "inlineComment": "If you can't remember one, that's not a failure. It's the most important data point here."
   },
   {
     "id": "30000000-0000-0000-0000-300000000025",
@@ -2368,7 +2404,8 @@
         "durationDescription": "Full weekend without checking likes, views, or engagement on posts",
         "endTime": null
       }
-    }
+    },
+    "inlineComment": "The metrics aren't feedback. They're a dopamine slot machine."
   },
   {
     "id": "30000000-0000-0000-0000-300000000028",
@@ -2409,7 +2446,8 @@
         ],
         "explanationAfter": "The first five minutes of meeting someone is a performance review you didn't know you were giving yourself."
       }
-    }
+    },
+    "inlineComment": "First impressions are performances. This assessment is about the script."
   },
   {
     "id": "30000000-0000-0000-0000-300000000029",
@@ -2470,7 +2508,8 @@
     "severity": "high",
     "interactionType": "reversal",
     "prompt": "You're in a conversation where you know more than the other person. Instead of demonstrating your knowledge, ask them to explain it to you. Learn their version.",
-    "validation": "Did you let them be the expert? Did you resist correcting or adding to their explanation? Mark Applied if you stayed in student mode the whole time."
+    "validation": "Did you let them be the expert? Did you resist correcting or adding to their explanation? Mark Applied if you stayed in student mode the whole time.",
+    "inlineComment": "Teaching by asking is harder than teaching by telling. That's the point."
   },
   {
     "id": "30000000-0000-0000-0000-300000000032",
@@ -2501,7 +2540,8 @@
         "triggerBehavior": "Adding impressive qualifiers, name-drops, or credential signals to messages",
         "replacementBehavior": "Delete the impressive part and send the plainest version of the message"
       }
-    }
+    },
+    "inlineComment": "The impressive version and the honest version are different drafts. Send the honest one."
   },
   {
     "id": "30000000-0000-0000-0000-300000000034",
@@ -2610,7 +2650,8 @@
     "severity": "medium",
     "interactionType": "standard",
     "prompt": "Delegate one task today and don't check on it. Not once. Not a quick peek. Not a casual 'how's it going?' that's actually surveillance.",
-    "validation": "Did you delegate and then fully leave it alone until the person delivered? Mark Applied if zero check-ins occurred."
+    "validation": "Did you delegate and then fully leave it alone until the person delivered? Mark Applied if zero check-ins occurred.",
+    "inlineComment": "The checking isn't about quality. It's about anxiety wearing a productivity mask."
   },
   {
     "id": "40000000-0000-0000-0000-400000000003",
@@ -2643,7 +2684,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Every check-in is a vote of no confidence. Count the ballots."
   },
   {
     "id": "40000000-0000-0000-0000-400000000005",
@@ -2676,7 +2718,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Backseat driving isn't about the route. It's about who's holding the wheel."
   },
   {
     "id": "40000000-0000-0000-0000-400000000007",
@@ -2722,7 +2765,8 @@
       "timed": {
         "durationSeconds": 180
       }
-    }
+    },
+    "inlineComment": "The discomfort you feel right now? That's the bug's operating system."
   },
   {
     "id": "40000000-0000-0000-0000-400000000010",
@@ -2766,7 +2810,8 @@
       "observation": {
         "reportPrompt": "Describe what happened physically when a small plan changed. Where did the tension land? How quickly did the urge to fix it arrive?"
       }
-    }
+    },
+    "inlineComment": "Small changes reveal the pattern better than big ones. The flinch is the data."
   },
   {
     "id": "40000000-0000-0000-0000-400000000013",
@@ -2780,7 +2825,8 @@
       "observation": {
         "reportPrompt": "What specific domains or territories did you protect most fiercely this week? Where is the grip tightest?"
       }
-    }
+    },
+    "inlineComment": "Your territories aren't random. They're where the anxiety lives."
   },
   {
     "id": "40000000-0000-0000-0000-400000000014",
@@ -2863,7 +2909,8 @@
         ],
         "debrief": "Not every vacuum needs you to fill it. Sometimes the group figures it out. Sometimes they don't. Both outcomes survive."
       }
-    }
+    },
+    "inlineComment": "Group decisions are where control bugs get loud. Everyone can hear it."
   },
   {
     "id": "40000000-0000-0000-0000-400000000016",
@@ -2924,7 +2971,8 @@
     "severity": "medium",
     "interactionType": "journal",
     "prompt": "What's the worst thing that could actually happen if you stopped managing a specific thing you currently control? Not the catastrophe fantasy — the realistic outcome.",
-    "validation": "Write 2-3 sentences. Separate the real risk from the anxiety projection."
+    "validation": "Write 2-3 sentences. Separate the real risk from the anxiety projection.",
+    "inlineComment": "The catastrophe you imagine rarely matches reality. But the anxiety is real either way."
   },
   {
     "id": "40000000-0000-0000-0000-400000000019",
@@ -2965,7 +3013,8 @@
         "durationDescription": "2 hours without checking any shared workspace or group communication",
         "endTime": null
       }
-    }
+    },
+    "inlineComment": "Two hours without checking won't break anything. But it might break the pattern."
   },
   {
     "id": "40000000-0000-0000-0000-400000000022",
@@ -3006,7 +3055,8 @@
         ],
         "explanationAfter": "Delegation isn't outsourcing. It's releasing. The difference matters."
       }
-    }
+    },
+    "inlineComment": "How you delegate tells you what you trust. Usually, it's only yourself."
   },
   {
     "id": "40000000-0000-0000-0000-400000000023",
@@ -3067,7 +3117,8 @@
     "severity": "high",
     "interactionType": "reversal",
     "prompt": "Today, when someone asks how to do something, respond with: 'What do you think?' Do not follow up with instructions. Let them figure it out.",
-    "validation": "Did you redirect at least one request back to the asker without eventually providing your answer? Mark Applied if you let them find their own way."
+    "validation": "Did you redirect at least one request back to the asker without eventually providing your answer? Mark Applied if you let them find their own way.",
+    "inlineComment": "Letting them figure it out isn't negligence. It's respect."
   },
   {
     "id": "40000000-0000-0000-0000-400000000026",
@@ -3098,7 +3149,8 @@
         "triggerBehavior": "Urge to redo, adjust, or 'fix' something someone else completed",
         "replacementBehavior": "Say 'This is good enough' out loud and physically leave the area"
       }
-    }
+    },
+    "inlineComment": "Good enough is a concept the control bug doesn't recognize. Teach it."
   },
   {
     "id": "40000000-0000-0000-0000-400000000028",
@@ -3129,7 +3181,8 @@
         "predictionPrompt": "If I let the mess sit for a full day without tidying, I think I'll feel...",
         "observationPrompt": "The day is over. How did you actually feel? When was the urge strongest? Did anything bad happen?"
       }
-    }
+    },
+    "inlineComment": "The mess isn't the problem. Your reaction to the mess is the data."
   },
   {
     "id": "40000000-0000-0000-0000-400000000030",
@@ -3238,7 +3291,8 @@
           }
         ]
       }
-    }
+    },
+    "inlineComment": "Wrong doesn't mean broken. It means someone else's version. That's the hard part."
   },
   {
     "id": "50000000-0000-0000-0000-500000000001",
@@ -3291,7 +3345,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Each one-up is a tiny bid for status. The other person always notices."
   },
   {
     "id": "50000000-0000-0000-0000-500000000005",
@@ -3324,7 +3379,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Downward comparison is still comparison. You're still on the ladder."
   },
   {
     "id": "50000000-0000-0000-0000-500000000007",
@@ -3353,7 +3409,8 @@
       "timed": {
         "durationSeconds": 600
       }
-    }
+    },
+    "inlineComment": "The feed is a comparison engine. You're just the input."
   },
   {
     "id": "50000000-0000-0000-0000-500000000009",
@@ -3382,7 +3439,8 @@
       "timed": {
         "durationSeconds": 300
       }
-    }
+    },
+    "inlineComment": "Envy fills in the blanks with fiction. This exercise is about the gaps in your data."
   },
   {
     "id": "50000000-0000-0000-0000-500000000011",
@@ -3411,7 +3469,8 @@
       "observation": {
         "reportPrompt": "How many of your 'good feelings' today were relative (based on comparison) versus absolute (based on your own experience)?"
       }
-    }
+    },
+    "inlineComment": "If your self-worth requires someone else's failure, it's not self-worth."
   },
   {
     "id": "50000000-0000-0000-0000-500000000013",
@@ -3425,7 +3484,8 @@
       "observation": {
         "reportPrompt": "What were the top 3 triggers for comparison thoughts this week? Did you notice any patterns in timing or context?"
       }
-    }
+    },
+    "inlineComment": "The trigger isn't random. It's a map of your insecurities."
   },
   {
     "id": "50000000-0000-0000-0000-500000000014",
@@ -3508,7 +3568,8 @@
         ],
         "debrief": "Comparison hijacks celebration. Someone else's milestone became your performance review."
       }
-    }
+    },
+    "inlineComment": "Social gatherings are comparison tournaments. Notice your entry fee."
   },
   {
     "id": "50000000-0000-0000-0000-500000000016",
@@ -3579,7 +3640,8 @@
     "severity": "high",
     "interactionType": "journal",
     "prompt": "Write about what you think would actually change if you had exactly what the person you envy most has. Be specific. Job, money, relationship, status. Then what?",
-    "validation": "Write honestly about the 'and then what' after getting the thing you compare yourself against."
+    "validation": "Write honestly about the 'and then what' after getting the thing you compare yourself against.",
+    "inlineComment": "The fantasy is always cleaner than the reality. That's how envy works."
   },
   {
     "id": "50000000-0000-0000-0000-500000000020",
@@ -3610,7 +3672,8 @@
         "durationDescription": "Full day without asking about others' status markers",
         "endTime": null
       }
-    }
+    },
+    "inlineComment": "Status markers are data points for comparison. Cut off the supply."
   },
   {
     "id": "50000000-0000-0000-0000-500000000022",
@@ -3687,7 +3750,8 @@
         ],
         "explanationAfter": "Social media doesn't create the comparison instinct. It just gives it unlimited content."
       }
-    }
+    },
+    "inlineComment": "Knowing your fuel source is the first step to not feeding it."
   },
   {
     "id": "50000000-0000-0000-0000-500000000024",
@@ -3706,7 +3770,8 @@
     "severity": "medium",
     "interactionType": "reversal",
     "prompt": "Someone just told you about something great in their life. Your instinct is to match it with your own thing. Instead, ask them a follow-up question about theirs.",
-    "validation": "Did you follow up on their win instead of redirecting to yours? Mark Applied if yes."
+    "validation": "Did you follow up on their win instead of redirecting to yours? Mark Applied if yes.",
+    "inlineComment": "Matching stories isn't connection. It's competition wearing a social mask."
   },
   {
     "id": "50000000-0000-0000-0000-500000000026",
@@ -3737,7 +3802,8 @@
         "triggerBehavior": "Urge to one-up or match someone's story with your own",
         "replacementBehavior": "Ask a follow-up question about their experience instead"
       }
-    }
+    },
+    "inlineComment": "A genuine question costs you nothing and gives them everything."
   },
   {
     "id": "50000000-0000-0000-0000-500000000028",
@@ -3768,7 +3834,8 @@
         "predictionPrompt": "Before your next social media session: will you feel better, worse, or the same about your own life afterward?",
         "observationPrompt": "How do you actually feel after scrolling? Was your prediction accurate? If not, what surprised you?"
       }
-    }
+    },
+    "inlineComment": "You already know the answer. The question is whether you'll act on it."
   },
   {
     "id": "50000000-0000-0000-0000-500000000030",
@@ -3787,7 +3854,8 @@
     "severity": "low",
     "interactionType": "body",
     "prompt": "You just compared yourself to someone and felt the drop. Where is it? Scan from head to chest to stomach. Name the sensation: tightness, heat, sinking, hollowness.",
-    "validation": "Did you identify the physical sensation of comparison? Mark Applied if you located and named it."
+    "validation": "Did you identify the physical sensation of comparison? Mark Applied if you located and named it.",
+    "inlineComment": "The drop is real. It lives somewhere specific. Name it and it shrinks."
   },
   {
     "id": "50000000-0000-0000-0000-500000000032",
@@ -3881,7 +3949,8 @@
           }
         ]
       }
-    }
+    },
+    "inlineComment": "Interrupting the pattern is the whole game. Speed doesn't matter. Catching it does."
   },
   {
     "id": "60000000-0000-0000-0000-600000000001",
@@ -3910,7 +3979,8 @@
     "severity": "low",
     "interactionType": "standard",
     "prompt": "In your next serious conversation, resist the urge to make a joke. Stay in it. Let the silence be uncomfortable.",
-    "validation": "Did you get through a serious conversation without cracking a joke to release the tension? Mark Applied if humor stayed holstered."
+    "validation": "Did you get through a serious conversation without cracking a joke to release the tension? Mark Applied if humor stayed holstered.",
+    "inlineComment": "Humor is armor. See what's underneath when you take it off."
   },
   {
     "id": "60000000-0000-0000-0000-600000000004",
@@ -3929,7 +3999,8 @@
     "severity": "low",
     "interactionType": "standard",
     "prompt": "Someone compliments you today. Accept it. Do not deflect, minimize, or return one immediately. Just say 'Thank you.'",
-    "validation": "Did you receive a compliment without batting it away? Mark Applied if 'thank you' was the whole response."
+    "validation": "Did you receive a compliment without batting it away? Mark Applied if 'thank you' was the whole response.",
+    "inlineComment": "Deflecting a compliment isn't modesty. It's refusing to be seen."
   },
   {
     "id": "60000000-0000-0000-0000-600000000006",
@@ -3948,7 +4019,8 @@
     "severity": "high",
     "interactionType": "standard",
     "prompt": "Tell someone one thing you've been struggling with that you haven't told anyone. Not for sympathy. Just to let it exist outside your head.",
-    "validation": "Did you share something genuinely difficult with another person? Mark Applied if they heard something real."
+    "validation": "Did you share something genuinely difficult with another person? Mark Applied if they heard something real.",
+    "inlineComment": "Vulnerability isn't weakness. It's the only thing that's actually brave."
   },
   {
     "id": "60000000-0000-0000-0000-600000000008",
@@ -3991,7 +4063,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Every subject change is an escape route. Map them."
   },
   {
     "id": "60000000-0000-0000-0000-600000000011",
@@ -4024,7 +4097,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Analyzing a feeling is not the same as feeling it. The brain knows the difference."
   },
   {
     "id": "60000000-0000-0000-0000-600000000013",
@@ -4070,7 +4144,8 @@
       "timed": {
         "durationSeconds": 180
       }
-    }
+    },
+    "inlineComment": "The question isn't hard. Sitting with it is."
   },
   {
     "id": "60000000-0000-0000-0000-600000000016",
@@ -4099,7 +4174,8 @@
       "timed": {
         "durationSeconds": 300
       }
-    }
+    },
+    "inlineComment": "Most people can name five emotions. You have more than five. Find them."
   },
   {
     "id": "60000000-0000-0000-0000-600000000018",
@@ -4128,7 +4204,8 @@
       "observation": {
         "reportPrompt": "What emotion or thought was present in the moment before each joke landed? Was there a pattern?"
       }
-    }
+    },
+    "inlineComment": "The joke is a redirect. What was the original destination?"
   },
   {
     "id": "60000000-0000-0000-0000-600000000020",
@@ -4226,7 +4303,8 @@
         ],
         "debrief": "Being seen is the thing the deflector wants most and tolerates least."
       }
-    }
+    },
+    "inlineComment": "The way you handle praise says everything about what you believe you deserve."
   },
   {
     "id": "60000000-0000-0000-0000-600000000023",
@@ -4281,7 +4359,8 @@
     "severity": "medium",
     "interactionType": "journal",
     "prompt": "Describe your day today -- but only the emotional truth. Not what happened. How it felt. No events, no plot, just the weather inside.",
-    "validation": "Write 2-3 sentences using emotion words, not event descriptions. 'Anxious' counts. 'Had a meeting' doesn't."
+    "validation": "Write 2-3 sentences using emotion words, not event descriptions. 'Anxious' counts. 'Had a meeting' doesn't.",
+    "inlineComment": "Events are easy. Feelings are the part you skip. That's why this works."
   },
   {
     "id": "60000000-0000-0000-0000-600000000026",
@@ -4322,7 +4401,8 @@
         "durationDescription": "Full day without 'I'm fine', 'All good', or any equivalent deflection response",
         "endTime": null
       }
-    }
+    },
+    "inlineComment": "'I'm fine' is a locked door. Try leaving it open today."
   },
   {
     "id": "60000000-0000-0000-0000-600000000029",
@@ -4363,7 +4443,8 @@
         ],
         "explanationAfter": "Everyone has a deflection signature. Knowing yours is the first step to catching it in action."
       }
-    }
+    },
+    "inlineComment": "Everyone deflects differently. Knowing your style is half the fix."
   },
   {
     "id": "60000000-0000-0000-0000-600000000030",
@@ -4446,7 +4527,8 @@
         "triggerBehavior": "About to crack a joke to escape an emotional moment",
         "replacementBehavior": "Say one honest sentence about what you're actually feeling"
       }
-    }
+    },
+    "inlineComment": "The real thing is one sentence. The joke takes more effort. Notice that."
   },
   {
     "id": "60000000-0000-0000-0000-600000000034",
@@ -4555,7 +4637,8 @@
     "severity": "medium",
     "interactionType": "standard",
     "prompt": "Tell a story about your day that doesn't cast you as the hero or the victim.",
-    "validation": "Did you tell someone about your day without being the protagonist? Mark Applied if you managed it."
+    "validation": "Did you tell someone about your day without being the protagonist? Mark Applied if you managed it.",
+    "inlineComment": "Every story has a narrator. Notice when the narrator is also the protagonist."
   },
   {
     "id": "70000000-0000-0000-0000-700000000003",
@@ -4574,7 +4657,8 @@
     "severity": "low",
     "interactionType": "standard",
     "prompt": "The next time you catch yourself rehearsing an argument in your head, stop. Take three breaths. Let the script dissolve.",
-    "validation": "Did you catch at least one mental rehearsal and interrupt it? Mark Applied if you stopped the replay."
+    "validation": "Did you catch at least one mental rehearsal and interrupt it? Mark Applied if you stopped the replay.",
+    "inlineComment": "The rehearsal is the ego's dress rehearsal. The show doesn't need to happen."
   },
   {
     "id": "70000000-0000-0000-0000-700000000005",
@@ -4593,7 +4677,8 @@
     "severity": "high",
     "interactionType": "standard",
     "prompt": "Go this entire day without telling anyone about anything bad that happened. No grievances, no venting, no 'you won't believe what happened.'",
-    "validation": "Did you make it through the day without airing a single grievance? Mark Applied if you did."
+    "validation": "Did you make it through the day without airing a single grievance? Mark Applied if you did.",
+    "inlineComment": "The grievance wants an audience. Deny it one and see what happens."
   },
   {
     "id": "70000000-0000-0000-0000-700000000007",
@@ -4612,7 +4697,8 @@
     "severity": "medium",
     "interactionType": "standard",
     "prompt": "You're about to tell someone a complaint story you've already told someone else. Don't. Ask them something about their life instead.",
-    "validation": "Did you redirect the conversation away from your rehearsed story? Mark Applied if you asked instead of told."
+    "validation": "Did you redirect the conversation away from your rehearsed story? Mark Applied if you asked instead of told.",
+    "inlineComment": "Repeat broadcasts aren't about sharing. They're about keeping the story alive."
   },
   {
     "id": "70000000-0000-0000-0000-700000000009",
@@ -4662,7 +4748,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "Each rehearsal is a conversation that hasn't happened and probably won't. Count the ghost arguments."
   },
   {
     "id": "70000000-0000-0000-0000-700000000012",
@@ -4695,7 +4782,8 @@
         "minTarget": null,
         "maxTarget": null
       }
-    }
+    },
+    "inlineComment": "The urge to narrate is the urge to make experience mean something. Sometimes it just is."
   },
   {
     "id": "70000000-0000-0000-0000-700000000014",
@@ -4739,7 +4827,8 @@
       "timed": {
         "durationSeconds": 120
       }
-    }
+    },
+    "inlineComment": "The replay adds nothing new. It's the ego's screensaver."
   },
   {
     "id": "70000000-0000-0000-0000-700000000017",
@@ -4798,7 +4887,8 @@
       "observation": {
         "reportPrompt": "Who is the imaginary audience for your self-stories? What reaction were you hoping for?"
       }
-    }
+    },
+    "inlineComment": "The audience changes the story. Notice which version is closest to true."
   },
   {
     "id": "70000000-0000-0000-0000-700000000021",
@@ -4881,7 +4971,8 @@
         ],
         "debrief": "Each retelling adds a layer of polish. The original event stopped mattering somewhere around telling number two."
       }
-    }
+    },
+    "inlineComment": "If you've told the same story to three people, it's not a story anymore. It's a campaign."
   },
   {
     "id": "70000000-0000-0000-0000-700000000023",
@@ -4952,7 +5043,8 @@
     "severity": "medium",
     "interactionType": "journal",
     "prompt": "Write down the story you tell yourself most often about who you are. Now write who you'd be without that story.",
-    "validation": "Write both versions honestly. The gap between them is where the narrator lives."
+    "validation": "Write both versions honestly. The gap between them is where the narrator lives.",
+    "inlineComment": "Identity stories are comfortable. That doesn't make them accurate."
   },
   {
     "id": "70000000-0000-0000-0000-700000000027",
@@ -4983,7 +5075,8 @@
         "durationDescription": "Full day, no venting",
         "endTime": null
       }
-    }
+    },
+    "inlineComment": "Venting feels like release. It's actually rehearsal. The pattern deepens each time."
   },
   {
     "id": "70000000-0000-0000-0000-700000000029",
@@ -5066,7 +5159,8 @@
         ],
         "explanationAfter": "The number of ready-to-tell grievances is a measure of the narrator's inventory."
       }
-    }
+    },
+    "inlineComment": "Your grievance inventory is a map of where you feel powerless. Read it that way."
   },
   {
     "id": "70000000-0000-0000-0000-700000000031",
@@ -5085,7 +5179,8 @@
     "severity": "medium",
     "interactionType": "reversal",
     "prompt": "You're about to narrate a frustrating experience. Instead, describe what you're grateful for in this moment. Say it out loud or write it down.",
-    "validation": "Did you swap the grievance narrative for a present-tense observation? Mark Applied if you made the switch."
+    "validation": "Did you swap the grievance narrative for a present-tense observation? Mark Applied if you made the switch.",
+    "inlineComment": "Gratitude isn't the point. Interrupting the narrative loop is."
   },
   {
     "id": "70000000-0000-0000-0000-700000000033",
@@ -5132,7 +5227,8 @@
         "predictionPrompt": "Who is my go-to audience for complaint stories?",
         "observationPrompt": "Was I right? Did I seek that person out to narrate to?"
       }
-    }
+    },
+    "inlineComment": "You already know the audience. The question is why they're the audience."
   },
   {
     "id": "70000000-0000-0000-0000-700000000036",
@@ -5162,7 +5258,8 @@
           }
         ]
       }
-    }
+    },
+    "inlineComment": "Catching the replay mid-loop is the skill. Everything else is just practice."
   },
   {
     "id": "70000000-0000-0000-0000-700000000037",

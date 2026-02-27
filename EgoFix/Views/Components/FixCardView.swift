@@ -27,9 +27,9 @@ struct FixCardView: View {
                     }
                 }
 
-                // Bug name + severity as comment
+                // Bug nickname + severity as comment
                 if let bugTitle = bugTitle {
-                    Text("// \(bugSlug(bugTitle)) \u{00B7} \(severityLabel)")
+                    Text("// \(bugTitle) \u{00B7} \(severityLabel)")
                         .font(.system(.caption2, design: .monospaced))
                         .foregroundColor(.gray.opacity(0.6))
                 }
@@ -101,11 +101,6 @@ struct FixCardView: View {
     private var fixNumber: String {
         let hash = abs(fix.id.hashValue)
         return String(format: "%04d", hash % 10000)
-    }
-
-    /// Convert "Need to be right" → "the-corrector" style slug display
-    private func bugSlug(_ title: String) -> String {
-        title.lowercased().replacingOccurrences(of: " ", with: "-")
     }
 
     private var severityLabel: String {

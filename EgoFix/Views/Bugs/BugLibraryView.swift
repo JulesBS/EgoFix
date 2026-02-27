@@ -14,7 +14,9 @@ struct BugLibraryView: View {
                 Color.black.ignoresSafeArea()
 
                 if viewModel.isLoading {
-                    ProgressView().tint(.green)
+                    Text("> loading...")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.gray)
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
@@ -53,7 +55,7 @@ struct BugLibraryView: View {
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("// All known ego patterns")
+            Text("// \(viewModel.activeBugCount) active, \(viewModel.bugs.count) identified")
                 .font(.system(.caption, design: .monospaced))
                 .foregroundColor(.gray.opacity(0.6))
         }

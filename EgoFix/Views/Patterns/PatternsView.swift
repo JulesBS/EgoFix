@@ -12,8 +12,9 @@ struct PatternsView: View {
             Color.black.ignoresSafeArea()
 
             if viewModel.isLoading {
-                ProgressView()
-                    .tint(.green)
+                Text("> loading...")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.gray)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
@@ -55,9 +56,19 @@ struct PatternsView: View {
                 .font(.system(.headline, design: .monospaced))
                 .foregroundColor(.white)
 
-            Text("// \(viewModel.allPatterns.count) total")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.5))
+            if viewModel.allPatterns.isEmpty {
+                Text("// Patterns emerge from data. Keep logging.")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.gray.opacity(0.5))
+            } else if viewModel.patterns.isEmpty && !viewModel.allPatterns.isEmpty {
+                Text("// All caught up. The app is still watching.")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.gray.opacity(0.5))
+            } else {
+                Text("// The app noticed \(viewModel.allPatterns.count) \(viewModel.allPatterns.count == 1 ? "thing" : "things").")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.gray.opacity(0.5))
+            }
         }
         .padding(.horizontal)
     }
@@ -125,13 +136,9 @@ struct PatternsView: View {
 
     private var emptyState: some View {
         VStack(spacing: 8) {
-            Text("// No patterns yet")
+            Text("// Patterns emerge from data. Keep logging.")
                 .font(.system(.body, design: .monospaced))
                 .foregroundColor(.gray.opacity(0.6))
-
-            Text("// They emerge from data")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.4))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
