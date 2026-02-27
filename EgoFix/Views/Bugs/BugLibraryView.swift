@@ -101,7 +101,7 @@ struct BugLibraryRowView: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             // ASCII art (compact)
-            BugASCIIArtView(slug: bug.slug)
+            BugSoulView(slug: bug.slug, intensity: .present, size: .small)
                 .frame(width: 70)
 
             // Bug info

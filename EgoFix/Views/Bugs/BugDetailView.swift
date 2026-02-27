@@ -61,7 +61,7 @@ struct BugDetailView: View {
 
                 Spacer()
 
-                BugASCIIArtView(slug: bug.slug)
+                BugSoulView(slug: bug.slug, intensity: .present, size: .medium)
             }
         }
     }

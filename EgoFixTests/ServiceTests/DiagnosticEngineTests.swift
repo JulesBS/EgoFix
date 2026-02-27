@@ -106,9 +106,9 @@ final class DiagnosticEngineTests: XCTestCase {
             id: bugId,
             slug: "test-bug",
             title: "Test Bug",
-            bugDescription: "A test bug",
-            status: .active,
-            isActive: true
+            description: "A test bug",
+            isActive: true,
+            status: .active
         )
         try await bugRepo.save(bug)
 

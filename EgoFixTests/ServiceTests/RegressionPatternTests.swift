@@ -25,9 +25,8 @@ final class RegressionPatternTests: XCTestCase {
             id: bugId,
             slug: "need-to-control",
             title: "Need to control",
-            bugDescription: "A test bug",
-            status: .resolved,
-            isActive: false
+            description: "A test bug",
+            status: .resolved
         )
         bug.stableAt = Calendar.current.date(byAdding: .weekOfYear, value: -6, to: Date())
         try await bugRepo.save(bug)
@@ -38,10 +37,9 @@ final class RegressionPatternTests: XCTestCase {
             let crash = Crash(
                 userId: userId,
                 bugId: bugId,
-                situation: "Test situation",
-                trigger: "Test trigger"
+                note: "Test situation",
+                crashedAt: crashDate
             )
-            crash.crashedAt = crashDate
             try await crashRepo.save(crash)
         }
 
@@ -76,9 +74,8 @@ final class RegressionPatternTests: XCTestCase {
             id: bugId,
             slug: "need-to-control",
             title: "Need to control",
-            bugDescription: "A test bug",
-            status: .resolved,
-            isActive: false
+            description: "A test bug",
+            status: .resolved
         )
         try await bugRepo.save(bug)
 
@@ -88,10 +85,9 @@ final class RegressionPatternTests: XCTestCase {
             let crash = Crash(
                 userId: userId,
                 bugId: bugId,
-                situation: "Test situation",
-                trigger: "Test trigger"
+                note: "Test situation",
+                crashedAt: crashDate
             )
-            crash.crashedAt = crashDate
             try await crashRepo.save(crash)
         }
 

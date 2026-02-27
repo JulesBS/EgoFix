@@ -7,6 +7,7 @@ enum TodayViewState {
     case noFix
     case fixAvailable(FixCompletion, Fix)
     case completed(FixOutcome, String?)  // outcome + optional micro-education tidbit
+    case doneForToday                    // resting state after outcome
     case pattern(DetectedPattern)
 }
 
@@ -37,9 +38,22 @@ final class TodayViewModel: ObservableObject {
     @Published var currentFix: Fix?
     @Published var currentCompletion: FixCompletion?
     @Published var currentBugTitle: String?
+    @Published var currentBugSlug: String?
     @Published private(set) var interactionManager: FixInteractionManager
     @Published var showWeeklyDiagnostic = false
     @Published var weeklySummary: WeeklySummaryData?
+
+    // Header data
+    @Published var currentVersion: String = "1.0"
+    @Published var currentStreak: Int = 0
+    @Published var currentIntensity: BugIntensity = .present
+
+    // Status line — set once per session
+    @Published var statusLine: String = "// System initializing..."
+
+    // Done-for-today state
+    @Published var lastOutcome: FixOutcome?
+    @Published var doneStatusLine: String = ""
 
     private let dailyFixService: DailyFixService
     private let fixRepository: FixRepository
@@ -49,9 +63,11 @@ final class TodayViewModel: ObservableObject {
     private let microEducationService: MicroEducationService
     private let streakService: StreakService
     private let userRepository: UserRepository
+    private let versionService: VersionService
     private let weeklyDiagnosticService: WeeklyDiagnosticService?
     private let fixCompletionRepository: FixCompletionRepository?
     private let diagnosticEngine: DiagnosticEngine?
+    private let bugIntensityProvider: BugIntensityProvider?
     private let sharedStorage = SharedStorageManager.shared
 
     init(
@@ -63,9 +79,11 @@ final class TodayViewModel: ObservableObject {
         microEducationService: MicroEducationService,
         streakService: StreakService,
         userRepository: UserRepository,
+        versionService: VersionService,
         weeklyDiagnosticService: WeeklyDiagnosticService? = nil,
         fixCompletionRepository: FixCompletionRepository? = nil,
-        diagnosticEngine: DiagnosticEngine? = nil
+        diagnosticEngine: DiagnosticEngine? = nil,
+        bugIntensityProvider: BugIntensityProvider? = nil
     ) {
         self.dailyFixService = dailyFixService
         self.fixRepository = fixRepository
@@ -75,10 +93,61 @@ final class TodayViewModel: ObservableObject {
         self.microEducationService = microEducationService
         self.streakService = streakService
         self.userRepository = userRepository
+        self.versionService = versionService
         self.weeklyDiagnosticService = weeklyDiagnosticService
         self.fixCompletionRepository = fixCompletionRepository
         self.diagnosticEngine = diagnosticEngine
+        self.bugIntensityProvider = bugIntensityProvider
         self.interactionManager = FixInteractionManager(timerService: timerService)
+    }
+
+    // MARK: - Header Data Loading
+
+    /// Load version, streak, and intensity on appear.
+    func loadHeaderData() async {
+        do {
+            // Version
+            currentVersion = (try? await versionService.getCurrentVersion()) ?? "1.0"
+
+            // Streak
+            if let user = try await userRepository.get() {
+                if let info = try? await streakService.getStreakInfo(userId: user.id) {
+                    currentStreak = info.currentStreak
+                }
+
+                // Intensity for primary bug
+                if let priorities = user.bugPriorities.first,
+                   let provider = bugIntensityProvider {
+                    let bugId = priorities.bugId
+                    currentIntensity = (try? await provider.currentIntensity(for: bugId, userId: user.id)) ?? .present
+
+                    // Also fetch slug and title for soul + status line
+                    if let bug = try? await bugRepository.getById(bugId) {
+                        currentBugSlug = bug.slug
+                        if currentBugTitle == nil {
+                            currentBugTitle = bug.title
+                        }
+                    }
+                }
+            }
+
+            // Status line — pick once per session
+            let context: StatusLineProvider.StatusContext
+            if currentStreak == 0 {
+                context = .firstDay
+            } else if currentStreak >= 7 {
+                context = .longStreak(currentStreak)
+            } else {
+                context = .normal
+            }
+            statusLine = StatusLineProvider.line(
+                for: currentIntensity,
+                bugTitle: currentBugTitle ?? "The pattern",
+                context: context
+            )
+        } catch {
+            // Use defaults
+        }
     }
 
     // MARK: - Widget Sync
@@ -112,6 +181,8 @@ final class TodayViewModel: ObservableObject {
             )
         }
     }
+
+    // MARK: - Weekly Diagnostic
 
     func checkWeeklyDiagnostic() async {
         guard let service = weeklyDiagnosticService else { return }
@@ -188,6 +259,8 @@ final class TodayViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Fix Loading
+
     func loadTodaysFix() async {
         state = .loading
         interactionManager.reset()
@@ -204,6 +277,20 @@ final class TodayViewModel: ObservableObject {
 
             // Try to get existing fix for today
             if let completion = try await dailyFixService.getTodaysFix() {
+                // If already completed, go to done state
+                if completion.outcome != .pending {
+                    currentCompletion = completion
+                    if let fix = try await fixRepository.getById(completion.fixId) {
+                        currentFix = fix
+                        currentBugTitle = await fetchBugTitle(for: fix.bugId)
+                    }
+                    lastOutcome = completion.outcome
+                    doneStatusLine = doneStatusMessage(for: completion.outcome)
+                    weeklySummary = await calculateWeeklySummary()
+                    state = .doneForToday
+                    return
+                }
+
                 if let fix = try await fixRepository.getById(completion.fixId) {
                     currentCompletion = completion
                     currentFix = fix
@@ -237,6 +324,8 @@ final class TodayViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Outcome
+
     func markOutcome(_ outcome: FixOutcome) async {
         guard let completion = currentCompletion else { return }
 
@@ -248,6 +337,16 @@ final class TodayViewModel: ObservableObject {
             // Record streak engagement
             if let user = try? await userRepository.get() {
                 try? await streakService.recordEngagement(userId: user.id)
+            }
+
+            // Check version increment
+            _ = try? await versionService.checkAndIncrementVersion()
+            currentVersion = (try? await versionService.getCurrentVersion()) ?? currentVersion
+
+            // Refresh streak
+            if let user = try? await userRepository.get(),
+               let info = try? await streakService.getStreakInfo(userId: user.id) {
+                currentStreak = info.currentStreak
             }
 
             // Fetch micro-education tidbit
@@ -266,16 +365,29 @@ final class TodayViewModel: ObservableObject {
             }
 
             state = .completed(outcome, tidbitText)
+            lastOutcome = outcome
             sharedStorage.updateCompleted(outcome: outcome)
 
             // Check for pattern to show after fix
             if let pattern = try await patternSurfacingService.shouldShowPatternAfterFix() {
                 state = .pattern(pattern)
+                return
             }
+
+            // Prepare done state data for auto-transition
+            doneStatusLine = doneStatusMessage(for: outcome)
+            weeklySummary = await calculateWeeklySummary()
         } catch {
             // Handle error silently - state remains unchanged
         }
     }
+
+    /// Called by the view after the completion animation finishes.
+    func transitionToDone() {
+        state = .doneForToday
+    }
+
+    // MARK: - Pattern Handling
 
     func dismissPattern(_ patternId: UUID) async {
         do {
@@ -295,8 +407,19 @@ final class TodayViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Helpers
+
     private func fetchBugTitle(for bugId: UUID) async -> String? {
         guard let bug = try? await bugRepository.getById(bugId) else { return nil }
         return bug.title
+    }
+
+    private func doneStatusMessage(for outcome: FixOutcome) -> String {
+        switch outcome {
+        case .applied: return "// Fix applied. System stable."
+        case .skipped: return "// Fix skipped. No judgment."
+        case .failed: return "// Fix failed. Data logged."
+        case .pending: return "// Standing by."
+        }
     }
 }

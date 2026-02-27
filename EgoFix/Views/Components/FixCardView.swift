@@ -7,53 +7,36 @@ struct FixCardView: View {
     let onApplied: () -> Void
     let onSkipped: () -> Void
     let onFailed: () -> Void
-    var onShare: (() -> Void)?
 
     @State private var appeared = false
-    @State private var showValidation = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header (FIXED - always visible at top)
+            // Header
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top) {
                     Text("FIX #\(fixNumber)")
                         .font(.system(.caption, design: .monospaced))
                         .foregroundColor(.gray)
 
-                    // Share button
-                    if let onShare = onShare {
-                        Button(action: onShare) {
-                            Text("[ share ]")
-                                .font(.system(.caption2, design: .monospaced))
-                                .foregroundColor(.gray.opacity(0.6))
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .padding(.leading, 8)
-                    }
-
                     Spacer()
 
                     // Show compact timer status in header when timer is running/paused
                     if fix.interactionType == .timed && (interactionManager.isTimerRunning || interactionManager.isTimerPaused) {
                         CompactInteractionTimerView(interactionManager: interactionManager)
-                    } else {
-                        Text("Severity: \(severityLabel)")
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(severityColor)
                     }
                 }
 
-                // Bug badge
+                // Bug name + severity as comment
                 if let bugTitle = bugTitle {
-                    Text("// \(bugTitle)")
+                    Text("// \(bugSlug(bugTitle)) \u{00B7} \(severityLabel)")
                         .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(.red.opacity(0.7))
+                        .foregroundColor(.gray.opacity(0.6))
                 }
             }
             .padding(.bottom, 24)
 
-            // Scrollable content area
+            // Content area
             ScrollView(.vertical, showsIndicators: true) {
                 VStack(alignment: .leading, spacing: 0) {
                     // Prompt (only for standard type, others show in interaction view)
@@ -71,79 +54,27 @@ struct FixCardView: View {
                             .padding(.bottom, 16)
                     }
 
-                    // Validation criteria (for standard type only - others handle in interaction view)
-                    if fix.interactionType == .standard {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Button(action: { withAnimation(.easeInOut(duration: 0.2)) { showValidation.toggle() } }) {
-                                HStack(spacing: 6) {
-                                    Text(showValidation ? "▼" : "▶")
-                                        .font(.system(.caption2, design: .monospaced))
-                                        .foregroundColor(.green)
-                                        .frame(width: 12)
-
-                                    Text("VALIDATION")
-                                        .font(.system(.caption2, design: .monospaced))
-                                        .foregroundColor(.green)
-                                }
-                            }
-                            .buttonStyle(PlainButtonStyle())
-
-                            if showValidation {
-                                Text(fix.validation)
-                                    .font(.system(.subheadline, design: .monospaced))
-                                    .foregroundColor(Color(white: 0.6))
-                                    .lineSpacing(4)
-                                    .padding(.leading, 18)
-                                    .padding(.top, 4)
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
-                            }
-                        }
-                        .padding(.bottom, 16)
-
-                        // Inline comment (for standard type only)
-                        if let comment = fix.inlineComment {
-                            Text("// \(comment)")
-                                .font(.system(.caption, design: .monospaced))
-                                .foregroundColor(Color(white: 0.35))
-                                .italic()
-                                .lineSpacing(4)
-                                .padding(.bottom, 16)
-                        }
+                    // Inline comment — always visible
+                    if let comment = fix.inlineComment {
+                        Text("// \(comment)")
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(Color(white: 0.35))
+                            .italic()
+                            .lineSpacing(4)
+                            .padding(.bottom, 16)
                     }
                 }
             }
 
             Spacer(minLength: 16)
 
-            // Type indicator (FIXED - always visible at bottom)
-            HStack {
-                Text(typeLabel)
+            // Completion requirement
+            if !interactionManager.canMarkApplied && !completionRequirementText.isEmpty {
+                Text("// \(completionRequirementText)")
                     .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(typeColor)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(typeColor.opacity(0.1))
-                    .cornerRadius(2)
-
-                // Interaction type badge
-                Text(interactionTypeLabel)
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(interactionTypeColor)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(interactionTypeColor.opacity(0.1))
-                    .cornerRadius(2)
-
-                Spacer()
-
-                // Completion requirement indicator
-                if !interactionManager.canMarkApplied {
-                    Text("// \(completionRequirementText)")
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(Color(white: 0.35))
-                }
+                    .foregroundColor(Color(white: 0.35))
+                    .padding(.bottom, 16)
             }
-            .padding(.bottom, 24)
 
             // Action buttons
             HStack(spacing: 16) {
@@ -157,7 +88,7 @@ struct FixCardView: View {
                 ActionButton(label: "Fail", color: .red, action: onFailed)
             }
         }
-        .padding(24)
+        .padding(.vertical, 8)
         .opacity(appeared ? 1 : 0)
         .offset(y: appeared ? 0 : 20)
         .onAppear {
@@ -168,89 +99,30 @@ struct FixCardView: View {
     }
 
     private var fixNumber: String {
-        // Generate a consistent 4-digit number from UUID
         let hash = abs(fix.id.hashValue)
         return String(format: "%04d", hash % 10000)
     }
 
+    /// Convert "Need to be right" → "the-corrector" style slug display
+    private func bugSlug(_ title: String) -> String {
+        title.lowercased().replacingOccurrences(of: " ", with: "-")
+    }
+
     private var severityLabel: String {
         switch fix.severity {
-        case .low: return "Low"
-        case .medium: return "Medium"
-        case .high: return "High"
-        }
-    }
-
-    private var severityColor: Color {
-        switch fix.severity {
-        case .low: return Color(white: 0.5)
-        case .medium: return Color(red: 1.0, green: 0.85, blue: 0.3) // Warmer, brighter yellow
-        case .high: return .red
-        }
-    }
-
-    private var typeLabel: String {
-        switch fix.type {
-        case .daily: return "DAILY"
-        case .weekly: return "WEEKLY"
-        case .quickFix: return "QUICK FIX"
-        }
-    }
-
-    private var typeColor: Color {
-        switch fix.type {
-        case .daily: return .blue
-        case .weekly: return .purple
-        case .quickFix: return .orange
-        }
-    }
-
-    private var interactionTypeLabel: String {
-        switch fix.interactionType {
-        case .standard: return "STANDARD"
-        case .timed: return "TIMED"
-        case .multiStep: return "MULTI-STEP"
-        case .quiz: return "QUIZ"
-        case .scenario: return "SCENARIO"
-        case .counter: return "COUNTER"
-        case .observation: return "OBSERVATION"
-        case .abstain: return "ABSTAIN"
-        case .substitute: return "SUBSTITUTE"
-        case .journal: return "JOURNAL"
-        case .reversal: return "REVERSAL"
-        case .predict: return "PREDICT"
-        case .body: return "BODY"
-        case .audit: return "AUDIT"
-        }
-    }
-
-    private var interactionTypeColor: Color {
-        switch fix.interactionType {
-        case .standard: return Color(white: 0.5)
-        case .timed: return .cyan
-        case .multiStep: return .mint
-        case .quiz: return .indigo
-        case .scenario: return .pink
-        case .counter: return .teal
-        case .observation: return .yellow
-        case .abstain: return .red
-        case .substitute: return .orange
-        case .journal: return .blue
-        case .reversal: return .purple
-        case .predict: return .green
-        case .body: return .mint
-        case .audit: return .gray
+        case .low: return "low"
+        case .medium: return "medium"
+        case .high: return "high"
         }
     }
 
     private var completionRequirementText: String {
         switch fix.interactionType {
-        case .standard, .reversal, .body: return ""
+        case .standard, .reversal, .body, .counter: return ""
         case .timed: return "Timer required"
         case .multiStep: return "Complete all steps"
         case .quiz: return "Select an answer"
         case .scenario: return "Choose your response"
-        case .counter: return ""
         case .observation: return "Report your observation"
         case .abstain: return "Mark when period ends"
         case .substitute: return "Track substitutions"
