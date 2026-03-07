@@ -189,6 +189,44 @@ struct TodayView: View {
         case .noFix:
             NoFixView()
 
+        case .fixBriefing(_, let fix):
+            FixBriefingView(
+                fix: fix,
+                bugTitle: viewModel.currentBugTitle,
+                onAccept: { Task { await viewModel.acceptFix() } },
+                onSkip: { Task { await viewModel.markOutcome(.skipped) } }
+            )
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+
+        case .fixEducation(_, let fix, let education):
+            FixEducationView(
+                fix: fix,
+                bugTitle: viewModel.currentBugTitle,
+                educationBody: education,
+                onContinue: { viewModel.continuePastEducation() }
+            )
+            .transition(.opacity)
+
+        case .fixActive(_, let fix):
+            FixActiveView(
+                fix: fix,
+                bugTitle: viewModel.currentBugTitle,
+                onCheckIn: { viewModel.beginCheckIn() },
+                onCrash: { showCrash = true }
+            )
+            .transition(.opacity)
+
+        case .checkIn(_, let fix):
+            CheckInView(
+                fix: fix,
+                bugTitle: viewModel.currentBugTitle,
+                interactionManager: viewModel.interactionManager,
+                onApplied: { Task { await viewModel.markOutcome(.applied) } },
+                onSkipped: { Task { await viewModel.markOutcome(.skipped) } },
+                onFailed: { Task { await viewModel.markOutcome(.failed) } }
+            )
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+
         case .fixAvailable(_, let fix):
             FixCardView(
                 fix: fix,
@@ -207,6 +245,13 @@ struct TodayView: View {
                 onAnimationComplete: {
                     viewModel.transitionToDone()
                 }
+            )
+            .transition(.opacity)
+
+        case .debrief(let content):
+            DebriefView(
+                content: content,
+                onDismiss: { viewModel.dismissDebrief() }
             )
             .transition(.opacity)
 
@@ -299,7 +344,7 @@ struct TodayView: View {
                     }
                 } else {
                     // Intensity question
-                    Text("This week, \(current.bug.nickname) felt...")
+                    Text("This week, \(current.bug.slug) was...")
                         .font(.system(.body, design: .monospaced))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)

@@ -17,12 +17,23 @@ public struct EgoFixWidgetAttributes: ActivityAttributes {
         public var isPaused: Bool
         public var remainingSeconds: Int
         public var progress: Double
+        public var isFixMode: Bool
+        public var fixAcceptedAt: Date?
 
-        public init(timerEndDate: Date, isPaused: Bool, remainingSeconds: Int, progress: Double) {
+        public init(
+            timerEndDate: Date,
+            isPaused: Bool,
+            remainingSeconds: Int,
+            progress: Double,
+            isFixMode: Bool = false,
+            fixAcceptedAt: Date? = nil
+        ) {
             self.timerEndDate = timerEndDate
             self.isPaused = isPaused
             self.remainingSeconds = remainingSeconds
             self.progress = progress
+            self.isFixMode = isFixMode
+            self.fixAcceptedAt = fixAcceptedAt
         }
     }
 

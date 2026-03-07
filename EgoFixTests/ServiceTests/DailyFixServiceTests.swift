@@ -123,4 +123,50 @@ final class DailyFixServiceTests: XCTestCase {
         let result = try await service.getTodaysFix()
         XCTAssertNil(result)
     }
+
+    // MARK: - Complexity Progression
+
+    func test_maxComplexity_week1_returns2() {
+        XCTAssertEqual(DailyFixService.maxComplexity(forCompletedFixes: 0), 2)
+        XCTAssertEqual(DailyFixService.maxComplexity(forCompletedFixes: 6), 2)
+    }
+
+    func test_maxComplexity_week2to3_returns3() {
+        XCTAssertEqual(DailyFixService.maxComplexity(forCompletedFixes: 7), 3)
+        XCTAssertEqual(DailyFixService.maxComplexity(forCompletedFixes: 20), 3)
+    }
+
+    func test_maxComplexity_week4to6_returns4() {
+        XCTAssertEqual(DailyFixService.maxComplexity(forCompletedFixes: 21), 4)
+        XCTAssertEqual(DailyFixService.maxComplexity(forCompletedFixes: 41), 4)
+    }
+
+    func test_maxComplexity_week7plus_returns5() {
+        XCTAssertEqual(DailyFixService.maxComplexity(forCompletedFixes: 42), 5)
+        XCTAssertEqual(DailyFixService.maxComplexity(forCompletedFixes: 100), 5)
+    }
+
+    // MARK: - Fix Complexity Values
+
+    func test_Fix_complexity_simpleTypesAre1or2() {
+        let standard = Fix(bugId: UUID(), type: .daily, severity: .low, interactionType: .standard, prompt: "t", validation: "v")
+        let counter = Fix(bugId: UUID(), type: .daily, severity: .low, interactionType: .counter, prompt: "t", validation: "v")
+        let abstain = Fix(bugId: UUID(), type: .daily, severity: .low, interactionType: .abstain, prompt: "t", validation: "v")
+        let observation = Fix(bugId: UUID(), type: .daily, severity: .low, interactionType: .observation, prompt: "t", validation: "v")
+
+        XCTAssertEqual(standard.complexity, 1)
+        XCTAssertEqual(counter.complexity, 1)
+        XCTAssertEqual(abstain.complexity, 2)
+        XCTAssertEqual(observation.complexity, 2)
+    }
+
+    func test_Fix_complexity_advancedTypesAre4or5() {
+        let scenario = Fix(bugId: UUID(), type: .daily, severity: .low, interactionType: .scenario, prompt: "t", validation: "v")
+        let multiStep = Fix(bugId: UUID(), type: .daily, severity: .low, interactionType: .multiStep, prompt: "t", validation: "v")
+        let audit = Fix(bugId: UUID(), type: .daily, severity: .low, interactionType: .audit, prompt: "t", validation: "v")
+
+        XCTAssertEqual(scenario.complexity, 4)
+        XCTAssertEqual(multiStep.complexity, 4)
+        XCTAssertEqual(audit.complexity, 5)
+    }
 }

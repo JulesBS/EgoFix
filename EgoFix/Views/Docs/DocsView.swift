@@ -53,7 +53,7 @@ struct DocsView: View {
 
                     DocSectionView(
                         title: "What is a Fix?",
-                        content: "A fix is a daily micro-mission designed to interrupt the pattern. Not therapy. Not journaling. Just one small, specific action that creates a moment of awareness."
+                        content: "A fix is a daily micro-challenge designed to interrupt the pattern. Not therapy. Not journaling. Just one small, specific action that creates a moment of awareness."
                     )
 
                     DocSectionView(

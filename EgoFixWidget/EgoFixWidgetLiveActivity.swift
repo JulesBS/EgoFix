@@ -57,46 +57,69 @@ struct LockScreenLiveActivityView: View {
     let context: ActivityViewContext<EgoFixWidgetAttributes>
 
     var body: some View {
-        HStack(spacing: 16) {
-            // Left: Fix info
-            VStack(alignment: .leading, spacing: 4) {
-                Text("FIX #\(context.attributes.fixNumber)")
+        if context.state.isFixMode {
+            // Fix mode: show fix prompt prominently, no timer
+            HStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("EGOFIX #\(context.attributes.fixNumber)")
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.green)
+
+                    Text(context.attributes.fixPrompt)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.white)
+                        .lineLimit(2)
+                }
+
+                Spacer()
+
+                Text("ACTIVE")
                     .font(.system(.caption2, design: .monospaced))
+                    .fontWeight(.bold)
                     .foregroundColor(.green)
-
-                Text(context.attributes.fixPrompt)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.white)
-                    .lineLimit(2)
             }
-
-            Spacer()
-
-            // Right: Timer
-            VStack(alignment: .trailing, spacing: 4) {
-                if context.state.isPaused {
-                    Text("PAUSED")
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(.yellow)
-
-                    Text(formatTime(context.state.remainingSeconds))
-                        .font(.system(.title2, design: .monospaced))
-                        .fontWeight(.bold)
-                        .foregroundColor(.yellow)
-                } else {
-                    Text("TIMER")
+            .padding()
+        } else {
+            // Timer mode: existing layout
+            HStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("FIX #\(context.attributes.fixNumber)")
                         .font(.system(.caption2, design: .monospaced))
                         .foregroundColor(.green)
 
-                    Text(context.state.timerEndDate, style: .timer)
-                        .font(.system(.title2, design: .monospaced))
-                        .fontWeight(.bold)
-                        .foregroundColor(.green)
-                        .monospacedDigit()
+                    Text(context.attributes.fixPrompt)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.white)
+                        .lineLimit(2)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 4) {
+                    if context.state.isPaused {
+                        Text("PAUSED")
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(.yellow)
+
+                        Text(formatTime(context.state.remainingSeconds))
+                            .font(.system(.title2, design: .monospaced))
+                            .fontWeight(.bold)
+                            .foregroundColor(.yellow)
+                    } else {
+                        Text("TIMER")
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(.green)
+
+                        Text(context.state.timerEndDate, style: .timer)
+                            .font(.system(.title2, design: .monospaced))
+                            .fontWeight(.bold)
+                            .foregroundColor(.green)
+                            .monospacedDigit()
+                    }
                 }
             }
+            .padding()
         }
-        .padding()
     }
 
     private func formatTime(_ seconds: Int) -> String {
@@ -129,7 +152,12 @@ struct ExpandedTrailingView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 2) {
-            if context.state.isPaused {
+            if context.state.isFixMode {
+                Text("ACTIVE")
+                    .font(.system(.caption2, design: .monospaced))
+                    .fontWeight(.bold)
+                    .foregroundColor(.green)
+            } else if context.state.isPaused {
                 Text("PAUSED")
                     .font(.system(.caption2, design: .monospaced))
                     .foregroundColor(.yellow)
@@ -159,10 +187,17 @@ struct ExpandedCenterView: View {
     let context: ActivityViewContext<EgoFixWidgetAttributes>
 
     var body: some View {
-        // Progress indicator
-        ProgressView(value: context.state.progress)
-            .tint(context.state.isPaused ? .yellow : .green)
-            .scaleEffect(y: 2)
+        if context.state.isFixMode {
+            // No progress bar for day-long fixes — just a subtle divider
+            Rectangle()
+                .fill(Color.green.opacity(0.3))
+                .frame(height: 1)
+        } else {
+            // Progress indicator
+            ProgressView(value: context.state.progress)
+                .tint(context.state.isPaused ? .yellow : .green)
+                .scaleEffect(y: 2)
+        }
     }
 }
 
@@ -194,7 +229,11 @@ struct CompactTrailingView: View {
     let context: ActivityViewContext<EgoFixWidgetAttributes>
 
     var body: some View {
-        if context.state.isPaused {
+        if context.state.isFixMode {
+            Text("ACTIVE")
+                .font(.system(.caption2, design: .monospaced))
+                .foregroundColor(.green)
+        } else if context.state.isPaused {
             Text(formatTime(context.state.remainingSeconds))
                 .font(.system(.caption, design: .monospaced))
                 .foregroundColor(.yellow)
@@ -220,8 +259,11 @@ struct MinimalView: View {
     let context: ActivityViewContext<EgoFixWidgetAttributes>
 
     var body: some View {
-        // Show a simple timer or pause indicator
-        if context.state.isPaused {
+        if context.state.isFixMode {
+            Image(systemName: "terminal.fill")
+                .font(.caption2)
+                .foregroundColor(.green)
+        } else if context.state.isPaused {
             Image(systemName: "pause.circle.fill")
                 .font(.caption2)
                 .foregroundColor(.yellow)

@@ -189,6 +189,36 @@ final class FixCompletionTests: XCTestCase {
         XCTAssertNil(completion.counterOutcome)
     }
 
+    // MARK: - Fix Acceptance
+
+    func test_FixCompletion_fixAcceptedAt_isNilByDefault() {
+        let completion = FixCompletion(
+            fixId: UUID(),
+            userId: UUID()
+        )
+        XCTAssertNil(completion.fixAcceptedAt)
+    }
+
+    func test_FixCompletion_fixAcceptedAt_canBeSet() {
+        let completion = FixCompletion(
+            fixId: UUID(),
+            userId: UUID()
+        )
+        let acceptDate = Date()
+        completion.fixAcceptedAt = acceptDate
+        XCTAssertEqual(completion.fixAcceptedAt, acceptDate)
+    }
+
+    func test_FixCompletion_fixAcceptedAt_canBePassedInInit() {
+        let acceptDate = Date()
+        let completion = FixCompletion(
+            fixId: UUID(),
+            userId: UUID(),
+            fixAcceptedAt: acceptDate
+        )
+        XCTAssertEqual(completion.fixAcceptedAt, acceptDate)
+    }
+
     func test_FixCompletion_canStoreOutcomeDataInInit() {
         let outcome = QuizOutcome(selectedOptionId: "test", weightModifierApplied: 1.0)
         let encodedData = try? JSONEncoder().encode(outcome)

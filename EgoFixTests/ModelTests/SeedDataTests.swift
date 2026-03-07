@@ -262,8 +262,8 @@ final class SeedDataTests: XCTestCase {
     func test_SeedData_microEducationTriggers() throws {
         let tidbits = try loadMicroEducationSeedData()
         let triggers = Set(tidbits.map { $0.trigger })
-        let expectedTriggers: Set<String> = ["postApply", "postSkip", "postCrash", "general"]
-        XCTAssertEqual(triggers, expectedTriggers, "Should cover all 4 trigger types")
+        let expectedTriggers: Set<String> = ["postApply", "postSkip", "postCrash", "postFailed", "general", "duringDiagnostic", "restDay"]
+        XCTAssertEqual(triggers, expectedTriggers, "Should cover all 7 trigger types")
     }
 
     func test_SeedData_microEducationNoDuplicateIDs() throws {

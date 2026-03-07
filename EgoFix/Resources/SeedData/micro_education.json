@@ -628,5 +628,642 @@
     "bugSlug": "need-to-narrate",
     "trigger": "general",
     "body": "Identity fusion with personal narratives is measurable in brain scans. The story of who you are activates the same regions as your actual self-concept. Loosen the story, loosen the grip."
+  },
+
+  {
+    "id": "me-right-16",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postApply",
+    "body": "Letting an incorrect detail slide without correcting it is like leaving a door open. The discomfort you feel is the draft. It passes."
+  },
+  {
+    "id": "me-right-17",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postApply",
+    "body": "You chose understanding over accuracy today. The corrector treats those as opposites. They're not."
+  },
+  {
+    "id": "me-right-18",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postApply",
+    "body": "Saying 'you might be right' when you know they're wrong activates the same brain regions as generosity. You gave something up. It cost less than you expected."
+  },
+  {
+    "id": "me-right-19",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postSkip",
+    "body": "The corrector framed this fix as unnecessary because you 'already get it.' Understanding the pattern and overriding it are different neural processes."
+  },
+  {
+    "id": "me-right-20",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postSkip",
+    "body": "Skipping today might mean the pattern is running the show. Or you needed a day off. Only you know which. Be honest."
+  },
+  {
+    "id": "me-right-21",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postCrash",
+    "body": "Mid-correction, your brain releases norepinephrine — the neurochemical of urgency. The correction felt important because your chemistry made it feel that way."
+  },
+  {
+    "id": "me-right-22",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postCrash",
+    "body": "You corrected someone and watched their face change. That microsecond of recognition — 'I did it again' — is the beginning of the override. The crash came with awareness this time."
+  },
+  {
+    "id": "me-right-23",
+    "bugSlug": "need-to-be-right",
+    "trigger": "general",
+    "body": "Intellectual humility correlates more strongly with accurate beliefs than IQ does. The people who hold their opinions loosely tend to be right more often."
+  },
+  {
+    "id": "me-right-24",
+    "bugSlug": "need-to-be-right",
+    "trigger": "general",
+    "body": "The backfire effect: presenting people with corrective information often strengthens their original belief. Your correction didn't just fail — it backfired."
+  },
+  {
+    "id": "me-right-25",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postFailed",
+    "body": "You tried to hold back the correction and it came out anyway. That's not failure — it's the pattern being stronger than your first attempt to override it. Reps build strength."
+  },
+  {
+    "id": "me-right-26",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postFailed",
+    "body": "The correction slipped out mid-sentence. Your prefrontal cortex tried to catch it but your basal ganglia were faster. Automatic behaviors outrun intentional ones. That's biology, not weakness."
+  },
+  {
+    "id": "me-right-27",
+    "bugSlug": "need-to-be-right",
+    "trigger": "postFailed",
+    "body": "You attempted the fix and the pattern won. Here's what's different from yesterday: you noticed. Awareness precedes change. Every time."
+  },
+  {
+    "id": "me-right-28",
+    "bugSlug": "need-to-be-right",
+    "trigger": "duringDiagnostic",
+    "body": "This week, pay attention to which corrections felt urgent vs. optional. The urgent ones reveal where the pattern has the deepest grip."
+  },
+  {
+    "id": "me-right-29",
+    "bugSlug": "need-to-be-right",
+    "trigger": "duringDiagnostic",
+    "body": "Reviewing your week: how many corrections were about accuracy and how many were about being seen as accurate? The distinction matters."
+  },
+  {
+    "id": "me-right-30",
+    "bugSlug": "need-to-be-right",
+    "trigger": "restDay",
+    "body": "No fix today. The corrector might interpret this as a gap in the system. It's not. Some days the most productive thing is to let the pattern rest unobserved."
+  },
+
+  {
+    "id": "me-liked-16",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postApply",
+    "body": "Holding a boundary without explaining yourself is the chameleon's hardest move. No justification needed. The boundary is the sentence."
+  },
+  {
+    "id": "me-liked-17",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postApply",
+    "body": "You expressed a genuine opinion without checking the room's temperature first. The chameleon's radar was pinging. You let it ping."
+  },
+  {
+    "id": "me-liked-18",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postApply",
+    "body": "Not volunteering to help when you're already overloaded is self-preservation, not selfishness. The chameleon can't tell the difference. You're learning to."
+  },
+  {
+    "id": "me-liked-19",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postSkip",
+    "body": "The chameleon skipped this fix because it involved potential friction. The pattern optimizes for smooth surfaces. Growth requires some texture."
+  },
+  {
+    "id": "me-liked-20",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postSkip",
+    "body": "You told yourself this fix wasn't relevant today. The chameleon is good at making avoidance sound reasonable. It's had a lifetime of practice."
+  },
+  {
+    "id": "me-liked-21",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postCrash",
+    "body": "You said yes when you meant no. The chameleon made the switch so fast you didn't catch it until after. That speed is the pattern's advantage — and it's getting slower each time you notice."
+  },
+  {
+    "id": "me-liked-22",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postCrash",
+    "body": "Monitoring others' reactions in real-time consumes about 30% of your working memory. You're literally thinking less clearly while trying to be liked. The crash happened because your attention was split."
+  },
+  {
+    "id": "me-liked-23",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "general",
+    "body": "Differentiation — the ability to maintain your sense of self while emotionally connected to others — is the developmental milestone the chameleon missed. It's learnable at any age."
+  },
+  {
+    "id": "me-liked-24",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "general",
+    "body": "Belonging is not the same as fitting in. Fitting in requires you to change. Belonging requires you to show up as you are. The chameleon confuses the two."
+  },
+  {
+    "id": "me-liked-25",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postFailed",
+    "body": "You tried to disagree and softened it into agreement halfway through. The chameleon is a real-time editor. You caught the edit. That's progress."
+  },
+  {
+    "id": "me-liked-26",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postFailed",
+    "body": "The fix failed because pleasing felt safer than risking tension. Your nervous system rated social harmony above self-expression. It was wrong, but it was trying to protect you."
+  },
+  {
+    "id": "me-liked-27",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "postFailed",
+    "body": "You couldn't hold the boundary. The pattern overrode your intention. Notice: you had the intention. That's new. The override will weaken."
+  },
+  {
+    "id": "me-liked-28",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "duringDiagnostic",
+    "body": "This week, notice which relationships required the most shape-shifting. Those aren't your weakest relationships — they're the ones where the pattern works hardest."
+  },
+  {
+    "id": "me-liked-29",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "duringDiagnostic",
+    "body": "How many times this week did you say 'I don't mind' when you did? Each one is a data point. The chameleon tracks the room. You're learning to track the chameleon."
+  },
+  {
+    "id": "me-liked-30",
+    "bugSlug": "need-to-be-liked",
+    "trigger": "restDay",
+    "body": "No fix today. The chameleon might feel uneasy without a task to perform well at. Sit with that. Not everything needs to be earned."
+  },
+
+  {
+    "id": "me-control-16",
+    "bugSlug": "need-to-control",
+    "trigger": "postApply",
+    "body": "You let something happen without managing it. The controller's prediction engine expected disaster. Reality delivered something more ordinary."
+  },
+  {
+    "id": "me-control-17",
+    "bugSlug": "need-to-control",
+    "trigger": "postApply",
+    "body": "Choosing not to optimize someone else's approach is restraint, not apathy. The controller can't distinguish between the two. You're building that distinction."
+  },
+  {
+    "id": "me-control-18",
+    "bugSlug": "need-to-control",
+    "trigger": "postApply",
+    "body": "You tolerated an imperfect outcome without fixing it. The controller's quality threshold is a moving target — it's never good enough. Today you let good enough be enough."
+  },
+  {
+    "id": "me-control-19",
+    "bugSlug": "need-to-control",
+    "trigger": "postSkip",
+    "body": "The controller skipped the fix because today felt too chaotic for experiments. The pattern's favorite excuse: now isn't the right time to loosen your grip."
+  },
+  {
+    "id": "me-control-20",
+    "bugSlug": "need-to-control",
+    "trigger": "postSkip",
+    "body": "Skipping a control fix during a stressful period is the pattern protecting its territory. It knows relaxation is harder when the stakes feel high."
+  },
+  {
+    "id": "me-control-21",
+    "bugSlug": "need-to-control",
+    "trigger": "postCrash",
+    "body": "You took over a task someone else was handling. The relief you felt wasn't satisfaction — it was the anxiety temporarily being managed. The anxiety will return. It always does."
+  },
+  {
+    "id": "me-control-22",
+    "bugSlug": "need-to-control",
+    "trigger": "postCrash",
+    "body": "Planning every detail of an event or trip is the controller's version of self-soothing. The crash isn't about the plan failing. It's about the plan being necessary at all."
+  },
+  {
+    "id": "me-control-23",
+    "bugSlug": "need-to-control",
+    "trigger": "general",
+    "body": "Learned controllability: people who've experienced predictable environments develop an exaggerated belief in their ability to control outcomes. The pattern was trained by success."
+  },
+  {
+    "id": "me-control-24",
+    "bugSlug": "need-to-control",
+    "trigger": "general",
+    "body": "The Zeigarnik effect: unfinished tasks occupy more mental space than completed ones. The controller uses this as justification. The real solution is tolerance, not completion."
+  },
+  {
+    "id": "me-control-25",
+    "bugSlug": "need-to-control",
+    "trigger": "postFailed",
+    "body": "You tried to step back and couldn't resist intervening. The controller overrode your intention within seconds. That speed tells you how deeply wired the pattern is."
+  },
+  {
+    "id": "me-control-26",
+    "bugSlug": "need-to-control",
+    "trigger": "postFailed",
+    "body": "The fix failed because uncertainty spiked and the controller grabbed the wheel. It felt necessary. It wasn't. But your nervous system doesn't know that yet."
+  },
+  {
+    "id": "me-control-27",
+    "bugSlug": "need-to-control",
+    "trigger": "postFailed",
+    "body": "You attempted to delegate without follow-up and checked in anyway. The pattern executed its backup protocol. Next time, the window before checking might be slightly longer."
+  },
+  {
+    "id": "me-control-28",
+    "bugSlug": "need-to-control",
+    "trigger": "duringDiagnostic",
+    "body": "This week, track which situations triggered the strongest control urges. High stress? New people? Ambiguous outcomes? The controller has a preferred hunting ground."
+  },
+  {
+    "id": "me-control-29",
+    "bugSlug": "need-to-control",
+    "trigger": "duringDiagnostic",
+    "body": "Reviewing your week: how many interventions were genuinely necessary vs. how many just reduced your anxiety? The controller conflates the two."
+  },
+  {
+    "id": "me-control-30",
+    "bugSlug": "need-to-control",
+    "trigger": "restDay",
+    "body": "No fix today. The controller might experience this as a scheduling gap that needs filling. It doesn't. Unstructured time is not wasted time."
+  },
+
+  {
+    "id": "me-compare-16",
+    "bugSlug": "need-to-compare",
+    "trigger": "postApply",
+    "body": "You heard someone's good news without immediately calculating where you stand. The scorekeeper went quiet. Even briefly, that's a different mode of listening."
+  },
+  {
+    "id": "me-compare-17",
+    "bugSlug": "need-to-compare",
+    "trigger": "postApply",
+    "body": "Appreciating your own progress without benchmarking it against someone else's is the scorekeeper's blind spot. You just operated in that blind spot."
+  },
+  {
+    "id": "me-compare-18",
+    "bugSlug": "need-to-compare",
+    "trigger": "postApply",
+    "body": "Not checking metrics, likes, or rankings after doing something is the scorekeeper's withdrawal. The itch to measure is the pattern requesting its next data point."
+  },
+  {
+    "id": "me-compare-19",
+    "bugSlug": "need-to-compare",
+    "trigger": "postSkip",
+    "body": "The scorekeeper dismissed this fix because it couldn't produce a measurable win. Not everything valuable shows up on a scoreboard."
+  },
+  {
+    "id": "me-compare-20",
+    "bugSlug": "need-to-compare",
+    "trigger": "postSkip",
+    "body": "Skipping a comparison fix often means someone else's success is freshly stinging. The pattern is louder when the comparison data is recent."
+  },
+  {
+    "id": "me-compare-21",
+    "bugSlug": "need-to-compare",
+    "trigger": "postCrash",
+    "body": "You one-upped someone's story without realizing it until after. The scorekeeper processes other people's experiences as position data before your conscious mind can intervene."
+  },
+  {
+    "id": "me-compare-22",
+    "bugSlug": "need-to-compare",
+    "trigger": "postCrash",
+    "body": "Checking someone's follower count, salary range, or career timeline is the scorekeeper's grocery list. You didn't need that information. The pattern needed it."
+  },
+  {
+    "id": "me-compare-23",
+    "bugSlug": "need-to-compare",
+    "trigger": "general",
+    "body": "Relative deprivation theory: your satisfaction depends more on how you compare to your reference group than on your objective circumstances. The scorekeeper chose your reference group for maximum dissatisfaction."
+  },
+  {
+    "id": "me-compare-24",
+    "bugSlug": "need-to-compare",
+    "trigger": "general",
+    "body": "Gratitude practices fail when the scorekeeper co-opts them. 'I'm grateful for what I have' becomes 'but they have more.' The pattern survives gratitude by comparing gratitude itself."
+  },
+  {
+    "id": "me-compare-25",
+    "bugSlug": "need-to-compare",
+    "trigger": "postFailed",
+    "body": "You tried not to compare and the ranking happened anyway — faster than you could intercept it. The scorekeeper runs in the background. You're learning to notice the process, not just the result."
+  },
+  {
+    "id": "me-compare-26",
+    "bugSlug": "need-to-compare",
+    "trigger": "postFailed",
+    "body": "The fix failed because the comparison data was too compelling. Someone's visible success activated your ranking system before your intention could catch up."
+  },
+  {
+    "id": "me-compare-27",
+    "bugSlug": "need-to-compare",
+    "trigger": "postFailed",
+    "body": "You attempted to celebrate someone's win and felt the sting underneath. The celebration was real. So was the sting. Both can coexist while the pattern weakens."
+  },
+  {
+    "id": "me-compare-28",
+    "bugSlug": "need-to-compare",
+    "trigger": "duringDiagnostic",
+    "body": "This week, notice which comparisons were upward vs. downward. The direction reveals what the scorekeeper is optimizing for."
+  },
+  {
+    "id": "me-compare-29",
+    "bugSlug": "need-to-compare",
+    "trigger": "duringDiagnostic",
+    "body": "Reviewing your week: how much mental energy went to ranking? The scorekeeper's overhead is invisible until you audit it. This is the audit."
+  },
+  {
+    "id": "me-compare-30",
+    "bugSlug": "need-to-compare",
+    "trigger": "restDay",
+    "body": "No fix today. The scorekeeper might compare your rest day to someone else's productive day. Let it. Then let it go."
+  },
+
+  {
+    "id": "me-impress-16",
+    "bugSlug": "need-to-impress",
+    "trigger": "postApply",
+    "body": "You let a silence exist without filling it with something impressive. The performer hates dead air. Dead air is where real conversation starts."
+  },
+  {
+    "id": "me-impress-17",
+    "bugSlug": "need-to-impress",
+    "trigger": "postApply",
+    "body": "Admitting you don't know something — out loud, in front of people — short-circuits the performer's entire operating system. If you did it today, the system is recalibrating."
+  },
+  {
+    "id": "me-impress-18",
+    "bugSlug": "need-to-impress",
+    "trigger": "postApply",
+    "body": "Contributing without sign-posting your contribution is invisible to the performer. It wanted credit. You let the work speak. The performer is confused."
+  },
+  {
+    "id": "me-impress-19",
+    "bugSlug": "need-to-impress",
+    "trigger": "postSkip",
+    "body": "The performer skipped the fix because it didn't offer a chance to shine. Growth that nobody sees doesn't register for this pattern."
+  },
+  {
+    "id": "me-impress-20",
+    "bugSlug": "need-to-impress",
+    "trigger": "postSkip",
+    "body": "When the fix felt too small, that was the performer ranking exercises by impressiveness rather than effectiveness. The most effective reps are usually the boring ones."
+  },
+  {
+    "id": "me-impress-21",
+    "bugSlug": "need-to-impress",
+    "trigger": "postCrash",
+    "body": "You steered the conversation to your expertise without noticing. The performer's autopilot is indistinguishable from enthusiasm. The crash is the moment you distinguished them."
+  },
+  {
+    "id": "me-impress-22",
+    "bugSlug": "need-to-impress",
+    "trigger": "postCrash",
+    "body": "Dropping a credential or achievement into conversation is the performer's tell. Like a poker player's tic — invisible to you, visible to everyone else."
+  },
+  {
+    "id": "me-impress-23",
+    "bugSlug": "need-to-impress",
+    "trigger": "general",
+    "body": "The spotlight effect: you overestimate how much others notice and remember about your performance. Studies show they retain about 50% less than you think."
+  },
+  {
+    "id": "me-impress-24",
+    "bugSlug": "need-to-impress",
+    "trigger": "general",
+    "body": "Authentic pride — earned through effort — and hubristic pride — maintained through display — activate different neural pathways. The performer specializes in the second one."
+  },
+  {
+    "id": "me-impress-25",
+    "bugSlug": "need-to-impress",
+    "trigger": "postFailed",
+    "body": "You tried to hold back the impressive detail and it slipped out anyway. The performer has rehearsed this material so thoroughly it's automatic. Awareness is the first crack."
+  },
+  {
+    "id": "me-impress-26",
+    "bugSlug": "need-to-impress",
+    "trigger": "postFailed",
+    "body": "The fix failed because the opportunity to shine was too tempting. The performer saw the opening and took it before your intention could intervene."
+  },
+  {
+    "id": "me-impress-27",
+    "bugSlug": "need-to-impress",
+    "trigger": "postFailed",
+    "body": "You attempted the fix and the performance won. The difference: you knew it was a performance. That meta-awareness didn't exist before. It counts."
+  },
+  {
+    "id": "me-impress-28",
+    "bugSlug": "need-to-impress",
+    "trigger": "duringDiagnostic",
+    "body": "This week, notice which audiences triggered the strongest performance instinct. The performer has a preferred crowd. Knowing who that crowd is changes the dynamic."
+  },
+  {
+    "id": "me-impress-29",
+    "bugSlug": "need-to-impress",
+    "trigger": "duringDiagnostic",
+    "body": "Reviewing your week: how many conversations were genuine vs. curated? The performer curates automatically. Noticing the curation is the first step to stopping it."
+  },
+  {
+    "id": "me-impress-30",
+    "bugSlug": "need-to-impress",
+    "trigger": "restDay",
+    "body": "No fix today. The performer might feel irrelevant without a stage. Irrelevance is not the same as invisibility. You exist without performing."
+  },
+
+  {
+    "id": "me-deflect-16",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postApply",
+    "body": "You stayed with an uncomfortable feeling instead of analyzing it, joking about it, or explaining it away. The deflector had three escape routes ready. You didn't take any of them."
+  },
+  {
+    "id": "me-deflect-17",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postApply",
+    "body": "Saying 'that hurt' without following it with 'but it's fine' is the deflector's equivalent of skydiving. The landing was fine. It usually is."
+  },
+  {
+    "id": "me-deflect-18",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postApply",
+    "body": "You let someone see you struggle without packaging it as a lesson or a joke. Raw exposure. The deflector is recalibrating what 'safe' means."
+  },
+  {
+    "id": "me-deflect-19",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postSkip",
+    "body": "The deflector skipped this fix by intellectualizing it. 'I already understand why I deflect' is itself a deflection. Understanding is the armor, not the vulnerability."
+  },
+  {
+    "id": "me-deflect-20",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postSkip",
+    "body": "When the fix felt too exposed, the deflector was doing its job. Its entire purpose is to make openness feel dangerous. The danger is imaginary. The discomfort is real."
+  },
+  {
+    "id": "me-deflect-21",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postCrash",
+    "body": "You made a joke at exactly the moment things got real. The deflector's timing is impeccable — millisecond precision. The room laughed. The moment died. Mission accomplished."
+  },
+  {
+    "id": "me-deflect-22",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postCrash",
+    "body": "Redirecting a personal question to the other person is the deflector's smoothest move. They didn't notice. You did. That noticing is the breach in the armor."
+  },
+  {
+    "id": "me-deflect-23",
+    "bugSlug": "need-to-deflect",
+    "trigger": "general",
+    "body": "Emotional granularity — the ability to distinguish between 'I feel bad' and 'I feel disappointed about being overlooked' — is the skill the deflector prevents you from developing."
+  },
+  {
+    "id": "me-deflect-24",
+    "bugSlug": "need-to-deflect",
+    "trigger": "general",
+    "body": "Research on self-disclosure shows that vulnerability in conversation increases the other person's trust more than competence does. The deflector is optimizing for the wrong metric."
+  },
+  {
+    "id": "me-deflect-25",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postFailed",
+    "body": "You tried to be direct about a feeling and the deflection kicked in mid-sentence. The pivot to humor or analysis was so smooth you almost missed it. Almost."
+  },
+  {
+    "id": "me-deflect-26",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postFailed",
+    "body": "The fix failed because the vulnerability threshold was too high today. The deflector's ceiling drops when stress rises. That's not failure — it's data about your current capacity."
+  },
+  {
+    "id": "me-deflect-27",
+    "bugSlug": "need-to-deflect",
+    "trigger": "postFailed",
+    "body": "You attempted openness and the armor snapped shut. The reflex is strong. But you felt the click of it closing. Before, you didn't even know it was armor."
+  },
+  {
+    "id": "me-deflect-28",
+    "bugSlug": "need-to-deflect",
+    "trigger": "duringDiagnostic",
+    "body": "This week, notice which emotions got deflected vs. which ones you sat with. The deflector has a hierarchy — some feelings are more threatening than others."
+  },
+  {
+    "id": "me-deflect-29",
+    "bugSlug": "need-to-deflect",
+    "trigger": "duringDiagnostic",
+    "body": "Reviewing your week: how many conversations ended without the other person learning something real about how you feel? The deflector's success rate is high. You're measuring it now."
+  },
+  {
+    "id": "me-deflect-30",
+    "bugSlug": "need-to-deflect",
+    "trigger": "restDay",
+    "body": "No fix today. The deflector might feel relieved — no exposure required. That relief is information. It tells you the pattern was bracing for impact."
+  },
+
+  {
+    "id": "me-narrate-16",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postApply",
+    "body": "You had an experience and didn't compose the text about it. The narrator's editorial desk was ready. You closed it. The experience stayed whole."
+  },
+  {
+    "id": "me-narrate-17",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postApply",
+    "body": "Not rehearsing a grievance before bed breaks the rumination cycle at its most habitual point. The narrator's evening news got cancelled."
+  },
+  {
+    "id": "me-narrate-18",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postApply",
+    "body": "You listened to someone's problem without preparing your own parallel story. The narrator usually has one cued up. Today it didn't get airtime."
+  },
+  {
+    "id": "me-narrate-19",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postSkip",
+    "body": "The narrator skipped this fix because silence feels like non-existence. If you don't narrate it, did it happen? Yes. But the pattern doesn't believe that."
+  },
+  {
+    "id": "me-narrate-20",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postSkip",
+    "body": "Skipping a narration fix when you have a good story to tell is the pattern at peak strength. The better the material, the harder the fix."
+  },
+  {
+    "id": "me-narrate-21",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postCrash",
+    "body": "You told the same complaint to a third person. Each retelling felt like processing. It wasn't. It was the narrator's syndication model — same content, new audience."
+  },
+  {
+    "id": "me-narrate-22",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postCrash",
+    "body": "Composing the social media post in your head while the thing was still happening is the narrator's most invasive behavior. You were the cameraman and the subject simultaneously."
+  },
+  {
+    "id": "me-narrate-23",
+    "bugSlug": "need-to-narrate",
+    "trigger": "general",
+    "body": "Narrative identity theory: we construct our sense of self through stories about ourselves. The narrator isn't just telling stories — it's building the self. Loosen the story, loosen the self-concept."
+  },
+  {
+    "id": "me-narrate-24",
+    "bugSlug": "need-to-narrate",
+    "trigger": "general",
+    "body": "Expressive writing research shows that writing about experiences helps processing — but only once. Repeated retelling of the same event reinforces the emotional charge rather than reducing it."
+  },
+  {
+    "id": "me-narrate-25",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postFailed",
+    "body": "You tried not to vent and the complaint came out anyway. The narrator had the script queued before you decided not to read it. The script is pre-loaded. You're learning to notice the teleprompter."
+  },
+  {
+    "id": "me-narrate-26",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postFailed",
+    "body": "The fix failed because the story was too good not to tell. The narrator evaluates experiences by their narrative potential. A good story is harder to resist than a boring one."
+  },
+  {
+    "id": "me-narrate-27",
+    "bugSlug": "need-to-narrate",
+    "trigger": "postFailed",
+    "body": "You attempted to let an experience pass without packaging it and the packaging happened automatically. The narrator is an assembly line. You're learning where the off switch is."
+  },
+  {
+    "id": "me-narrate-28",
+    "bugSlug": "need-to-narrate",
+    "trigger": "duringDiagnostic",
+    "body": "This week, track which experiences you narrated vs. which you let be. The narrator has preferences — it favors grievances, victories, and injustices. Mundane moments get a pass."
+  },
+  {
+    "id": "me-narrate-29",
+    "bugSlug": "need-to-narrate",
+    "trigger": "duringDiagnostic",
+    "body": "Reviewing your week: how many stories did you tell more than once? Repetition is the narrator's signature. Single-serving stories are a sign the pattern is loosening."
+  },
+  {
+    "id": "me-narrate-30",
+    "bugSlug": "need-to-narrate",
+    "trigger": "restDay",
+    "body": "No fix today. The narrator might feel purposeless without material to curate. A day without a story is not an empty day. It's an experienced one."
   }
 ]

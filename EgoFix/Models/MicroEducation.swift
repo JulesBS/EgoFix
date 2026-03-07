@@ -5,7 +5,10 @@ enum EducationTrigger: String, Codable {
     case postApply
     case postSkip
     case postCrash
+    case postFailed
     case general
+    case duringDiagnostic
+    case restDay
 }
 
 @Model

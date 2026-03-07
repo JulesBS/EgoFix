@@ -236,15 +236,16 @@ final class OnboardingViewModelTests: XCTestCase {
 
     // MARK: - Nickname & Comment Tests
 
-    func test_OnboardingViewModel_nickname_returnsCorrectNicknames() {
-        XCTAssertEqual(viewModel.nickname(for: "need-to-be-right"), "The Corrector")
-        XCTAssertEqual(viewModel.nickname(for: "need-to-impress"), "The Performer")
-        XCTAssertEqual(viewModel.nickname(for: "need-to-be-liked"), "The Chameleon")
-        XCTAssertEqual(viewModel.nickname(for: "need-to-control"), "The Controller")
-        XCTAssertEqual(viewModel.nickname(for: "need-to-compare"), "The Scorekeeper")
-        XCTAssertEqual(viewModel.nickname(for: "need-to-deflect"), "The Deflector")
-        XCTAssertEqual(viewModel.nickname(for: "need-to-narrate"), "The Narrator")
-        XCTAssertEqual(viewModel.nickname(for: "unknown"), "Unknown")
+    func test_OnboardingViewModel_nickname_returnsSlugs() {
+        // Nicknames are slugs — diagnostic labels, not personality types.
+        XCTAssertEqual(viewModel.nickname(for: "need-to-be-right"), "need-to-be-right")
+        XCTAssertEqual(viewModel.nickname(for: "need-to-impress"), "need-to-impress")
+        XCTAssertEqual(viewModel.nickname(for: "need-to-be-liked"), "need-to-be-liked")
+        XCTAssertEqual(viewModel.nickname(for: "need-to-control"), "need-to-control")
+        XCTAssertEqual(viewModel.nickname(for: "need-to-compare"), "need-to-compare")
+        XCTAssertEqual(viewModel.nickname(for: "need-to-deflect"), "need-to-deflect")
+        XCTAssertEqual(viewModel.nickname(for: "need-to-narrate"), "need-to-narrate")
+        XCTAssertEqual(viewModel.nickname(for: "unknown"), "unknown")
     }
 
     func test_OnboardingViewModel_inlineComment_existsForAllBugs() {

@@ -48,9 +48,6 @@ final class OnboardingViewModel: ObservableObject {
     /// All 7 bugs in display order
     private(set) var allBugs: [Bug] = []
 
-    /// Slug-to-nickname mapping (delegates to Bug.slugNicknames)
-    static var nicknames: [String: String] { Bug.slugNicknames }
-
     /// Inline comments for each bug during scan
     static let inlineComments: [String: String] = [
         "need-to-be-right": "// You're not helping them. You're helping yourself feel certain.",
@@ -150,9 +147,9 @@ final class OnboardingViewModel: ObservableObject {
         return index
     }
 
-    /// Nickname for a bug slug
+    /// Display name for a bug slug — the slug IS the name.
     func nickname(for slug: String) -> String {
-        Self.nicknames[slug] ?? "Unknown"
+        slug
     }
 
     /// Inline comment for a bug slug

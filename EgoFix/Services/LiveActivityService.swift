@@ -66,6 +66,55 @@ final class LiveActivityService {
         }
     }
 
+    // MARK: - Start Fix Activity
+
+    /// Start a Live Activity for a day-long fix (no timer, stays on lock screen)
+    @discardableResult
+    func startFixActivity(
+        fixNumber: String,
+        fixPrompt: String
+    ) -> Bool {
+        guard isAvailable else {
+            print("LiveActivityService: Live Activities not available")
+            return false
+        }
+
+        // End any existing activity first
+        endCurrentActivity()
+
+        let attributes = EgoFixWidgetAttributes(
+            fixNumber: fixNumber,
+            fixPrompt: fixPrompt,
+            totalDurationSeconds: 0  // No timer for day-long fixes
+        )
+
+        let now = Date()
+        let contentState = EgoFixWidgetAttributes.ContentState(
+            timerEndDate: now,
+            isPaused: false,
+            remainingSeconds: 0,
+            progress: 0,
+            isFixMode: true,
+            fixAcceptedAt: now
+        )
+
+        do {
+            // Fix activities stay until checked in — stale after 18 hours
+            let staleDate = Calendar.current.date(byAdding: .hour, value: 18, to: now)
+            let activity = try Activity.request(
+                attributes: attributes,
+                content: .init(state: contentState, staleDate: staleDate),
+                pushType: nil
+            )
+            currentActivity = activity
+            print("LiveActivityService: Started fix activity \(activity.id)")
+            return true
+        } catch {
+            print("LiveActivityService: Failed to start fix activity: \(error)")
+            return false
+        }
+    }
+
     // MARK: - Update Activity
 
     /// Update the Live Activity with new timer state

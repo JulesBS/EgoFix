@@ -46,14 +46,49 @@ final class DailyFixService {
         // Get completed fix IDs to exclude
         let completedIds = try await fixCompletionRepository.getCompletedFixIds(for: user.id)
 
+        // Determine max complexity based on user's completion count
+        let completedCount = completedIds.count
+        let maxComplexity = Self.maxComplexity(forCompletedFixes: completedCount)
+
+        // Check for rest day (Day 60+, ~1 in 7 chance)
+        if completedCount >= 60 && Self.shouldRestToday(completedCount: completedCount) {
+            return nil  // No fix today — rest day
+        }
+
         // Get a fix using weighted priorities or legacy single-bug approach
-        let fix: Fix?
+        var fix: Fix?
         if !priorities.isEmpty {
             fix = try await fixRepository.getWeightedDailyFix(priorities: priorities, excluding: completedIds)
         } else if let primaryBugId = user.primaryBugId {
             fix = try await fixRepository.getDailyFix(for: primaryBugId, excluding: completedIds)
         } else {
             fix = nil
+        }
+
+        // Filter by complexity — retry if the selected fix is too complex
+        if let selectedFix = fix, selectedFix.complexity > maxComplexity {
+            // Try to find a simpler fix
+            let allFixes: [Fix]
+            if !priorities.isEmpty {
+                let bugIds = priorities.map(\.bugId)
+                var candidates: [Fix] = []
+                for bugId in bugIds {
+                    let bugFixes = try await fixRepository.getForBug(bugId)
+                    candidates.append(contentsOf: bugFixes)
+                }
+                allFixes = candidates
+            } else if let primaryBugId = user.primaryBugId {
+                allFixes = try await fixRepository.getForBug(primaryBugId)
+            } else {
+                allFixes = []
+            }
+
+            let eligible = allFixes.filter { f in
+                f.complexity <= maxComplexity &&
+                !completedIds.contains(f.id) &&
+                f.type == .daily
+            }
+            fix = eligible.randomElement() ?? fix  // Fall back to original if no simpler fix found
         }
 
         guard let selectedFix = fix else { return nil }
@@ -78,6 +113,26 @@ final class DailyFixService {
         try await analyticsEventRepository.save(event)
 
         return completion
+    }
+
+    // MARK: - Complexity & Rest Day Logic
+
+    /// Max complexity allowed based on completed fix count.
+    /// Week 1 (0-6): complexity 1-2. Week 2-3 (7-20): 1-3. Week 4+ (21+): all.
+    static func maxComplexity(forCompletedFixes count: Int) -> Int {
+        switch count {
+        case 0..<7:   return 2
+        case 7..<21:  return 3
+        case 21..<42: return 4
+        default:      return 5
+        }
+    }
+
+    /// Deterministic rest day check. ~1 in 7 chance, based on completed count.
+    static func shouldRestToday(completedCount: Int) -> Bool {
+        // Use a simple hash to make it deterministic per day
+        let daysSinceEpoch = Int(Date().timeIntervalSince1970 / 86400)
+        return (daysSinceEpoch + completedCount) % 7 == 0
     }
 
     func markOutcome(_ completionId: UUID, outcome: FixOutcome, outcomeData: Data? = nil) async throws {

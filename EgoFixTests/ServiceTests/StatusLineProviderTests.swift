@@ -6,19 +6,19 @@ final class StatusLineProviderTests: XCTestCase {
     // MARK: - Line generation returns non-empty for all intensities
 
     func test_line_quiet_normal_returnsNonEmpty() {
-        let line = StatusLineProvider.line(for: .quiet, bugTitle: "The Corrector", context: .normal)
+        let line = StatusLineProvider.line(for: .quiet, bugTitle: "need-to-be-right", context: .normal)
         XCTAssertFalse(line.isEmpty)
         XCTAssertTrue(line.hasPrefix("//"))
     }
 
     func test_line_present_normal_returnsNonEmpty() {
-        let line = StatusLineProvider.line(for: .present, bugTitle: "The Corrector", context: .normal)
+        let line = StatusLineProvider.line(for: .present, bugTitle: "need-to-be-right", context: .normal)
         XCTAssertFalse(line.isEmpty)
         XCTAssertTrue(line.hasPrefix("//"))
     }
 
     func test_line_loud_normal_returnsNonEmpty() {
-        let line = StatusLineProvider.line(for: .loud, bugTitle: "The Corrector", context: .normal)
+        let line = StatusLineProvider.line(for: .loud, bugTitle: "need-to-be-right", context: .normal)
         XCTAssertFalse(line.isEmpty)
         XCTAssertTrue(line.hasPrefix("//"))
     }
@@ -26,19 +26,19 @@ final class StatusLineProviderTests: XCTestCase {
     // MARK: - Context variants
 
     func test_line_postCrash_returnsPostCrashLine() {
-        let line = StatusLineProvider.line(for: .present, bugTitle: "The Corrector", context: .postCrash)
+        let line = StatusLineProvider.line(for: .present, bugTitle: "need-to-be-right", context: .postCrash)
         XCTAssertFalse(line.isEmpty)
         XCTAssertTrue(line.hasPrefix("//"))
     }
 
     func test_line_firstDay_returnsFirstDayLine() {
-        let line = StatusLineProvider.line(for: .present, bugTitle: "The Corrector", context: .firstDay)
+        let line = StatusLineProvider.line(for: .present, bugTitle: "need-to-be-right", context: .firstDay)
         XCTAssertFalse(line.isEmpty)
         XCTAssertTrue(line.hasPrefix("//"))
     }
 
     func test_line_longStreak_returnsNonEmpty() {
-        let line = StatusLineProvider.line(for: .present, bugTitle: "The Corrector", context: .longStreak(14))
+        let line = StatusLineProvider.line(for: .present, bugTitle: "need-to-be-right", context: .longStreak(14))
         XCTAssertFalse(line.isEmpty)
         XCTAssertTrue(line.hasPrefix("//"))
     }

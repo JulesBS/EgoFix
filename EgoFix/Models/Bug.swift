@@ -51,18 +51,8 @@ final class Bug {
         self.deletedAt = deletedAt
     }
 
-    /// Friendly nickname derived from slug ("The Corrector", "The Performer", etc.)
+    /// Display name is the slug itself — a diagnostic label, not a personality type.
     var nickname: String {
-        Self.slugNicknames[slug] ?? title
+        slug
     }
-
-    static let slugNicknames: [String: String] = [
-        "need-to-be-right": "The Corrector",
-        "need-to-impress": "The Performer",
-        "need-to-be-liked": "The Chameleon",
-        "need-to-control": "The Controller",
-        "need-to-compare": "The Scorekeeper",
-        "need-to-deflect": "The Deflector",
-        "need-to-narrate": "The Narrator",
-    ]
 }

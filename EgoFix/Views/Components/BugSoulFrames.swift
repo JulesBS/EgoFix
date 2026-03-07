@@ -19,7 +19,7 @@ enum BugSoulFrames {
         }
     }
 
-    // MARK: - The Corrector (need-to-be-right)
+    // MARK: - need-to-be-right
     // Exclamation mark / pointing finger. Pulses, jabs, glitches.
 
     private static func correctorFrames(_ intensity: BugIntensity) -> [String] {
@@ -201,7 +201,7 @@ enum BugSoulFrames {
         }
     }
 
-    // MARK: - The Performer (need-to-impress)
+    // MARK: - need-to-impress
     // Spotlight / figure on stage. Poses, sweeps, strobes.
 
     private static func performerFrames(_ intensity: BugIntensity) -> [String] {
@@ -383,7 +383,7 @@ enum BugSoulFrames {
         }
     }
 
-    // MARK: - The Chameleon (need-to-be-liked)
+    // MARK: - need-to-be-liked
     // Face/mask shifting expressions. Fragments at loud.
 
     private static func chameleonFrames(_ intensity: BugIntensity) -> [String] {
@@ -565,7 +565,7 @@ enum BugSoulFrames {
         }
     }
 
-    // MARK: - The Controller (need-to-control)
+    // MARK: - need-to-control
     // Grid / control panel. Switches flip and warp.
 
     private static func controllerFrames(_ intensity: BugIntensity) -> [String] {
@@ -747,7 +747,7 @@ enum BugSoulFrames {
         }
     }
 
-    // MARK: - The Scorekeeper (need-to-compare)
+    // MARK: - need-to-compare
     // Balance scale. Tips, rocks, numbers appear.
 
     private static func scorekeeperFrames(_ intensity: BugIntensity) -> [String] {
@@ -929,7 +929,7 @@ enum BugSoulFrames {
         }
     }
 
-    // MARK: - The Deflector (need-to-deflect)
+    // MARK: - need-to-deflect
     // Shield with arrows. Cracks under barrage.
 
     private static func deflectorFrames(_ intensity: BugIntensity) -> [String] {
@@ -1111,7 +1111,7 @@ enum BugSoulFrames {
         }
     }
 
-    // MARK: - The Narrator (need-to-narrate)
+    // MARK: - need-to-narrate
     // Speech bubble. Words appear, overflow, spawn.
 
     private static func narratorFrames(_ intensity: BugIntensity) -> [String] {

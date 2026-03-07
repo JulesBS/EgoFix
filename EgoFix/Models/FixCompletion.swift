@@ -17,6 +17,7 @@ final class FixCompletion {
     var reflection: String?
     var outcomeData: Data?
     var assignedAt: Date
+    var fixAcceptedAt: Date?
     var completedAt: Date?
     var createdAt: Date
     var updatedAt: Date
@@ -30,6 +31,7 @@ final class FixCompletion {
         reflection: String? = nil,
         outcomeData: Data? = nil,
         assignedAt: Date = Date(),
+        fixAcceptedAt: Date? = nil,
         completedAt: Date? = nil,
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
@@ -42,6 +44,7 @@ final class FixCompletion {
         self.reflection = reflection
         self.outcomeData = outcomeData
         self.assignedAt = assignedAt
+        self.fixAcceptedAt = fixAcceptedAt
         self.completedAt = completedAt
         self.createdAt = createdAt
         self.updatedAt = updatedAt

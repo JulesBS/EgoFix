@@ -54,6 +54,12 @@ private struct FirstLaunchBootView: View {
         VStack(alignment: .leading, spacing: 0) {
             Spacer()
 
+            // 3D ASCII soul animation
+            OnboardingSoulView()
+                .frame(width: 170, height: 170)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 24)
+
             VStack(alignment: .leading, spacing: 6) {
                 ForEach(0..<min(currentLine + 1, lines.count), id: \.self) { index in
                     let line = lines[index]

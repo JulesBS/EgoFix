@@ -130,4 +130,25 @@ extension Fix {
     func setConfiguration<T: Encodable>(_ config: T) {
         configurationData = try? JSONEncoder().encode(config)
     }
+
+    /// Complexity level (1-5) based on interaction type.
+    /// Week 1 users only see complexity 1-2, Week 4+ see all.
+    var complexity: Int {
+        switch interactionType {
+        case .standard:    return 1
+        case .counter:     return 1
+        case .abstain:     return 2
+        case .reversal:    return 2
+        case .observation: return 2
+        case .body:        return 2
+        case .journal:     return 3
+        case .substitute:  return 3
+        case .timed:       return 3
+        case .predict:     return 3
+        case .scenario:    return 4
+        case .multiStep:   return 4
+        case .quiz:        return 4
+        case .audit:       return 5
+        }
+    }
 }

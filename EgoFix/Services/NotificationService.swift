@@ -116,6 +116,67 @@ final class NotificationService {
         notificationCenter.removePendingNotificationRequests(withIdentifiers: ["daily_reminder"])
     }
 
+    // MARK: - Fix Notifications
+
+    /// Schedule a mid-day reminder with the fix prompt (fires ~4 hours after accept)
+    func scheduleFixReminder(
+        fixPrompt: String,
+        identifier: String
+    ) async throws {
+        let content = UNMutableNotificationContent()
+        content.title = "Fix Active"
+        content.body = fixPrompt
+        content.sound = .default
+        content.categoryIdentifier = "FIX_REMINDER"
+
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: 4 * 60 * 60,
+            repeats: false
+        )
+
+        let request = UNNotificationRequest(
+            identifier: identifier,
+            content: content,
+            trigger: trigger
+        )
+
+        try await notificationCenter.add(request)
+    }
+
+    /// Schedule an evening check-in notification (fires at 8 PM today or tomorrow)
+    func scheduleEveningCheckIn(identifier: String) async throws {
+        let content = UNMutableNotificationContent()
+        content.title = "Ready to check in?"
+        content.body = "How did today's fix go?"
+        content.sound = .default
+        content.categoryIdentifier = "EVENING_CHECKIN"
+
+        var dateComponents = DateComponents()
+        dateComponents.hour = 20
+        dateComponents.minute = 0
+
+        let trigger = UNCalendarNotificationTrigger(
+            dateMatching: dateComponents,
+            repeats: false
+        )
+
+        let request = UNNotificationRequest(
+            identifier: identifier,
+            content: content,
+            trigger: trigger
+        )
+
+        try await notificationCenter.add(request)
+    }
+
+    /// Cancel fix-related notifications
+    func cancelFixNotifications(fixId: String) {
+        notificationCenter.removePendingNotificationRequests(withIdentifiers: [
+            "fix_midday_\(fixId)",
+            "fix_evening_\(fixId)"
+        ])
+    }
+
     // MARK: - Notification Categories
 
     /// Setup notification categories for actions
@@ -134,6 +195,20 @@ final class NotificationService {
             options: []
         )
 
-        notificationCenter.setNotificationCategories([timerCategory, dailyCategory])
+        let fixCategory = UNNotificationCategory(
+            identifier: "FIX_REMINDER",
+            actions: [],
+            intentIdentifiers: [],
+            options: []
+        )
+
+        let checkInCategory = UNNotificationCategory(
+            identifier: "EVENING_CHECKIN",
+            actions: [],
+            intentIdentifiers: [],
+            options: []
+        )
+
+        notificationCenter.setNotificationCategories([timerCategory, dailyCategory, fixCategory, checkInCategory])
     }
 }

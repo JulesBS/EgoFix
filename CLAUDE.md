@@ -102,15 +102,17 @@ var quizConfig: QuizConfig? {
 
 ## The Seven Ego Bugs
 
-| Slug | Title | Nickname | Color |
-|------|-------|----------|-------|
-| need-to-be-right | Need to be right | The Corrector | Red/orange |
-| need-to-impress | Need to impress | The Performer | Purple/indigo |
-| need-to-be-liked | Need to be liked | The Chameleon | Cyan/teal |
-| need-to-control | Need to control | The Controller | Yellow/amber |
-| need-to-compare | Need to compare | The Scorekeeper | Green |
-| need-to-deflect | Need to deflect | The Deflector | Gray/silver |
-| need-to-narrate | Need to narrate | The Narrator | Blue/dark blue |
+| Slug | Title | Color |
+|------|-------|-------|
+| need-to-be-right | Need to be right | Red/orange |
+| need-to-impress | Need to impress | Purple/indigo |
+| need-to-be-liked | Need to be liked | Cyan/teal |
+| need-to-control | Need to control | Yellow/amber |
+| need-to-compare | Need to compare | Green |
+| need-to-deflect | Need to deflect | Gray/silver |
+| need-to-narrate | Need to narrate | Blue/dark blue |
+
+**No character nicknames.** The slug IS the display name. Ego patterns are bugs to fix, not personality types to wear.
 
 See `egofix-bugs-redesign.md` for full descriptions, root mechanisms, daily-life examples, and 100+ fix examples across all interaction types.
 
