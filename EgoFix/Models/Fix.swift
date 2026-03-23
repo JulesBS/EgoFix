@@ -191,6 +191,13 @@ extension Fix {
         return try? JSONDecoder().decode(BodyConfig.self, from: data)
     }
 
+    /// Stable, deterministic fix number derived from UUID (consistent across launches)
+    var fixNumber: String {
+        let hex = id.uuidString.replacingOccurrences(of: "-", with: "").prefix(4)
+        let value = UInt32(hex, radix: 16) ?? 0
+        return String(format: "%04d", value % 10000)
+    }
+
     func setConfiguration<T: Encodable>(_ config: T) {
         configurationData = try? JSONEncoder().encode(config)
     }

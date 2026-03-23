@@ -213,8 +213,7 @@ final class TodayViewModel: ObservableObject {
             return
         }
 
-        let hash = abs(fix.id.hashValue)
-        let fixNumber = String(format: "%04d", hash % 10000)
+        let fixNumber = fix.fixNumber
         let outcome = currentCompletion?.outcome ?? .pending
 
         // Use mission-state-aware sync based on current state
@@ -345,7 +344,11 @@ final class TodayViewModel: ObservableObject {
         guard let service = weeklyDiagnosticService else { return }
         do {
             try await service.skipDiagnostic()
-        } catch { }
+        } catch {
+            #if DEBUG
+            print("TodayViewModel error: \(error)")
+            #endif
+        }
         await loadTodaysFix()
     }
 
@@ -363,7 +366,11 @@ final class TodayViewModel: ObservableObject {
 
         do {
             try await service.submitDiagnostic(responses: responses)
-        } catch { }
+        } catch {
+            #if DEBUG
+            print("TodayViewModel error: \(error)")
+            #endif
+        }
 
         // Track diagnostic completion
         progressTracker?.recordDiagnosticCompleted()
@@ -380,21 +387,6 @@ final class TodayViewModel: ObservableObject {
             weeklySummary = summary
         }
         await loadTodaysFix()
-    }
-
-    func onDiagnosticComplete() async {
-        showWeeklyDiagnostic = false
-
-        // Track diagnostic completion
-        progressTracker?.recordDiagnosticCompleted()
-
-        // Run pattern detection after weekly diagnostic
-        await runDiagnosticsIfNeeded()
-
-        // Calculate and show weekly summary
-        if let summary = await calculateWeeklySummary() {
-            weeklySummary = summary
-        }
     }
 
     /// Run pattern detection diagnostics if scheduled
@@ -598,7 +590,11 @@ final class TodayViewModel: ObservableObject {
             // Go straight to done — no intermediate completion/debrief screens
             state = .doneForToday
         } catch {
-            // Handle error silently - state remains unchanged
+            // Outcome wasn't saved — reset soul reaction and stay on current state
+            soulReaction = nil
+            #if DEBUG
+            print("markOutcome failed: \(error)")
+            #endif
         }
     }
 
@@ -709,8 +705,7 @@ final class TodayViewModel: ObservableObject {
         }
 
         // Start fix Live Activity with mission countdown
-        let hash = abs(fix.id.hashValue)
-        let fixNumber = String(format: "%04d", hash % 10000)
+        let fixNumber = fix.fixNumber
         LiveActivityService.shared.startFixActivity(
             fixNumber: fixNumber,
             fixPrompt: fix.prompt
@@ -752,8 +747,7 @@ final class TodayViewModel: ObservableObject {
         let hour = windDown?.hour ?? 21
         let minute = windDown?.minute ?? 0
 
-        let hash = abs(fix.id.hashValue)
-        let fixNumber = String(format: "%04d", hash % 10000)
+        let fixNumber = fix.fixNumber
 
         do {
             try await notificationService.scheduleWindDownNotification(
@@ -762,7 +756,11 @@ final class TodayViewModel: ObservableObject {
                 minute: minute,
                 identifier: "fix_winddown_\(fix.id.uuidString)"
             )
-        } catch { }
+        } catch {
+            #if DEBUG
+            print("TodayViewModel error: \(error)")
+            #endif
+        }
     }
 
     /// Schedule morning notification for tomorrow's fix
@@ -775,16 +773,16 @@ final class TodayViewModel: ObservableObject {
         let hour = morning?.hour ?? 8
         let minute = morning?.minute ?? 0
 
-        let hash = abs(currentFix?.id.hashValue ?? 0)
-        let fixNumber = String(format: "%04d", abs(hash) % 10000)
-
         do {
             try await notificationService.scheduleMorningNotification(
-                fixNumber: fixNumber,
                 hour: hour,
                 minute: minute
             )
-        } catch { }
+        } catch {
+            #if DEBUG
+            print("TodayViewModel error: \(error)")
+            #endif
+        }
     }
 
     /// Schedule anti-notification if streak qualifies
@@ -797,7 +795,11 @@ final class TodayViewModel: ObservableObject {
 
         do {
             try await NotificationService.shared.scheduleAntiNotification()
-        } catch { }
+        } catch {
+            #if DEBUG
+            print("TodayViewModel error: \(error)")
+            #endif
+        }
     }
 
     // MARK: - Helpers

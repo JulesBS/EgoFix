@@ -71,105 +71,10 @@ final class NotificationService {
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
     }
 
-    /// Cancel all timer notifications
-    func cancelAllTimerNotifications() {
-        notificationCenter.removeAllPendingNotificationRequests()
-    }
-
-    // MARK: - Daily Reminder
-
-    /// Schedule a daily fix reminder at a specific time
-    func scheduleDailyReminder(hour: Int, minute: Int) async throws {
-        // Request permission if not granted
-        let status = await checkPermission()
-        if status == .notDetermined {
-            let granted = await requestPermission()
-            guard granted else { return }
-        } else if status == .denied {
-            return
-        }
-
-        let content = UNMutableNotificationContent()
-        content.title = "Daily Fix Available"
-        content.body = "Your daily fix is ready. Time to debug your ego."
-        content.sound = .default
-        content.categoryIdentifier = "DAILY_REMINDER"
-
-        var dateComponents = DateComponents()
-        dateComponents.hour = hour
-        dateComponents.minute = minute
-
-        let trigger = UNCalendarNotificationTrigger(
-            dateMatching: dateComponents,
-            repeats: true
-        )
-
-        let request = UNNotificationRequest(
-            identifier: "daily_reminder",
-            content: content,
-            trigger: trigger
-        )
-
-        try await notificationCenter.add(request)
-    }
-
-    /// Cancel the daily reminder
-    func cancelDailyReminder() {
-        notificationCenter.removePendingNotificationRequests(withIdentifiers: ["daily_reminder"])
-    }
-
     // MARK: - Fix Notifications
-
-    /// Schedule a mid-day reminder with the fix prompt (fires ~4 hours after accept)
-    func scheduleFixReminder(
-        fixPrompt: String,
-        identifier: String
-    ) async throws {
-        let content = UNMutableNotificationContent()
-        content.title = "Fix Active"
-        content.body = fixPrompt
-        content.sound = .default
-        content.categoryIdentifier = "FIX_REMINDER"
-
-        let trigger = UNTimeIntervalNotificationTrigger(
-            timeInterval: 4 * 60 * 60,
-            repeats: false
-        )
-
-        let request = UNNotificationRequest(
-            identifier: identifier,
-            content: content,
-            trigger: trigger
-        )
-
-        try await notificationCenter.add(request)
-    }
-
-    /// Schedule an evening check-in notification (fires at 8 PM today or tomorrow)
-    func scheduleEveningCheckIn(identifier: String) async throws {
-        let content = UNMutableNotificationContent()
-        content.title = "Ready to check in?"
-        content.body = "How did today's fix go?"
-        content.sound = .default
-        content.categoryIdentifier = "EVENING_CHECKIN"
-
-        var dateComponents = DateComponents()
-        dateComponents.hour = 20
-        dateComponents.minute = 0
-
-        let trigger = UNCalendarNotificationTrigger(
-            dateMatching: dateComponents,
-            repeats: false
-        )
-
-        let request = UNNotificationRequest(
-            identifier: identifier,
-            content: content,
-            trigger: trigger
-        )
-
-        try await notificationCenter.add(request)
-    }
+    // Legacy methods (scheduleDailyReminder, scheduleFixReminder, scheduleEveningCheckIn,
+    // cancelAllTimerNotifications) removed — replaced by scheduleMorningNotification,
+    // scheduleWindDownNotification, scheduleAntiNotification
 
     /// Schedule wind-down notification at a specific time
     func scheduleWindDownNotification(fixNumber: String, hour: Int, minute: Int, identifier: String) async throws {
@@ -198,10 +103,10 @@ final class NotificationService {
     }
 
     /// Schedule morning notification for fix availability
-    func scheduleMorningNotification(fixNumber: String, hour: Int, minute: Int) async throws {
+    func scheduleMorningNotification(hour: Int, minute: Int) async throws {
         let content = UNMutableNotificationContent()
         content.title = "EgoFix"
-        content.body = "Fix #\(fixNumber) is ready."
+        content.body = "Your daily fix is ready."
         content.sound = .default
         content.categoryIdentifier = "DAILY_REMINDER"
 

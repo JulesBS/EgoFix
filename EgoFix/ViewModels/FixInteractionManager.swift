@@ -281,8 +281,7 @@ final class FixInteractionManager: ObservableObject {
         currentFixCompletionId = fixCompletionId
         interactionType = fix.interactionType
 
-        let hash = abs(fix.id.hashValue)
-        currentFixNumber = String(format: "%04d", hash % 10000)
+        currentFixNumber = fix.fixNumber
         currentFixPrompt = fix.prompt
         notificationIdentifier = "interaction_\(fixCompletionId.uuidString)"
 
@@ -738,60 +737,6 @@ final class FixInteractionManager: ObservableObject {
     }
 
     // MARK: - Completion Data Generation
-
-    /// Generate the appropriate outcome struct based on interaction type
-    func generateCompletionData() -> Any? {
-        switch interactionType {
-        case .standard, .reversal:
-            return nil
-
-        case .body:
-            return BodyOutcome(
-                selectedRegions: Array(selectedBodyRegions),
-                selectedSensations: Array(selectedBodySensations)
-            )
-
-        case .timed:
-            return generateTimedOutcome()
-
-        case .multiStep:
-            return generateMultiStepOutcome()
-
-        case .quiz:
-            return generateQuizOutcome()
-
-        case .scenario:
-            return generateScenarioOutcome()
-
-        case .counter:
-            return generateCounterOutcome()
-
-        case .observation:
-            return ObservationOutcome(report: observationReport)
-
-        case .abstain:
-            return AbstainOutcome(
-                completed: abstainCompleted,
-                slipCount: abstainSlips.count,
-                slips: abstainSlips,
-                timerUsed: abstainTimerMode,
-                durationSeconds: abstainTimerMode ? abstainDurationSeconds : nil
-            )
-
-        case .substitute:
-            return SubstituteOutcome(substituteCount: substituteCount, urgeCount: urgeCount)
-
-        case .journal:
-            return nil // journal uses reflection field
-
-        case .predict:
-            return PredictOutcome(prediction: predictionText, actualResult: observationText)
-
-        case .audit:
-            let items = auditItems.map { AuditOutcome.AuditItem(categoryId: $0.key, note: $0.value) }
-            return AuditOutcome(items: items)
-        }
-    }
 
     /// Generate outcome data as encoded Data for storage
     func generateOutcomeData() -> Data? {

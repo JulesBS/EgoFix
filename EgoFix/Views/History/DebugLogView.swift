@@ -140,7 +140,7 @@ struct DebugLogEntryView: View {
         VStack(alignment: .leading, spacing: 6) {
             // Meta line: fix number + outcome + date
             HStack(spacing: 8) {
-                Text("#\(String(format: "%04d", abs(completion.fixId.hashValue) % 10000))")
+                Text("#\(stableFixNumber(completion.fixId))")
                     .font(EgoTheme.mono(.caption2))
                     .foregroundColor(EgoTheme.textMuted)
 
@@ -223,6 +223,12 @@ struct DebugLogEntryView: View {
         case .failed: return "tried, couldn't"
         case .pending: return "pending"
         }
+    }
+
+    private func stableFixNumber(_ uuid: UUID) -> String {
+        let hex = uuid.uuidString.replacingOccurrences(of: "-", with: "").prefix(4)
+        let value = UInt32(hex, radix: 16) ?? 0
+        return String(format: "%04d", value % 10000)
     }
 
     private func formatDate(_ date: Date) -> String {

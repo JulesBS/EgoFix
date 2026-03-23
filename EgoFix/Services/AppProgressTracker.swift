@@ -115,7 +115,12 @@ final class AppProgressTracker: ObservableObject {
         var dateComponents = calendar.dateComponents([.year, .month, .day], from: Date())
         dateComponents.hour = components.hour
         dateComponents.minute = components.minute
-        return calendar.date(from: dateComponents) ?? Date()
+        let candidate = calendar.date(from: dateComponents) ?? Date()
+        // If wind-down already passed today, use tomorrow
+        if candidate < Date() {
+            return calendar.date(byAdding: .day, value: 1, to: candidate) ?? candidate
+        }
+        return candidate
     }
 
     /// Today's morning notification date

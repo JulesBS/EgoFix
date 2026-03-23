@@ -104,8 +104,7 @@ struct FixCardView: View {
     }
 
     private var fixNumber: String {
-        let hash = abs(fix.id.hashValue)
-        return String(format: "%04d", hash % 10000)
+        fix.fixNumber
     }
 
     private var severityLabel: String {

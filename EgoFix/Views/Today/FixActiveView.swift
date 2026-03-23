@@ -44,7 +44,7 @@ struct FixActiveView: View {
                     // Countdown to mission end
                     if let endDate = missionEndDate {
                         TimelineView(.periodic(from: .now, by: 60)) { _ in
-                            Text("⏱ \(formatRemaining(until: endDate))")
+                            Text("> \(formatRemaining(until: endDate))")
                                 .font(EgoTheme.mono(.caption))
                                 .foregroundColor(EgoTheme.textMuted)
                                 .monospacedDigit()
@@ -214,6 +214,7 @@ struct FixActiveView: View {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Didn't apply fix")
+                    .accessibilityHint("Shows options for why you didn't")
                 }
             } else {
                 // Step 2: Didn't try / Tried, couldn't
@@ -264,6 +265,7 @@ struct FixActiveView: View {
                         .foregroundColor(EgoTheme.textMuted)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Go back to outcome choices")
             }
         }
     }

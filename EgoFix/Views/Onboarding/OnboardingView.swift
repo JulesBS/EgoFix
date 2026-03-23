@@ -18,6 +18,20 @@ struct OnboardingView: View {
         ZStack {
             EgoTheme.bg.ignoresSafeArea()
 
+            // Error display
+            if let error = viewModel.loadError {
+                VStack(spacing: 12) {
+                    Text("// \(error)")
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(.red)
+                    Button("[ RETRY ]") { Task { await viewModel.loadBugs() } }
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.green)
+                        .accessibilityLabel("Retry loading")
+                }
+                .padding(24)
+            }
+
             switch viewModel.phase {
             case .awakening:
                 AwakeningPhaseView(
@@ -204,6 +218,8 @@ private struct AwakeningPhaseView: View {
                                 activeLineView(line, index: index)
                             }
                         }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel(lines.prefix(currentLine + 1).map(\.text).joined(separator: ". "))
 
                         if showButton {
                             FigmaCTAButton(label: "BEGIN SCAN", action: {
@@ -220,6 +236,8 @@ private struct AwakeningPhaseView: View {
                             .onAppear {
                                 buttonPulse = true
                             }
+                            .accessibilityLabel("Begin scan")
+                            .accessibilityHint("Start identifying your ego patterns")
                         }
                     }
                     .padding(.horizontal, 24)
@@ -428,6 +446,9 @@ private struct ScenarioPhaseView: View {
                             .opacity(isFaded ? 0.3 : 1)
                             .animation(.easeOut(duration: 0.2), value: selectedOptionId)
                             .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .accessibilityLabel("Option \(option.id.uppercased()): \(option.text)")
+                            .accessibilityAddTraits(isSelected ? .isSelected : [])
+                            .accessibilityRemoveTraits(selectedOptionId != nil ? .isButton : [])
                         }
                     }
                 }
@@ -515,6 +536,13 @@ private struct ReframePhaseView: View {
         }
         .padding(.horizontal, 24)
         .contentShape(Rectangle())
+        .accessibilityAction(.default) {
+            if textFinished {
+                autoAdvanceTask?.cancel()
+                onComplete()
+            }
+        }
+        .accessibilityHint("Tap to continue to next step")
         .onTapGesture {
             if textFinished {
                 autoAdvanceTask?.cancel()

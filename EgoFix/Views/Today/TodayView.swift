@@ -292,14 +292,14 @@ struct TodayView: View {
                 .transition(.opacity)
 
         case .noFix:
-            NoFixView()
+            NoFixView(onRetry: { Task { await viewModel.loadTodaysFix() } })
 
         case .fixBriefing(_, let fix):
             FixBriefingView(
                 fix: fix,
                 bugTitle: viewModel.currentBugTitle,
                 bugSlug: viewModel.currentBugSlug,
-                fixNumber: String(format: "%04d", abs(fix.id.hashValue) % 10000),
+                fixNumber: fix.fixNumber,
                 version: viewModel.currentVersion,
                 isReturningFix: viewModel.isReturningFix,
                 onAccept: { Task { await viewModel.acceptFix() } },
@@ -381,7 +381,7 @@ struct TodayView: View {
 
                     if showPostOutcomeDeepDive {
                         Text(deepDive)
-                            .font(EgoTheme.mono(.caption2))
+                            .font(EgoTheme.mono(.caption))
                             .foregroundColor(EgoTheme.textMuted.opacity(0.8))
                             .fixedSize(horizontal: false, vertical: true)
                             .lineSpacing(4)

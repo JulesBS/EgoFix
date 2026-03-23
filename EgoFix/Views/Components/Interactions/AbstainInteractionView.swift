@@ -43,7 +43,8 @@ struct AbstainInteractionView: View {
 
                 if interactionManager.abstainCompleted {
                     HStack(spacing: 4) {
-                        Image(systemName: "checkmark.circle.fill")
+                        Text("[+]")
+                            .font(EgoTheme.mono(.caption))
                             .foregroundColor(EgoTheme.green)
                         Text("COMPLETE")
                             .font(EgoTheme.label())
@@ -97,7 +98,7 @@ struct AbstainInteractionView: View {
     private var toggleSection: some View {
         if let config = interactionManager.abstainConfig {
             HStack(spacing: 8) {
-                Image(systemName: "clock")
+                Text(">")
                     .font(EgoTheme.mono(.caption))
                     .foregroundColor(.red)
                 Text(config.durationDescription)

@@ -259,20 +259,5 @@ final class SharedStorageManager {
         saveFixState(state)
     }
 
-    /// Update widget for check-in state
-    func updateForMissionCheckIn(fixNumber: String) {
-        if let current = loadFixState() {
-            let state = SharedFixState(
-                hasFixToday: true,
-                fixPrompt: current.fixPrompt,
-                fixNumber: fixNumber,
-                outcome: "pending",
-                missionState: "checkIn",
-                bugSlug: current.bugSlug,
-                typeLabel: current.typeLabel,
-                severity: current.severity
-            )
-            saveFixState(state)
-        }
-    }
+    // updateForMissionCheckIn removed — widget infers check-in from missionEndDate
 }

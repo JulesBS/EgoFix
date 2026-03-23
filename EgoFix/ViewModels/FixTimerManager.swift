@@ -76,8 +76,7 @@ final class FixTimerManager: ObservableObject {
     /// Initialize timer manager for a specific fix and fix completion
     func setup(for fix: Fix, fixCompletionId: UUID) async {
         // Store fix info for notifications and Live Activities
-        let hash = abs(fix.id.hashValue)
-        currentFixNumber = String(format: "%04d", hash % 10000)
+        currentFixNumber = fix.fixNumber
         currentFixPrompt = fix.prompt
         notificationIdentifier = "timer_\(fixCompletionId.uuidString)"
 
