@@ -132,10 +132,14 @@ Every fix (except timed/quiz/scenario) is a **daily mission** — accepted in th
 
 ### State Machine (TodayViewState)
 ```
-loading → [diagnostic → diagnosticComplete] → fixBriefing → fixActive → [checkIn] → completed → debrief → doneForToday
-                                                                ↑
-                                               fixAvailable (timed/quiz/scenario — immediate)
+loading → [diagnostic → diagnosticComplete] → fixBriefing → fixActive → doneForToday
+                                                    ↓
+                                              fixAvailable → doneForToday
+                                         (timed/quiz/scenario)
+
+Pattern interrupts can occur before fix or after outcome → pattern → reload
 ```
+States: `loading`, `diagnostic`, `diagnosticComplete`, `noFix`, `fixBriefing`, `fixActive`, `fixAvailable`, `doneForToday`, `pattern`
 
 ### Morning Briefing (FixBriefingView)
 Shows a **teaser card** — bug name, type label, severity bar, estimated time, version. Does NOT show the prompt. Creates a curiosity gap. `[ ACCEPT MISSION ]` reveals the fix.

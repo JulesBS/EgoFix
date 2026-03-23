@@ -139,10 +139,7 @@ struct TodayView: View {
     // MARK: - State Label
 
     private var stateLabelColor: Color {
-        switch viewModel.state {
-        case .checkIn: return EgoTheme.amber
-        default: return EgoTheme.green
-        }
+        EgoTheme.green
     }
 
     private var stateLabel: some View {
@@ -160,26 +157,14 @@ struct TodayView: View {
         case .noFix: return "NO_FIX"
         case .fixBriefing: return "MISSION_BRIEFING"
         case .fixActive: return "FIX_ACTIVE"
-        case .checkIn: return "FIX_REPORT"
         case .fixAvailable: return "FIX_AVAILABLE"
-        case .completed(let outcome, _):
-            switch outcome {
-            case .applied: return "FIX_APPLIED"
-            case .skipped: return "FIX_SKIPPED"
-            case .failed: return "FIX_FAILED"
-            case .pending: return "PENDING"
-            }
-        case .debrief: return "DEBRIEF"
         case .doneForToday: return "SYSTEM_STABLE"
         case .pattern: return "PATTERN_DETECTED"
         }
     }
 
     private var showCrashButton: Bool {
-        switch viewModel.state {
-        case .fixBriefing: return true
-        default: return false
-        }
+        false // Crash button removed — crashes captured via 2-step outcome
     }
 
     // MARK: - Header Bar
@@ -215,14 +200,7 @@ struct TodayView: View {
         switch viewModel.state {
         case .fixBriefing: return "BRIEFING"
         case .fixActive: return "ACTIVE"
-        case .checkIn: return "REPORTING"
-        case .completed(let outcome, _):
-            switch outcome {
-            case .applied: return "APPLIED"
-            case .skipped: return "SKIPPED"
-            case .failed: return "FAILED"
-            case .pending: return "PENDING"
-            }
+        case .fixAvailable: return "READY"
         case .doneForToday: return "IDLE"
         default: return "SYS"
         }
@@ -230,15 +208,8 @@ struct TodayView: View {
 
     private var statusBadgeColor: Color {
         switch viewModel.state {
-        case .fixBriefing, .checkIn: return EgoTheme.amber
-        case .fixActive: return EgoTheme.green
-        case .completed(let outcome, _):
-            switch outcome {
-            case .applied: return EgoTheme.green
-            case .skipped: return EgoTheme.amber
-            case .failed: return .red
-            case .pending: return EgoTheme.textMuted
-            }
+        case .fixBriefing: return EgoTheme.amber
+        case .fixActive, .fixAvailable: return EgoTheme.green
         default: return EgoTheme.textMuted
         }
     }
@@ -350,17 +321,6 @@ struct TodayView: View {
             )
             .transition(.opacity)
 
-        case .checkIn(_, let fix):
-            CheckInView(
-                fix: fix,
-                bugTitle: viewModel.currentBugTitle,
-                interactionManager: viewModel.interactionManager,
-                onApplied: { Task { await viewModel.markOutcome(.applied) } },
-                onSkipped: { Task { await viewModel.markOutcome(.skipped) } },
-                onFailed: { Task { await viewModel.markOutcome(.failed) } }
-            )
-            .transition(.move(edge: .bottom).combined(with: .opacity))
-
         case .fixAvailable(_, let fix):
             FixCardView(
                 fix: fix,
@@ -371,18 +331,6 @@ struct TodayView: View {
                 onFailed: { Task { await viewModel.markOutcome(.failed) } }
             )
             .transition(.move(edge: .bottom).combined(with: .opacity))
-
-        case .completed:
-            // Legacy state — redirect to doneForToday
-            doneForTodayContent
-                .transition(.opacity)
-                .onAppear { viewModel.transitionToDone() }
-
-        case .debrief:
-            // Legacy state — redirect to doneForToday
-            doneForTodayContent
-                .transition(.opacity)
-                .onAppear { viewModel.dismissDebrief() }
 
         case .doneForToday:
             doneForTodayContent
@@ -404,17 +352,9 @@ struct TodayView: View {
         VStack(alignment: .leading, spacing: 16) {
             // Outcome header with education teaser
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(outcomeLabel(viewModel.lastOutcome))
-                        .font(EgoTheme.mono(.callout))
-                        .foregroundColor(outcomeColor(viewModel.lastOutcome))
-
-                    Spacer()
-
-                    Text("v\(viewModel.currentVersion)")
-                        .font(EgoTheme.mono(.caption2))
-                        .foregroundColor(EgoTheme.textMuted)
-                }
+                Text(outcomeLabel(viewModel.lastOutcome))
+                    .font(EgoTheme.mono(.callout))
+                    .foregroundColor(outcomeColor(viewModel.lastOutcome))
 
                 // Education teaser — the insight from today's fix
                 if let teaser = viewModel.educationTeaser {

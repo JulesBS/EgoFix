@@ -9,10 +9,7 @@ enum TodayViewState {
     case noFix
     case fixBriefing(FixCompletion, Fix)        // morning — mission teaser (no prompt)
     case fixActive(FixCompletion, Fix)           // during day — mission accepted, prompt revealed
-    case checkIn(FixCompletion, Fix)            // evening — report outcome
-    case fixAvailable(FixCompletion, Fix)       // for timed/quiz (immediate in-app)
-    case completed(FixOutcome, String?)  // outcome + optional micro-education tidbit
-    case debrief(DebriefContent)                // post-outcome insight
+    case fixAvailable(FixCompletion, Fix)       // for timed/quiz/scenario (immediate in-app)
     case doneForToday                    // resting state after outcome
     case pattern(DetectedPattern)
 
@@ -25,30 +22,21 @@ enum TodayViewState {
         case .noFix: return "noFix"
         case .fixBriefing: return "fixBriefing"
         case .fixActive: return "fixActive"
-        case .checkIn: return "checkIn"
         case .fixAvailable: return "fixAvailable"
-        case .completed: return "completed"
-        case .debrief: return "debrief"
         case .doneForToday: return "doneForToday"
         case .pattern: return "pattern"
         }
     }
 }
 
-/// Content for the post-outcome debrief screen
+/// Stub — DebriefService still references this type but debrief flow is removed
 struct DebriefContent: Identifiable {
     let id = UUID()
     let title: String
     let body: String
     let comment: String
     let template: DebriefTemplate
-
-    enum DebriefTemplate {
-        case comparisonToSelf   // 5+ completions for this bug
-        case crossBug           // 2+ active bugs, 3+ completions this week
-        case tomorrowPreview    // default/fallback
-        case milestone          // fix 5, 10, 14, 21, 30
-    }
+    enum DebriefTemplate { case comparisonToSelf, crossBug, tomorrowPreview, milestone }
 }
 
 struct WeeklySummaryData: Identifiable {
@@ -265,9 +253,6 @@ final class TodayViewModel: ObservableObject {
                 )
             }
 
-        case .checkIn:
-            sharedStorage.updateForMissionCheckIn(fixNumber: fixNumber)
-
         default:
             sharedStorage.updateForFix(
                 prompt: fix.prompt,
@@ -290,7 +275,7 @@ final class TodayViewModel: ObservableObject {
 
         // Don't interrupt if we're already past the fix flow
         switch state {
-        case .completed, .debrief, .doneForToday: return
+        case .doneForToday: return
         default: break
         }
 
@@ -569,9 +554,7 @@ final class TodayViewModel: ObservableObject {
                 currentStreak = info.currentStreak
             }
 
-            // Fetch micro-education tidbit — only for immediate flow (timed/quiz).
-            // Day-long fixes get education at acceptance, not after outcome.
-            var tidbitText: String?
+            // Fetch post-outcome education for immediate types (day-long fixes got it at accept)
             if let fix = currentFix,
                immediateInteractionTypes.contains(fix.interactionType),
                let bug = try? await bugRepository.getById(fix.bugId) {
@@ -583,7 +566,8 @@ final class TodayViewModel: ObservableObject {
                 case .pending: trigger = .general
                 }
                 if let tidbit = try? await microEducationService.getRandomTidbit(bugSlug: bug.slug, trigger: trigger) {
-                    tidbitText = tidbit.body
+                    educationTeaser = tidbit.effectiveTeaser
+                    educationDeepDive = tidbit.effectiveDeepDive
                 }
             }
 
@@ -618,13 +602,7 @@ final class TodayViewModel: ObservableObject {
         }
     }
 
-    func transitionToDone() {
-        state = .doneForToday
-    }
-
-    func dismissDebrief() {
-        state = .doneForToday
-    }
+    // transitionToDone, dismissDebrief removed — outcome goes straight to doneForToday
 
     // MARK: - Pattern Handling
 
