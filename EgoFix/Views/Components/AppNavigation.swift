@@ -21,6 +21,8 @@ private struct TerminalBackButton: ViewModifier {
                         .font(EgoTheme.label())
                         .foregroundColor(EgoTheme.textMuted)
                     }
+                    .accessibilityLabel("Back to Today")
+                    .accessibilityHint("Returns to the Today view")
                 }
             }
     }
@@ -69,6 +71,8 @@ struct AppNavBar: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
             }
+            .accessibilityLabel("More options")
+            .accessibilityHint("Shows Bug Library, Docs, and Settings")
             .popover(isPresented: $showOverflow, attachmentAnchor: .point(.top)) {
                 OverflowMenu(onSelect: { dest in
                     showOverflow = false
@@ -82,6 +86,7 @@ struct AppNavBar: View {
             Rectangle()
                 .fill(EgoTheme.borderSubtle)
                 .frame(height: 0.5)
+                .accessibilityHidden(true)
         }
     }
 
@@ -93,6 +98,7 @@ struct AppNavBar: View {
                     .fill(isActive ? EgoTheme.green : Color.clear)
                     .frame(height: 1)
                     .shadow(color: isActive ? EgoTheme.greenGlow : .clear, radius: 4)
+                    .accessibilityHidden(true)
 
                 Text(label)
                     .font(EgoTheme.label())
@@ -102,6 +108,9 @@ struct AppNavBar: View {
                     .padding(.vertical, 14)
             }
         }
+        .accessibilityLabel(label)
+        .accessibilityHint(isActive ? "Currently selected" : "Switch to \(label)")
+        .accessibilityAddTraits(isActive ? .isSelected : [])
     }
 }
 
@@ -198,8 +207,10 @@ struct FooterLinks: View {
                 Image(systemName: "arrow.right")
                     .font(.system(size: 8, weight: .medium))
                     .foregroundColor(EgoTheme.textMuted)
+                    .accessibilityHidden(true)
             }
         }
+        .accessibilityLabel("Go to \(label)")
     }
 }
 
@@ -235,10 +246,13 @@ struct UnlockPromptView: View {
                             .tracking(1.5)
                         Image(systemName: "arrow.right")
                             .font(.system(size: 8, weight: .medium))
+                            .accessibilityHidden(true)
                     }
                     .foregroundColor(EgoTheme.green)
                     .greenGlow()
                 }
+                .accessibilityLabel(linkLabel)
+                .accessibilityHint("Opens newly unlocked feature")
                 .transition(.opacity)
             }
         }

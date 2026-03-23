@@ -25,7 +25,10 @@ struct MultiStepInteractionView: View {
                     .foregroundColor(EgoTheme.green)
                 Spacer()
                 progressDots
+                    .accessibilityHidden(true)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Step \(interactionManager.currentStepIndex + 1) of \(interactionManager.totalSteps)")
 
             if isComplete {
                 // Completion state
@@ -66,6 +69,8 @@ struct MultiStepInteractionView: View {
                             .cornerRadius(2)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Complete step")
+                    .accessibilityHint("Marks the current step as done")
 
                     Button(action: {
                         withAnimation(.easeInOut(duration: 0.2)) {
@@ -81,6 +86,8 @@ struct MultiStepInteractionView: View {
                             .cornerRadius(2)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Skip step")
+                    .accessibilityHint("Skips the current step")
 
                     Spacer()
                 }
@@ -88,6 +95,7 @@ struct MultiStepInteractionView: View {
             }
         }
         .interactionCard(borderColor: borderColor)
+        .accessibilityLabel("Multi-step interaction, step \(interactionManager.currentStepIndex + 1) of \(interactionManager.totalSteps)")
     }
 
     // MARK: - Progress Dots

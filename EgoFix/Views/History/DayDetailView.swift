@@ -22,9 +22,12 @@ struct DayDetailView: View {
                             .font(EgoTheme.mono(.caption))
                             .foregroundColor(EgoTheme.textMuted)
                     }
+                    .accessibilityLabel("Dismiss")
+                    .accessibilityHint("Close day detail view")
                 }
 
                 TerminalDivider()
+                    .accessibilityHidden(true)
 
                 // Activity breakdown
                 VStack(alignment: .leading, spacing: 16) {
@@ -40,6 +43,7 @@ struct DayDetailView: View {
                     if day.crashes > 0 {
                         Divider()
                             .background(EgoTheme.borderSubtle)
+                            .accessibilityHidden(true)
                         activityRow(label: "Crashes", count: day.crashes, color: .red)
                     }
                 }
@@ -75,6 +79,8 @@ struct DayDetailView: View {
                 .fontWeight(.medium)
                 .foregroundColor(count > 0 ? color : EgoTheme.textMuted)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(count)")
     }
 }
 

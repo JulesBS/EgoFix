@@ -52,6 +52,7 @@ struct SettingsView: View {
                             .foregroundColor(EgoTheme.green)
                             .padding(.vertical, 12)
                     }
+                    .accessibilityHint("Opens 3D ASCII animation preview")
 
                     commentLine("// 3D ASCII animation preview.")
                         .padding(.top, 4)
@@ -63,6 +64,7 @@ struct SettingsView: View {
                             .foregroundColor(EgoTheme.green)
                             .padding(.vertical, 12)
                     }
+                    .accessibilityHint("Resets onboarding flag so you can replay it")
 
                     commentLine("// Resets onboarding flag.")
                         .padding(.top, 4)
@@ -77,6 +79,7 @@ struct SettingsView: View {
                             .foregroundColor(.red)
                             .padding(.vertical, 12)
                     }
+                    .accessibilityHint("Warning: this will permanently delete all progress and data")
 
                     commentLine("// This cannot be undone.")
                         .padding(.top, 4)
@@ -124,6 +127,8 @@ struct SettingsView: View {
                 .foregroundColor(EgoTheme.textPrimary)
         }
         .padding(.vertical, 6)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 
     private func featureRow(_ label: String, unlocked: Bool) -> some View {
@@ -137,6 +142,8 @@ struct SettingsView: View {
                 .foregroundColor(unlocked ? EgoTheme.green : EgoTheme.textMuted)
         }
         .padding(.vertical, 6)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(unlocked ? "unlocked" : "locked")")
     }
 
     private func commentLine(_ text: String) -> some View {

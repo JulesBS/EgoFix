@@ -38,7 +38,10 @@ struct PatternAlertView: View {
             .overlay(
                 Rectangle()
                     .stroke(severityColor.opacity(borderPulse ? 0.6 : 0), lineWidth: 1)
+                    .accessibilityHidden(true)
             )
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Pattern detected: \(pattern.title). \(pattern.body)")
             .offset(y: appeared ? 0 : 40)
             .opacity(appeared ? 1 : 0)
             .modifier(ShakeEffect(shakes: shake ? 2 : 0))
@@ -48,8 +51,10 @@ struct PatternAlertView: View {
             // Action buttons
             VStack(spacing: 10) {
                 FigmaCTAButton(label: "NOTED", showArrow: false, action: onAcknowledge)
+                    .accessibilityHint("Acknowledge this pattern")
 
                 FigmaSecondaryButton(label: "DISMISS", action: onDismiss)
+                    .accessibilityHint("Dismiss this pattern alert")
             }
             .opacity(appeared ? 1 : 0)
 

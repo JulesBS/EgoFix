@@ -20,6 +20,7 @@ struct HistoryView: View {
                     .fill(EgoTheme.borderSubtle)
                     .frame(height: 0.5)
                     .padding(.top, 12)
+                    .accessibilityHidden(true)
 
                 if viewModel.isLoading {
                     Spacer()
@@ -83,6 +84,7 @@ struct HistoryView: View {
                 Rectangle()
                     .fill(EgoTheme.borderSubtle)
                     .frame(height: 0.5)
+                    .accessibilityHidden(true)
 
                 ForEach(viewModel.versionGroups) { group in
                     VersionGroupView(group: group)
@@ -113,6 +115,7 @@ struct VersionGroupView: View {
                 HStack(alignment: .top, spacing: 8) {
                     Text(changeTypeSymbol(entry.changeType))
                         .foregroundColor(changeTypeColor(entry.changeType))
+                        .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(entry.entryDescription)
@@ -124,6 +127,8 @@ struct VersionGroupView: View {
                             .foregroundColor(EgoTheme.textMuted)
                     }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("\(entry.changeType == .majorUpdate ? "Major update" : entry.changeType == .minorUpdate ? "Minor update" : entry.changeType == .crash ? "Crash" : "Reboot"): \(entry.entryDescription), \(formatDate(entry.createdAt))")
             }
         }
     }

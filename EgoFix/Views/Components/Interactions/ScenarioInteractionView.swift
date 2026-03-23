@@ -68,6 +68,7 @@ struct ScenarioInteractionView: View {
             }
         }
         .interactionCard(borderColor: borderColor)
+        .accessibilityLabel("Scenario interaction, \(interactionManager.scenarioAnswered ? "completed" : "awaiting response")")
     }
 
     // MARK: - Option Row
@@ -105,6 +106,8 @@ struct ScenarioInteractionView: View {
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(interactionManager.scenarioAnswered)
+        .accessibilityLabel("\(option.text), \(isSelected ? "selected" : "not selected")")
+        .accessibilityHint(interactionManager.scenarioAnswered ? "" : "Double tap to select this response")
     }
 
     // MARK: - Helpers

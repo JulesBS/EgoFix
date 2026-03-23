@@ -31,6 +31,7 @@ struct FixBriefingView: View {
                         .fill(EgoTheme.borderSubtle)
                         .frame(height: 0.5)
                         .padding(.bottom, 12)
+                        .accessibilityHidden(true)
                 }
 
                 // Inline comment
@@ -43,12 +44,17 @@ struct FixBriefingView: View {
             }
             .padding(24)
             .glassCard()
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Today's fix: \(fix.prompt)\(fix.inlineComment.map { ". \($0)" } ?? "")")
 
             // CTA: Accept
             FigmaCTAButton(label: "ACCEPT FIX", action: onAccept)
+                .accessibilityHint("Accept today's fix and begin working on it")
 
             // Secondary: Skip
             FigmaSecondaryButton(label: "SKIP", action: onSkip)
+                .accessibilityLabel("Skip fix")
+                .accessibilityHint("Skip today's fix without attempting it")
         }
     }
 }

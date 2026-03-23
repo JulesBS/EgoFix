@@ -21,6 +21,7 @@ struct FixActiveView: View {
                         .fill(EgoTheme.green)
                         .frame(width: 6, height: 6)
                         .opacity(pulseOpacity)
+                        .accessibilityHidden(true)
 
                     Text("PROCESS / RUNNING")
                         .font(EgoTheme.label())
@@ -30,6 +31,8 @@ struct FixActiveView: View {
                 }
                 .greenGlow()
                 .padding(.bottom, 16)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Fix active, running")
                 .onAppear {
                     withAnimation(
                         .easeInOut(duration: 1.2)
@@ -49,6 +52,7 @@ struct FixActiveView: View {
                         .fill(EgoTheme.borderSubtle)
                         .frame(height: 0.5)
                         .padding(.vertical, 12)
+                        .accessibilityHidden(true)
 
                     Text("// \(comment)")
                         .font(EgoTheme.mono(.caption))
@@ -62,6 +66,7 @@ struct FixActiveView: View {
                         .fill(EgoTheme.borderSubtle)
                         .frame(height: 0.5)
                         .padding(.vertical, 12)
+                        .accessibilityHidden(true)
 
                     HStack {
                         Text("ELAPSED")
@@ -76,6 +81,8 @@ struct FixActiveView: View {
                                 .monospacedDigit()
                         }
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Elapsed time: \(formatElapsed(since: acceptedAt))")
                 }
             }
             .padding(24)
@@ -83,6 +90,7 @@ struct FixActiveView: View {
 
             // CTA: Check in
             FigmaCTAButton(label: "CHECK IN", action: onCheckIn)
+                .accessibilityHint("Report how the fix went today")
         }
     }
 

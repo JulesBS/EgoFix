@@ -54,7 +54,12 @@ struct SubstituteInteractionView: View {
                     .foregroundColor(.orange)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .overlay(RoundedRectangle(cornerRadius: 2).stroke(.orange, lineWidth: 1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 2).stroke(.orange, lineWidth: 1)
+                            .accessibilityHidden(true)
+                    )
+                    .accessibilityLabel("Record urge")
+                    .accessibilityHint("Logs an urge occurrence, current count: \(interactionManager.urgeCount)")
 
                     Button("+substituted") {
                         interactionManager.substituteCount += 1
@@ -63,12 +68,18 @@ struct SubstituteInteractionView: View {
                     .foregroundColor(.green)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .overlay(RoundedRectangle(cornerRadius: 2).stroke(.green, lineWidth: 1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 2).stroke(.green, lineWidth: 1)
+                            .accessibilityHidden(true)
+                    )
+                    .accessibilityLabel("Record substitution")
+                    .accessibilityHint("Logs a successful substitution, current count: \(interactionManager.substituteCount)")
                 }
             }
 
             InlineCommentView(comment: fix.inlineComment)
         }
         .interactionCard()
+        .accessibilityLabel("Substitute interaction, \(interactionManager.substituteCount) substituted, \(interactionManager.urgeCount) urges")
     }
 }

@@ -18,12 +18,16 @@ struct BugDetailView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     headerSection
                     Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
+                        .accessibilityHidden(true)
                     statusSection
                     Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
+                        .accessibilityHidden(true)
                     descriptionSection
                     Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
+                        .accessibilityHidden(true)
                     timelineSection
                     Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
+                        .accessibilityHidden(true)
                     actionsSection
                 }
                 .padding()
@@ -46,6 +50,8 @@ struct BugDetailView: View {
                         .font(EgoTheme.mono(.caption))
                         .foregroundColor(EgoTheme.textMuted)
                 }
+                .accessibilityLabel("Dismiss")
+                .accessibilityHint("Close bug detail view")
             }
 
             HStack(alignment: .top, spacing: 16) {
@@ -129,6 +135,7 @@ struct BugDetailView: View {
             Circle()
                 .fill(color)
                 .frame(width: 6, height: 6)
+                .accessibilityHidden(true)
 
             Text(label)
                 .font(EgoTheme.mono(.caption))
@@ -140,6 +147,8 @@ struct BugDetailView: View {
                 .font(EgoTheme.mono(.caption))
                 .foregroundColor(EgoTheme.textMuted)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(formatDate(date))")
     }
 
     private var actionsSection: some View {
@@ -222,12 +231,16 @@ struct BugDetailView: View {
             .cornerRadius(2)
         }
         .disabled(isPerformingAction)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(label)
+        .accessibilityHint(comment.replacingOccurrences(of: "// ", with: ""))
     }
 
     private var statusIndicator: some View {
         Circle()
             .fill(statusColor)
             .frame(width: 10, height: 10)
+            .accessibilityHidden(true)
     }
 
     private var statusColor: Color {

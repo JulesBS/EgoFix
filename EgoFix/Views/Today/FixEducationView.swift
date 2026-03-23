@@ -30,10 +30,13 @@ struct FixEducationView: View {
             }
             .padding(24)
             .glassCard()
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Before you go: \(educationBody)")
 
             // CTA: Ready
             FigmaCTAButton(label: "READY", action: onContinue)
                 .opacity(showButton ? 1 : 0)
+                .accessibilityHint("Dismiss education and start today's fix")
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.5).delay(0.3)) {

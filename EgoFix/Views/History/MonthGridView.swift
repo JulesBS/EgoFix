@@ -36,6 +36,9 @@ struct MonthGridView: View {
                                 onDayTap(day)
                             }
                         }
+                        .accessibilityLabel(dayCellAccessibilityLabel(dayNumber: dayNumber, day: day))
+                        .accessibilityHint(day != nil && day!.totalActivity > 0 ? "Double tap for details" : "")
+                        .accessibilityAddTraits(day != nil && day!.totalActivity > 0 ? .isButton : [])
                 }
             }
         }
@@ -63,6 +66,26 @@ struct MonthGridView: View {
         let startOfDay = calendar.startOfDay(for: date)
         return month.days.first { calendar.isDate($0.id, inSameDayAs: startOfDay) }
     }
+
+    private func dayCellAccessibilityLabel(dayNumber: Int, day: CalendarDay?) -> String {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d"
+        guard let date = calendar.date(byAdding: .day, value: dayNumber - 1, to: month.id) else {
+            return "Day \(dayNumber)"
+        }
+        let dateString = formatter.string(from: date)
+        guard let day = day, day.totalActivity > 0 else {
+            return "\(dateString), no activity"
+        }
+        switch day.outcomeColor {
+        case .applied: return "\(dateString), fix applied"
+        case .skipped: return "\(dateString), fix skipped"
+        case .crash: return "\(dateString), crash"
+        case .opened: return "\(dateString), opened"
+        case .empty: return "\(dateString), no activity"
+        }
+    }
 }
 
 struct DayCellView: View {
@@ -81,6 +104,7 @@ struct DayCellView: View {
                     .stroke(Color.green, lineWidth: 1)
                     .frame(height: 20)
                     .cornerRadius(2)
+                    .accessibilityHidden(true)
             }
         }
     }

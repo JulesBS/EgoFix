@@ -27,6 +27,8 @@ struct CheckInView: View {
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .glassCard()
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Mission: \(fix.prompt)")
 
             // DEBRIEF — interaction-specific content
             VStack(alignment: .leading, spacing: 0) {
@@ -48,6 +50,7 @@ struct CheckInView: View {
                 if interactionManager.canMarkApplied {
                     FigmaCTAButton(label: "SUBMIT", action: onApplied)
                         .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        .accessibilityHint("Submit your check-in and mark fix as applied")
                 }
             }
         }
@@ -106,6 +109,8 @@ struct CheckInView: View {
                 .overlay(Rectangle().stroke(EgoTheme.green.opacity(0.4), lineWidth: 1))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Fix applied")
+            .accessibilityHint("Mark this fix as successfully applied")
 
             Button(action: onFailed) {
                 HStack {
@@ -121,6 +126,8 @@ struct CheckInView: View {
                 .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Fix failed")
+            .accessibilityHint("Mark this fix as tried but couldn't apply")
 
             Button(action: onSkipped) {
                 HStack {
@@ -136,6 +143,8 @@ struct CheckInView: View {
                 .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Fix skipped")
+            .accessibilityHint("Mark this fix as not attempted")
         }
     }
 
@@ -158,12 +167,14 @@ struct CheckInView: View {
                         .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Decrease count")
 
                 Text("\(interactionManager.counterValue)")
                     .font(.system(size: 36, weight: .light, design: .monospaced))
                     .foregroundColor(EgoTheme.green)
                     .greenGlow()
                     .frame(maxWidth: .infinity)
+                    .accessibilityLabel("Count: \(interactionManager.counterValue)")
 
                 Button(action: { interactionManager.incrementCounter() }) {
                     Text("+")
@@ -174,6 +185,7 @@ struct CheckInView: View {
                         .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Increase count")
             }
         }
         .padding(24)
@@ -195,6 +207,8 @@ struct CheckInView: View {
                 .background(EgoTheme.surface)
                 .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 .lineLimit(3...6)
+                .accessibilityLabel("Observation report")
+                .accessibilityHint("Describe what you noticed today")
         }
         .padding(24)
         .glassCard()
@@ -226,6 +240,8 @@ struct CheckInView: View {
                 .overlay(Rectangle().stroke(EgoTheme.green.opacity(0.4), lineWidth: 1))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Made it")
+            .accessibilityHint("Successfully abstained today")
 
             Button(action: {
                 interactionManager.abstainCompleted = false
@@ -244,6 +260,8 @@ struct CheckInView: View {
                 .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Broke it")
+            .accessibilityHint("Did not successfully abstain today")
         }
     }
 
@@ -264,6 +282,8 @@ struct CheckInView: View {
                               onIncrement: { interactionManager.substituteCount += 1 })
             }
             .background(EgoTheme.borderSubtle)
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Urges versus substitutions tracker")
         }
     }
 
@@ -277,12 +297,15 @@ struct CheckInView: View {
                 Button(action: onDecrement) {
                     Text("\u{2212}").font(EgoTheme.mono()).foregroundColor(EgoTheme.textMuted)
                 }
+                .accessibilityLabel("Decrease \(label.lowercased())")
                 Text("\(count)")
                     .font(.system(size: 28, weight: .light, design: .monospaced))
                     .foregroundColor(color)
+                    .accessibilityLabel("\(label.lowercased()): \(count)")
                 Button(action: onIncrement) {
                     Text("+").font(EgoTheme.mono()).foregroundColor(color)
                 }
+                .accessibilityLabel("Increase \(label.lowercased())")
             }
         }
         .frame(maxWidth: .infinity)
@@ -305,6 +328,8 @@ struct CheckInView: View {
                 .background(EgoTheme.surface)
                 .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 .lineLimit(3...8)
+                .accessibilityLabel("Journal entry")
+                .accessibilityHint("Write your reflection on today")
         }
         .padding(24)
         .glassCard()
@@ -331,6 +356,8 @@ struct CheckInView: View {
                 .background(EgoTheme.surface)
                 .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 .lineLimit(3...6)
+                .accessibilityLabel("What actually happened")
+                .accessibilityHint("Describe the actual outcome compared to your prediction")
         }
         .padding(24)
         .glassCard()
@@ -358,6 +385,7 @@ struct CheckInView: View {
                             .padding(12)
                             .background(EgoTheme.surface)
                             .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
+                            .accessibilityLabel("\(category.label) audit entry")
                     }
                 }
             }
@@ -381,6 +409,7 @@ struct CheckInView: View {
                     .fill(EgoTheme.borderSubtle)
                     .frame(height: 0.5)
                     .padding(.bottom, 16)
+                    .accessibilityHidden(true)
 
                 VStack(spacing: 8) {
                     ForEach(config.options, id: \.id) { option in
@@ -402,6 +431,8 @@ struct CheckInView: View {
                         }
                         .buttonStyle(.plain)
                         .disabled(interactionManager.scenarioAnswered)
+                        .accessibilityAddTraits(isSelected ? .isSelected : [])
+                        .accessibilityHint(isSelected ? "Selected" : "Double tap to select this response")
                     }
                 }
             }
@@ -430,6 +461,7 @@ struct CheckInView: View {
                             .font(EgoTheme.mono())
                             .foregroundColor(isCompleted ? EgoTheme.green : isSkipped ? EgoTheme.amber : EgoTheme.textMuted)
                             .frame(width: 28)
+                            .accessibilityHidden(true)
 
                         Text(step.prompt)
                             .font(EgoTheme.mono(.caption))
@@ -447,6 +479,7 @@ struct CheckInView: View {
                                         .padding(.vertical, 4)
                                         .background(EgoTheme.surface)
                                 }
+                                .accessibilityLabel("Mark step done")
                                 Button(action: { interactionManager.skipCurrentStep() }) {
                                     Text("Skip")
                                         .font(EgoTheme.label())
@@ -454,10 +487,13 @@ struct CheckInView: View {
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 4)
                                 }
+                                .accessibilityLabel("Skip step")
                             }
                         }
                     }
                     .padding(.vertical, 4)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Step \(index + 1): \(step.prompt). \(isCompleted ? "Completed" : isSkipped ? "Skipped" : isCurrent ? "Current step" : "Pending")")
                 }
             }
         }

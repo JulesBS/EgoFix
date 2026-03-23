@@ -19,11 +19,14 @@ struct TimerSectionView: View {
                     .foregroundColor(timerColor)
                     .monospacedDigit()
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Timer, \(timerManager.formattedTime) remaining, \(timerStatusLabel)")
 
             // Progress bar (ASCII style)
             Text(timerManager.progressBarString)
                 .font(EgoTheme.mono(.caption))
                 .foregroundColor(progressColor)
+                .accessibilityHidden(true)
 
             // Control button
             HStack {
@@ -38,6 +41,7 @@ struct TimerSectionView: View {
         .overlay(
             RoundedRectangle(cornerRadius: 4)
                 .stroke(borderColor, lineWidth: 1)
+                .accessibilityHidden(true)
         )
     }
 
@@ -54,6 +58,8 @@ struct TimerSectionView: View {
                     .background(Color.green.opacity(0.1))
                     .cornerRadius(2)
             }
+            .accessibilityLabel("Start timer")
+            .accessibilityHint("Begins the timed session")
 
         case .running:
             Button(action: { Task { await timerManager.pauseTimer() } }) {
@@ -65,6 +71,8 @@ struct TimerSectionView: View {
                     .background(Color.yellow.opacity(0.1))
                     .cornerRadius(2)
             }
+            .accessibilityLabel("Pause timer")
+            .accessibilityHint("Pauses the running timer")
 
         case .paused:
             HStack(spacing: 12) {
@@ -77,6 +85,8 @@ struct TimerSectionView: View {
                         .background(Color.green.opacity(0.1))
                         .cornerRadius(2)
                 }
+                .accessibilityLabel("Resume timer")
+                .accessibilityHint("Resumes the paused timer")
 
                 Button(action: { Task { await timerManager.resetTimer() } }) {
                     Text("[ Reset ]")
@@ -85,6 +95,8 @@ struct TimerSectionView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                 }
+                .accessibilityLabel("Reset timer")
+                .accessibilityHint("Resets the timer to the beginning")
             }
 
         case .completed:
@@ -96,6 +108,17 @@ struct TimerSectionView: View {
                     .foregroundColor(EgoTheme.green)
             }
             .padding(.vertical, 8)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Timer completed")
+        }
+    }
+
+    private var timerStatusLabel: String {
+        switch timerManager.status {
+        case .idle: return "not started"
+        case .running: return "running"
+        case .paused: return "paused"
+        case .completed: return "completed"
         }
     }
 

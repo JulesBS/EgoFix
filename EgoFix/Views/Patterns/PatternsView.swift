@@ -111,6 +111,9 @@ struct PatternsView: View {
             .background(isSelected ? Color.green.opacity(0.15) : Color.gray.opacity(0.1))
             .cornerRadius(2)
         }
+        .accessibilityLabel("\(title), \(count) patterns")
+        .accessibilityHint(isSelected ? "Currently selected" : "Filter patterns by \(title)")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private var filterSection: some View {
@@ -126,6 +129,9 @@ struct PatternsView: View {
                             .background(viewModel.severityFilter == filter ? Color.green.opacity(0.15) : Color.gray.opacity(0.1))
                             .cornerRadius(2)
                     }
+                    .accessibilityLabel("\(filter.rawValue) filter")
+                    .accessibilityHint(viewModel.severityFilter == filter ? "Currently selected" : "Filter by \(filter.rawValue)")
+                    .accessibilityAddTraits(viewModel.severityFilter == filter ? .isSelected : [])
                 }
             }
             .padding(.horizontal)
@@ -202,6 +208,9 @@ struct PatternCardView: View {
         .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(2)
         .padding(.horizontal)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(severityLabel) pattern: \(pattern.title). \(pattern.body). \(recommendationCount) recommendations")
+        .accessibilityHint("Double tap for details")
     }
 
     @ViewBuilder

@@ -43,6 +43,8 @@ struct WeeklySummaryView: View {
                         .foregroundColor(EgoTheme.textMuted)
                         .padding()
                 }
+                .accessibilityLabel("Continue")
+                .accessibilityHint("Dismiss weekly summary")
                 .opacity(appeared ? 1 : 0)
             }
             .padding()
@@ -68,5 +70,7 @@ struct WeeklySummaryView: View {
         .padding(.vertical, 16)
         .background(color.opacity(0.1))
         .cornerRadius(2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }

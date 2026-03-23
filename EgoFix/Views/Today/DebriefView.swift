@@ -33,9 +33,12 @@ struct DebriefView: View {
             .glassCard()
             .opacity(appeared ? 1 : 0)
             .offset(y: appeared ? 0 : 10)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Debrief: \(content.title). \(content.body). \(content.comment)")
 
             HStack(spacing: 12) {
                 FigmaCTAButton(label: "CONTINUE", action: onDismiss)
+                    .accessibilityHint("Dismiss debrief and continue")
 
                 if let onShare {
                     Button(action: onShare) {
@@ -45,6 +48,8 @@ struct DebriefView: View {
                             .padding(.vertical, 17)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Share fix")
+                    .accessibilityHint("Share this fix with someone")
                 }
             }
             .opacity(appeared ? 1 : 0)

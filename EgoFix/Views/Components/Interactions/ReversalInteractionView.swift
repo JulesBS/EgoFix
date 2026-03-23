@@ -20,5 +20,6 @@ struct ReversalInteractionView: View {
             InlineCommentView(comment: fix.inlineComment)
         }
         .interactionCard()
+        .accessibilityLabel("Reversal interaction, do the opposite")
     }
 }

@@ -29,10 +29,12 @@ struct AbstainInteractionView: View {
                         .foregroundColor(EgoTheme.textPrimary)
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .red))
+                .accessibilityHint("Mark whether you completed the abstain period without slipping")
             }
 
             InlineCommentView(comment: fix.inlineComment)
         }
         .interactionCard()
+        .accessibilityLabel("Abstain interaction, \(interactionManager.abstainCompleted ? "completed" : "in progress")")
     }
 }

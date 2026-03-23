@@ -126,6 +126,8 @@ struct InteractionHeader: View {
                 .font(EgoTheme.label())
                 .foregroundColor(EgoTheme.textMuted)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(type) interaction, status: \(status)")
     }
 }
 
@@ -153,6 +155,7 @@ extension View {
             .overlay(
                 RoundedRectangle(cornerRadius: 4)
                     .stroke(borderColor, lineWidth: 1)
+                    .accessibilityHidden(true)
             )
     }
 }

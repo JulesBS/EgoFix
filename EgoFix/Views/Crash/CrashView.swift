@@ -79,6 +79,8 @@ struct CrashBugSelectView: View {
                         .font(EgoTheme.mono(.caption))
                         .foregroundColor(EgoTheme.textMuted)
                 }
+                .accessibilityLabel("Dismiss")
+                .accessibilityHint("Cancel crash logging")
             }
 
             if isLoading {
@@ -100,6 +102,7 @@ struct CrashBugSelectView: View {
                                     Spacer()
                                     Text(">")
                                         .foregroundColor(EgoTheme.textMuted)
+                                        .accessibilityHidden(true)
                                 }
                                 .font(EgoTheme.mono())
                                 .padding(.vertical, 12)
@@ -107,6 +110,8 @@ struct CrashBugSelectView: View {
                                 .background(EgoTheme.surface)
                                 .cornerRadius(2)
                             }
+                            .accessibilityLabel("Log crash for \(bug.nickname)")
+                            .accessibilityHint("Select this bug to log a crash")
                             .opacity(index < visibleBugCount ? 1 : 0)
                             .offset(y: index < visibleBugCount ? 0 : 8)
                         }
@@ -159,6 +164,7 @@ struct CrashLoggedView: View {
             Color.red.opacity(flashOpacity)
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
+                .accessibilityHidden(true)
 
             VStack(spacing: 24) {
                 Spacer()

@@ -33,6 +33,8 @@ struct PatternDetailView: View {
                                 .font(EgoTheme.mono(.caption))
                                 .foregroundColor(EgoTheme.textMuted)
                         }
+                        .accessibilityLabel("Close")
+                        .accessibilityHint("Dismiss pattern detail")
                     }
 
                     // Severity badge and date
@@ -73,6 +75,7 @@ struct PatternDetailView: View {
                         Divider()
                             .background(EgoTheme.borderSubtle)
                             .padding(.vertical, 8)
+                            .accessibilityHidden(true)
 
                         TrendChartView(
                             title: "Bug Intensity",
@@ -83,6 +86,7 @@ struct PatternDetailView: View {
 
                     TerminalDivider()
                         .padding(.vertical, 8)
+                        .accessibilityHidden(true)
 
                     // Recommendations section
                     Text("RECOMMENDATIONS")

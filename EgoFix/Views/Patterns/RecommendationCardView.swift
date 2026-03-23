@@ -10,6 +10,7 @@ struct RecommendationCardView: View {
                 Text("▶")
                     .font(EgoTheme.label())
                     .foregroundColor(EgoTheme.green)
+                    .accessibilityHidden(true)
 
                 Text(recommendation.title.uppercased())
                     .font(EgoTheme.mono(.callout))
@@ -28,6 +29,8 @@ struct RecommendationCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Recommendation: \(recommendation.title). \(recommendation.description)")
     }
 }
 

@@ -30,6 +30,7 @@ struct CounterInteractionView: View {
                     .fontWeight(.bold)
                     .foregroundColor(countColor)
                     .monospacedDigit()
+                    .accessibilityLabel("Count: \(interactionManager.counterValue)")
 
                 Spacer()
             }
@@ -54,6 +55,8 @@ struct CounterInteractionView: View {
                         .cornerRadius(4)
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Increment count")
+                .accessibilityHint("Adds one to the counter")
 
                 Spacer()
             }
@@ -75,6 +78,8 @@ struct CounterInteractionView: View {
                             .padding(.vertical, 6)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Decrement count")
+                    .accessibilityHint("Subtracts one from the counter")
 
                     Spacer()
                 }
@@ -93,6 +98,7 @@ struct CounterInteractionView: View {
             }
         }
         .interactionCard(borderColor: borderColor)
+        .accessibilityLabel("Counter interaction, count: \(interactionManager.counterValue)")
     }
 
     // MARK: - Computed Properties

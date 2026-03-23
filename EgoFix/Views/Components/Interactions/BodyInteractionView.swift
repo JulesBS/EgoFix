@@ -20,5 +20,6 @@ struct BodyInteractionView: View {
             InlineCommentView(comment: fix.inlineComment)
         }
         .interactionCard()
+        .accessibilityLabel("Body awareness interaction")
     }
 }

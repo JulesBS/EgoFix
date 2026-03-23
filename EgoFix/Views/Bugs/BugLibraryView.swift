@@ -21,6 +21,7 @@ struct BugLibraryView: View {
                             headerSection
                             statusSummary
                             Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
+                                .accessibilityHidden(true)
                             bugList
                         }
                         .padding()
@@ -83,6 +84,8 @@ struct BugLibraryView: View {
         .padding(.vertical, 8)
         .background(color.opacity(0.1))
         .cornerRadius(2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(count)")
     }
 
     private var bugList: some View {
@@ -139,10 +142,14 @@ struct BugLibraryRowView: View {
             Text(">")
                 .font(EgoTheme.mono())
                 .foregroundColor(EgoTheme.textMuted)
+                .accessibilityHidden(true)
         }
         .padding()
         .background(EgoTheme.surface)
         .cornerRadius(2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(bug.title), \(bug.statusLabel)\(bug.durationLabel != nil ? ", \(bug.durationLabel!)" : "")")
+        .accessibilityHint("Double tap for details")
     }
 
     private var statusIndicator: some View {
@@ -150,6 +157,7 @@ struct BugLibraryRowView: View {
             .fill(statusColor)
             .frame(width: 8, height: 8)
             .padding(.top, 6)
+            .accessibilityHidden(true)
     }
 
     private var statusColor: Color {

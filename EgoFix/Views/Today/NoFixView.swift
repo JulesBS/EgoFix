@@ -13,5 +13,7 @@ struct NoFixView: View {
                 .foregroundColor(EgoTheme.textMuted)
         }
         .padding(.top, 16)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("No fix available. Check back later or select a bug first.")
     }
 }

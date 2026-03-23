@@ -18,11 +18,14 @@ struct TimedInteractionView: View {
                     .foregroundColor(timerColor)
                     .monospacedDigit()
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Timer, \(interactionManager.formattedTime) remaining, \(timerStatusLabel)")
 
             // Progress bar (ASCII style)
             Text(interactionManager.progressBarString)
                 .font(EgoTheme.mono(.caption))
                 .foregroundColor(progressColor)
+                .accessibilityHidden(true)
 
             // Control buttons
             HStack {
@@ -39,6 +42,7 @@ struct TimedInteractionView: View {
             }
         }
         .interactionCard(borderColor: borderColor)
+        .accessibilityLabel("Timer interaction, \(timerStatusLabel)")
     }
 
     // MARK: - Timer Button
@@ -57,6 +61,8 @@ struct TimedInteractionView: View {
                     .cornerRadius(2)
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Start timer")
+            .accessibilityHint("Begins the timed session")
 
         case .running:
             Button(action: { Task { await interactionManager.pauseTimer() } }) {
@@ -69,6 +75,8 @@ struct TimedInteractionView: View {
                     .cornerRadius(2)
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel("Pause timer")
+            .accessibilityHint("Pauses the running timer")
 
         case .paused:
             HStack(spacing: 12) {
@@ -82,6 +90,8 @@ struct TimedInteractionView: View {
                         .cornerRadius(2)
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Resume timer")
+                .accessibilityHint("Resumes the paused timer")
 
                 Button(action: { Task { await interactionManager.resetTimer() } }) {
                     Text("[ Reset ]")
@@ -91,6 +101,8 @@ struct TimedInteractionView: View {
                         .padding(.vertical, 8)
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Reset timer")
+                .accessibilityHint("Resets the timer to the beginning")
             }
 
         case .completed:
@@ -102,10 +114,21 @@ struct TimedInteractionView: View {
                     .foregroundColor(.green)
             }
             .padding(.vertical, 8)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Timer completed")
         }
     }
 
     // MARK: - Computed Properties
+
+    private var timerStatusLabel: String {
+        switch interactionManager.timerStatus {
+        case .idle: return "not started"
+        case .running: return "running"
+        case .paused: return "paused"
+        case .completed: return "completed"
+        }
+    }
 
     private var timerColor: Color {
         switch interactionManager.timerStatus {

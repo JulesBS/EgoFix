@@ -19,6 +19,7 @@ struct DocsView: View {
                         .foregroundColor(EgoTheme.textMuted)
 
                     TerminalDivider()
+                        .accessibilityHidden(true)
 
                     // Bug Library link
                     Button(action: { showBugLibrary = true }) {
@@ -32,17 +33,21 @@ struct DocsView: View {
                             Text(">")
                                 .font(EgoTheme.mono())
                                 .foregroundColor(EgoTheme.textMuted)
+                                .accessibilityHidden(true)
                         }
                         .padding()
                         .background(Color.red.opacity(0.1))
                         .cornerRadius(2)
                     }
+                    .accessibilityLabel("Bug Library")
+                    .accessibilityHint("View all 7 ego patterns and their lifecycle status")
 
                     Text("// View all 7 ego patterns and their lifecycle status")
                         .font(EgoTheme.mono(.caption))
                         .foregroundColor(EgoTheme.textMuted)
 
                     TerminalDivider()
+                        .accessibilityHidden(true)
 
                     DocSectionView(
                         title: "What is a Bug?",
@@ -92,5 +97,6 @@ struct DocSectionView: View {
                 .font(EgoTheme.mono())
                 .foregroundColor(EgoTheme.textMuted)
         }
+        .accessibilityElement(children: .combine)
     }
 }

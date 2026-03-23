@@ -30,13 +30,17 @@ struct ObservationInteractionView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 2)
                             .stroke(isTextFieldFocused ? Color.yellow.opacity(0.5) : Color(white: 0.2), lineWidth: 1)
+                            .accessibilityHidden(true)
                     )
                     .shadow(color: isTextFieldFocused ? .yellow.opacity(0.3) : .clear, radius: 4, x: 0, y: 0)
                     .focused($isTextFieldFocused)
+                    .accessibilityLabel("Observation report")
+                    .accessibilityHint("Describe what you noticed")
             }
 
             InlineCommentView(comment: fix.inlineComment)
         }
         .interactionCard()
+        .accessibilityLabel("Observation interaction")
     }
 }

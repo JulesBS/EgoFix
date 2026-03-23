@@ -29,6 +29,7 @@ struct StandardInteractionView: View {
                             .font(EgoTheme.label())
                             .foregroundColor(.green)
                             .frame(width: 12)
+                            .accessibilityHidden(true)
 
                         Text("VALIDATION")
                             .font(EgoTheme.label())
@@ -36,6 +37,8 @@ struct StandardInteractionView: View {
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel(showValidation ? "Hide validation" : "Show validation")
+                .accessibilityHint("Toggles the validation criteria display")
 
                 if showValidation {
                     Text(fix.validation)
@@ -52,6 +55,7 @@ struct StandardInteractionView: View {
             InlineCommentView(comment: fix.inlineComment)
         }
         .interactionCard()
+        .accessibilityLabel("Standard interaction")
     }
 }
 

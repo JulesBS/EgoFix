@@ -22,23 +22,29 @@ struct StreakCardView: View {
                     Text(currentStreakBar)
                         .font(EgoTheme.mono())
                         .foregroundColor(EgoTheme.green)
+                        .accessibilityHidden(true)
 
                     Text("\(displayedStreak) days current")
                         .font(EgoTheme.mono())
                         .foregroundColor(EgoTheme.textPrimary)
                         .scaleEffect(streakScale)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Current streak: \(displayedStreak) days")
 
                 // Longest streak bar
                 HStack(spacing: 8) {
                     Text(longestStreakBar)
                         .font(EgoTheme.mono())
                         .foregroundColor(EgoTheme.green.opacity(0.5))
+                        .accessibilityHidden(true)
 
                     Text("\(streakData.longestStreak) days longest")
                         .font(EgoTheme.mono())
                         .foregroundColor(EgoTheme.textPrimary)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Longest streak: \(streakData.longestStreak) days")
             }
 
             // Comment

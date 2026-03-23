@@ -15,6 +15,7 @@ struct CompletionView: View {
             // Outcome color flash overlay
             titleColor.opacity(flashOpacity)
                 .ignoresSafeArea()
+                .accessibilityHidden(true)
 
             VStack(spacing: 0) {
                 Spacer()
@@ -26,12 +27,14 @@ struct CompletionView: View {
                     .scaleEffect(appeared ? 1 : 0.5)
                     .opacity(appeared ? 1 : 0)
                     .shadow(color: titleColor.opacity(0.5), radius: 8, x: 0, y: 0)
+                    .accessibilityHidden(true)
 
                 Text(title)
                     .font(EgoTheme.mono(.title2))
                     .foregroundColor(titleColor)
                     .padding(.top, 16)
                     .opacity(appeared ? 1 : 0)
+                    .accessibilityLabel("Outcome: \(title)")
 
                 // Typing animation for message
                 Text(typedMessage + (showMessage && typedMessage.count < message.count ? "_" : ""))

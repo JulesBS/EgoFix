@@ -39,7 +39,10 @@ struct AuditInteractionView: View {
                             .overlay(
                                 RoundedRectangle(cornerRadius: 2)
                                     .stroke(EgoTheme.border, lineWidth: 1)
+                                    .accessibilityHidden(true)
                             )
+                            .accessibilityLabel("\(category.label) audit note")
+                            .accessibilityHint("Enter your notes for the \(category.label) category")
                     }
                 }
             }
@@ -47,5 +50,6 @@ struct AuditInteractionView: View {
             InlineCommentView(comment: fix.inlineComment)
         }
         .interactionCard()
+        .accessibilityLabel("Audit interaction, end-of-day review")
     }
 }

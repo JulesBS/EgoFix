@@ -77,6 +77,7 @@ struct StatsDashboardView: View {
             .font(EgoTheme.mono())
             .foregroundColor(EgoTheme.textMuted)
             .frame(width: 24)
+            .accessibilityHidden(true)
     }
 
     private func statCell(label: String, value: Int, valueColor: Color) -> some View {
@@ -96,6 +97,8 @@ struct StatsDashboardView: View {
                 .foregroundColor(valueColor)
         }
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label) \(value)")
     }
 }
 

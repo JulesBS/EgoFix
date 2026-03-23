@@ -52,6 +52,7 @@ struct TodayView: View {
                 .opacity(soulOpacity)
                 .blur(radius: 1)
                 .allowsHitTesting(false)
+                .accessibilityHidden(true)
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
@@ -64,6 +65,7 @@ struct TodayView: View {
                             .fill(EgoTheme.greenSubtle)
                             .frame(height: 0.5)
                             .padding(.bottom, 24)
+                            .accessibilityHidden(true)
 
                         // STATE LABEL
                         stateLabel
@@ -188,17 +190,21 @@ struct TodayView: View {
                     .tracking(1)
                     .foregroundColor(EgoTheme.green)
             }
+            .accessibilityLabel("Settings, version \(viewModel.currentVersion)")
+            .accessibilityHint("Opens settings")
 
             Spacer()
 
             // Status badge
             StatusBadge(text: statusBadgeText, color: statusBadgeColor)
+                .accessibilityLabel("Status: \(statusBadgeText)")
 
             // Streak
             Text(StatusLineProvider.formatStreak(viewModel.currentStreak))
                 .font(EgoTheme.label())
                 .foregroundColor(EgoTheme.textMuted)
                 .padding(.leading, 12)
+                .accessibilityLabel("Streak: \(viewModel.currentStreak) days")
         }
     }
 
@@ -255,6 +261,8 @@ struct TodayView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Log a crash")
+        .accessibilityHint("Record an ego crash event")
     }
 
     // MARK: - Navigation Destinations
@@ -418,6 +426,8 @@ struct TodayView: View {
                     bentoTile(count: summary.failed, label: "FAILED", color: .red)
                 }
                 .background(EgoTheme.borderSubtle)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Weekly summary: \(summary.applied) applied, \(summary.skipped) skipped, \(summary.failed) failed")
 
                 Text(summary.comment)
                     .font(EgoTheme.label())
@@ -606,6 +616,7 @@ struct InlineCompletionView: View {
                 .scaleEffect(appeared ? 1 : 0.5)
                 .opacity(appeared ? 1 : 0)
                 .shadow(color: outcomeColor.opacity(0.5), radius: 8)
+                .accessibilityHidden(true)
 
             // Title (tracked)
             Text(title)
@@ -615,6 +626,7 @@ struct InlineCompletionView: View {
                 .greenGlow()
                 .padding(.top, 16)
                 .opacity(appeared ? 1 : 0)
+                .accessibilityLabel("Outcome: \(title)")
 
             // Typing message
             Text(typedMessage + (showMessage && typedMessage.count < message.count ? "_" : ""))

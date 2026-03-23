@@ -58,6 +58,8 @@ struct ActivityCalendarView: View {
                     .foregroundColor(currentMonthIndex > 0 ? EgoTheme.green : EgoTheme.textMuted)
             }
             .disabled(currentMonthIndex == 0)
+            .accessibilityLabel("Previous month")
+            .accessibilityHint(currentMonthIndex > 0 ? "Go to previous month" : "No previous month available")
 
             Spacer()
 
@@ -73,6 +75,8 @@ struct ActivityCalendarView: View {
                     .foregroundColor(currentMonthIndex < months.count - 1 ? EgoTheme.green : EgoTheme.textMuted)
             }
             .disabled(currentMonthIndex >= months.count - 1)
+            .accessibilityLabel("Next month")
+            .accessibilityHint(currentMonthIndex < months.count - 1 ? "Go to next month" : "No next month available")
         }
     }
 
@@ -101,10 +105,13 @@ struct ActivityCalendarView: View {
                 .fill(color)
                 .frame(width: 12, height: 12)
                 .cornerRadius(2)
+                .accessibilityHidden(true)
             Text(label)
                 .font(EgoTheme.label())
                 .foregroundColor(EgoTheme.textMuted)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Legend: \(label)")
     }
 
     private func previousMonth() {

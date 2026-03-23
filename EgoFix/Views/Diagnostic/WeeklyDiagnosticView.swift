@@ -24,6 +24,8 @@ struct WeeklyDiagnosticView: View {
                                 .frame(width: 8, height: 8)
                         }
                     }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Progress: bug \(viewModel.currentBugIndex + 1) of \(viewModel.bugs.count)")
 
                     Spacer()
 
@@ -47,6 +49,8 @@ struct WeeklyDiagnosticView: View {
                             .font(EgoTheme.mono(.caption))
                             .foregroundColor(EgoTheme.textMuted)
                     }
+                    .accessibilityLabel("Skip diagnostic")
+                    .accessibilityHint("Skip the weekly diagnostic and dismiss")
                 }
                 .padding()
             }
@@ -92,6 +96,8 @@ struct IntensityButton: View {
                 .background(color.opacity(0.1))
                 .cornerRadius(2)
         }
+        .accessibilityLabel("\(label) intensity")
+        .accessibilityHint("Rate this bug as \(label.lowercased()) this week")
     }
 }
 
@@ -129,6 +135,8 @@ struct ContextButton: View {
                 .foregroundColor(EgoTheme.textMuted)
                 .padding(.vertical, 8)
         }
+        .accessibilityLabel(label)
+        .accessibilityHint("Select \(label.lowercased()) as the context")
     }
 }
 
@@ -156,6 +164,8 @@ struct DiagnosticCompleteView: View {
                     .foregroundColor(EgoTheme.textMuted)
                     .padding()
             }
+            .accessibilityLabel("Continue")
+            .accessibilityHint("Dismiss diagnostic results")
         }
         .padding()
     }

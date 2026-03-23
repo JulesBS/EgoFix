@@ -35,6 +35,8 @@ struct FixCardView: View {
                 }
             }
             .padding(.bottom, 24)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Fix number \(fixNumber)\(bugTitle != nil ? ", \(bugTitle!), severity \(severityLabel)" : "")")
 
             // Content area
             ScrollView(.vertical, showsIndicators: true) {
@@ -84,8 +86,11 @@ struct FixCardView: View {
                     isDisabled: !interactionManager.canMarkApplied,
                     action: onApplied
                 )
+                .accessibilityHint(interactionManager.canMarkApplied ? "Mark this fix as applied" : "Complete the interaction first")
                 ActionButton(label: "Skip", color: .yellow, action: onSkipped)
+                    .accessibilityHint("Skip this fix for today")
                 ActionButton(label: "Fail", color: .red, action: onFailed)
+                    .accessibilityHint("Log a crash for this fix")
             }
         }
         .padding(.vertical, 8)

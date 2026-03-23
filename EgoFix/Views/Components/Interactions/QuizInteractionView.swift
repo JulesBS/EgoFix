@@ -57,6 +57,7 @@ struct QuizInteractionView: View {
             }
         }
         .interactionCard(borderColor: borderColor)
+        .accessibilityLabel("Assessment interaction, \(interactionManager.quizAnswered ? "submitted" : "awaiting answer")")
     }
 
     // MARK: - Option Row
@@ -94,6 +95,8 @@ struct QuizInteractionView: View {
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(interactionManager.quizAnswered)
+        .accessibilityLabel("\(option.text), \(isSelected ? "selected" : "not selected")")
+        .accessibilityHint(interactionManager.quizAnswered ? "" : "Double tap to select this option")
     }
 
     // MARK: - Helpers

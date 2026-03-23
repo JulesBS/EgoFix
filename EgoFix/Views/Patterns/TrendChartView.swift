@@ -75,6 +75,8 @@ struct TrendChartView: View {
         .padding()
         .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(2)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title) trend chart with \(dataPoints.count) data points. Trending: \(trendDirection.label)")
     }
 
     @ViewBuilder
