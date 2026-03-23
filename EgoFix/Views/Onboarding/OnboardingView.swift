@@ -92,7 +92,7 @@ struct OnboardingView: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.4), value: viewModel.phase)
+        .animation(.easeOut(duration: 0.35), value: viewModel.phase)
         .task {
             await viewModel.loadBugs()
         }
@@ -113,6 +113,8 @@ private struct AwakeningPhaseView: View {
 
     @State private var currentLine = 0
     @State private var showButton = false
+    @State private var glitchFlash: Double = 0
+    @State private var buttonPulse = false
 
     private struct BootLine {
         let text: String
@@ -158,37 +160,60 @@ private struct AwakeningPhaseView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            // 3D ASCII soul animation with corner brackets — fixed size, never scales down
-            OnboardingSoulView(
-                onRendererReady: { r in soulRenderer = r },
-                onRendererFailed: { rendererFailed = true }
-            )
-            .frame(width: 200, height: 200)
-            .cornerBrackets()
-            .padding(.top, 40)
-            .padding(.bottom, 24)
+        ZStack {
+            // CRT scanline effect
+            ScanlineOverlay()
+                .ignoresSafeArea()
 
-            // Scrollable text + button area
-            ScrollView {
-                VStack(alignment: .leading, spacing: 6) {
-                    ForEach(0..<min(currentLine + 1, lines.count), id: \.self) { index in
-                        let line = lines[index]
-                        if index < currentLine {
-                            completedLineView(line)
-                        } else if index == currentLine {
-                            activeLineView(line, index: index)
+            // Green flash on "bugs" glitch
+            EgoTheme.green.opacity(glitchFlash)
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+
+            VStack(spacing: 0) {
+                // 3D ASCII soul animation with corner brackets — fixed size, never scales down
+                OnboardingSoulView(
+                    onRendererReady: { r in soulRenderer = r },
+                    onRendererFailed: { rendererFailed = true }
+                )
+                .frame(width: 200, height: 200)
+                .cornerBrackets()
+                .padding(.top, 40)
+                .padding(.bottom, 24)
+
+                // Scrollable text + button area
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(0..<min(currentLine + 1, lines.count), id: \.self) { index in
+                            let line = lines[index]
+                            if index < currentLine {
+                                completedLineView(line)
+                                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            } else if index == currentLine {
+                                activeLineView(line, index: index)
+                            }
+                        }
+
+                        if showButton {
+                            FigmaCTAButton(label: "INITIALIZE SEQUENCE", action: {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                onBeginScan()
+                            })
+                            .overlay(
+                                Rectangle()
+                                    .stroke(EgoTheme.green.opacity(buttonPulse ? 0.6 : 0.3), lineWidth: 1)
+                                    .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: buttonPulse)
+                            )
+                            .padding(.top, 26)
+                            .transition(.opacity)
+                            .onAppear {
+                                buttonPulse = true
+                            }
                         }
                     }
-
-                    if showButton {
-                        FigmaCTAButton(label: "INITIALIZE SEQUENCE", action: onBeginScan)
-                            .padding(.top, 26)
-                        .transition(.opacity)
-                    }
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 48)
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 48)
             }
         }
         .onAppear {
@@ -199,7 +224,12 @@ private struct AwakeningPhaseView: View {
     // MARK: Line rendering
 
     private func lineColor(_ line: BootLine) -> Color {
-        line.style == .terminal ? EgoTheme.green : EgoTheme.textPrimary
+        if line.style == .terminal { return EgoTheme.green }
+        // "so you'd..." motivation lines render dimmer — the ego's quiet justifications
+        if line.text.hasPrefix("so you") || line.text.hasPrefix("aren") {
+            return EgoTheme.textMuted
+        }
+        return EgoTheme.textPrimary
     }
 
     private func completedLineView(_ line: BootLine) -> some View {
@@ -241,10 +271,15 @@ private struct AwakeningPhaseView: View {
     }
 
     private func advanceToNext(_ index: Int) {
-        // Trigger soul split when "bugs" line completes
+        // Trigger soul split + screen flash when "bugs" line completes
         if index == splitTriggerLineIndex {
             if let r = soulRenderer {
                 r.animator.triggerSplit(scene: r.soulScene)
+            }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            glitchFlash = 0.08
+            withAnimation(.easeOut(duration: 0.4)) {
+                glitchFlash = 0
             }
         }
 
@@ -255,6 +290,9 @@ private struct AwakeningPhaseView: View {
             if index + 1 < lines.count {
                 currentLine = index + 1
             } else {
+                // Let the final line breathe before showing CTA
+                try? await Task.sleep(nanoseconds: 800_000_000)
+                guard !Task.isCancelled else { return }
                 withAnimation(.easeIn(duration: 0.5)) {
                     showButton = true
                 }
@@ -275,9 +313,21 @@ private struct ScenarioPhaseView: View {
     @State private var showSituation = false
     @State private var revealedOptions: Int = 0
     @State private var situationComplete = false
+    @State private var cardAppeared = false
+    @State private var selectedOptionId: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // Progress indicator top-right
+            HStack {
+                Spacer()
+                Text("\(scenarioIndex + 1) / \(totalScenarios)")
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
+            }
+            .padding(.horizontal, 24)
+            .padding(.top, 12)
+
             Spacer()
 
             // Progress label (Figma: green tracked uppercase)
@@ -286,14 +336,9 @@ private struct ScenarioPhaseView: View {
                 .tracking(2.2)
                 .foregroundColor(EgoTheme.green)
                 .greenGlow()
-                .padding(.bottom, 8)
-
-            Text("\(scenarioIndex + 1) of \(totalScenarios)")
-                .font(EgoTheme.label())
-                .foregroundColor(EgoTheme.textMuted)
                 .padding(.bottom, 20)
 
-            // Situation inside glass card
+            // Situation inside glass card — slides up on entrance
             if showSituation {
                 VStack(alignment: .leading, spacing: 0) {
                     TypewriterText(
@@ -310,6 +355,13 @@ private struct ScenarioPhaseView: View {
                 .padding(24)
                 .glassCard()
                 .padding(.bottom, 24)
+                .offset(y: cardAppeared ? 0 : 20)
+                .opacity(cardAppeared ? 1 : 0)
+                .onAppear {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        cardAppeared = true
+                    }
+                }
             }
 
             // Options (staggered reveal)
@@ -317,8 +369,16 @@ private struct ScenarioPhaseView: View {
                 VStack(spacing: 10) {
                     ForEach(Array(scenario.options.enumerated()), id: \.element.id) { index, option in
                         if index < revealedOptions {
+                            let isSelected = selectedOptionId == option.id
+                            let isFaded = selectedOptionId != nil && !isSelected
                             Button {
-                                onSelect(option.id)
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                selectedOptionId = option.id
+                                // Brief delay to show selection before advancing
+                                Task { @MainActor in
+                                    try? await Task.sleep(nanoseconds: 300_000_000)
+                                    onSelect(option.id)
+                                }
                             } label: {
                                 HStack(alignment: .top, spacing: 12) {
                                     Text(option.id.uppercased())
@@ -335,12 +395,16 @@ private struct ScenarioPhaseView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 14)
+                                .background(isSelected ? EgoTheme.green.opacity(0.04) : .clear)
                                 .overlay(
                                     Rectangle()
-                                        .stroke(EgoTheme.border, lineWidth: 1)
+                                        .stroke(isSelected ? EgoTheme.green.opacity(0.4) : EgoTheme.border, lineWidth: 1)
                                 )
                             }
                             .buttonStyle(.plain)
+                            .disabled(selectedOptionId != nil)
+                            .opacity(isFaded ? 0.3 : 1)
+                            .animation(.easeOut(duration: 0.2), value: selectedOptionId)
                             .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
                     }
@@ -377,31 +441,53 @@ private struct ReframePhaseView: View {
     let onTextComplete: () -> Void
 
     @State private var textFinished = false
+    @State private var showTapHint = false
     @State private var autoAdvanceTask: Task<Void, Never>?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Spacer()
+            // Position at ~40% from top, not centered
+            Spacer().frame(maxHeight: .infinity)
 
-            TypewriterText(
-                text: text,
-                characterDelay: 0.025,
-                color: EgoTheme.green,
-                font: .system(size: 16, weight: .regular, design: .monospaced),
-                onComplete: {
-                    textFinished = true
-                    onTextComplete()
-                    autoAdvanceTask = Task { @MainActor in
-                        try? await Task.sleep(nanoseconds: 1_500_000_000)
-                        guard !Task.isCancelled else { return }
-                        onComplete()
+            // // prefix in muted, reframe in green
+            HStack(alignment: .top, spacing: 0) {
+                Text("// ")
+                    .font(.system(size: 16, weight: .regular, design: .monospaced))
+                    .foregroundColor(EgoTheme.textMuted)
+
+                TypewriterText(
+                    text: text,
+                    characterDelay: 0.025,
+                    color: EgoTheme.green,
+                    font: .system(size: 16, weight: .regular, design: .monospaced),
+                    onComplete: {
+                        textFinished = true
+                        onTextComplete()
+                        withAnimation(.easeIn(duration: 0.5).delay(0.3)) {
+                            showTapHint = true
+                        }
+                        autoAdvanceTask = Task { @MainActor in
+                            try? await Task.sleep(nanoseconds: 1_500_000_000)
+                            guard !Task.isCancelled else { return }
+                            onComplete()
+                        }
                     }
-                }
-            )
-            .greenGlow()
+                )
+                .greenGlow()
+            }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer()
+            // Tap hint
+            if showTapHint {
+                Text("// tap to continue")
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted.opacity(0.3))
+                    .padding(.top, 20)
+                    .transition(.opacity)
+            }
+
+            Spacer().frame(maxHeight: .infinity)
+            Spacer().frame(maxHeight: .infinity)
         }
         .padding(.horizontal, 24)
         .contentShape(Rectangle())
@@ -424,17 +510,24 @@ private struct BugRevealPhaseView: View {
     let onCommit: () -> Void
 
     @State private var appeared = false
+    @State private var revealedTiles: Int = 0
+    @State private var headerGlow = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                // Header (Figma: tracked green uppercase)
+                // Header with pulse glow
                 Text("PATTERNS_DETECTED")
                     .font(EgoTheme.label())
                     .tracking(2.2)
                     .foregroundColor(EgoTheme.green)
-                    .greenGlow()
+                    .shadow(color: EgoTheme.green.opacity(headerGlow ? 0.4 : 0.2), radius: headerGlow ? 6 : 4)
                     .padding(.bottom, 8)
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: 2).repeatCount(2, autoreverses: true)) {
+                            headerGlow = true
+                        }
+                    }
 
                 Text(viewModel.scenarioSelections.isEmpty
                     ? "// Select the pattern to debug first."
@@ -443,9 +536,10 @@ private struct BugRevealPhaseView: View {
                     .foregroundColor(EgoTheme.textMuted)
                     .padding(.bottom, 24)
 
-                // Top bugs as bento diagnostic tiles
+                // Top bugs as bento diagnostic tiles — staggered cascade
                 VStack(spacing: 1) {
                     ForEach(Array(viewModel.topBugs.enumerated()), id: \.element.id) { index, bug in
+                        if index < revealedTiles {
                         BugDiagnosticTile(
                             bug: bug,
                             nodeIndex: index + 1,
@@ -454,11 +548,14 @@ private struct BugRevealPhaseView: View {
                             inlineComment: viewModel.inlineComment(for: bug.slug),
                             examples: viewModel.examples(for: bug.slug),
                             onSelect: {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                 withAnimation(.easeInOut(duration: 0.25)) {
                                     viewModel.selectedBugId = bug.id
                                 }
                             }
                         )
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        }
                     }
                 }
                 .background(EgoTheme.borderSubtle)
@@ -514,7 +611,10 @@ private struct BugRevealPhaseView: View {
                     .padding(.top, 20)
 
                 if viewModel.selectedBugId != nil {
-                    FigmaCTAButton(label: "BEGIN DEBUGGING", action: onCommit)
+                    FigmaCTAButton(label: "BEGIN DEBUGGING", action: {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        onCommit()
+                    })
                         .padding(.top, 24)
                         .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
@@ -530,6 +630,15 @@ private struct BugRevealPhaseView: View {
             withAnimation(.easeOut(duration: 0.4)) {
                 appeared = true
             }
+            // Staggered tile cascade
+            Task { @MainActor in
+                for i in 1...viewModel.topBugs.count {
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        revealedTiles = i
+                    }
+                }
+            }
         }
     }
 }
@@ -544,6 +653,8 @@ private struct BugDiagnosticTile: View {
     let inlineComment: String
     let examples: [String]
     let onSelect: () -> Void
+
+    @State private var animatedScore: Double = 0
 
     private var bugColor: Color {
         BugColors.color(for: bug.slug)
@@ -586,9 +697,8 @@ private struct BugDiagnosticTile: View {
                     .padding(.bottom, 12)
                 }
 
-                // Match score progress bar
+                // Match score progress bar (animates on appear)
                 HStack(spacing: 12) {
-                    // Progress track
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
                             Rectangle()
@@ -596,11 +706,16 @@ private struct BugDiagnosticTile: View {
                                 .frame(height: 4)
                             Rectangle()
                                 .fill(isSelected ? EgoTheme.green : bugColor)
-                                .frame(width: geo.size.width * matchScore, height: 4)
+                                .frame(width: geo.size.width * animatedScore, height: 4)
                                 .shadow(color: isSelected ? EgoTheme.greenGlow : .clear, radius: 4)
                         }
                     }
                     .frame(height: 4)
+                    .onAppear {
+                        withAnimation(.easeOut(duration: 0.4).delay(0.1)) {
+                            animatedScore = matchScore
+                        }
+                    }
 
                     // Signal strength label
                     Text(matchScore > 0.7 ? "HIGH" : matchScore > 0.4 ? "MED" : "LOW")
@@ -629,6 +744,7 @@ private struct BugDiagnosticTile: View {
                         lineWidth: 1
                     )
             )
+            .shadow(color: isSelected ? EgoTheme.green.opacity(0.2) : .clear, radius: 6)
         }
         .buttonStyle(.plain)
     }
@@ -639,22 +755,51 @@ private struct BugDiagnosticTile: View {
 private struct CommittingPhaseView: View {
     @ObservedObject var viewModel: OnboardingViewModel
     @State private var dots = ""
+    @State private var visibleLines: Int = 1
+    @State private var errorShake: CGFloat = 0
+    @State private var successFlash = false
+
+    private struct SysLine {
+        let timestamp: String
+        let message: String
+    }
+
+    private let sysLines: [SysLine] = [
+        SysLine(timestamp: "[0.01200]", message: "SYS: Bug locked."),
+        SysLine(timestamp: "[0.01458]", message: "SYS: Assigning fix #001"),
+        SysLine(timestamp: "[0.01892]", message: "SYS: Calibrating fix difficulty..."),
+        SysLine(timestamp: "[0.02140]", message: "SYS: Writing user profile..."),
+    ]
 
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
 
             VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 8) {
-                    Text("[0.01200]")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textMuted)
-                    Text("SYS: Bug locked.")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textPrimary)
-                    Text("OK")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.green)
+                // Sequential terminal lines
+                ForEach(0..<min(visibleLines, sysLines.count), id: \.self) { i in
+                    let line = sysLines[i]
+                    let isComplete = i < visibleLines - 1 || viewModel.commitError != nil
+                    let isLast = i == min(visibleLines, sysLines.count) - 1
+
+                    HStack(spacing: 8) {
+                        Text(line.timestamp)
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textMuted)
+                        Text(isLast && !isComplete ? "\(line.message)\(dots)" : line.message)
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textPrimary)
+                        if isComplete {
+                            Text("OK")
+                                .font(EgoTheme.mono(.caption))
+                                .foregroundColor(EgoTheme.green)
+                        } else if !isComplete && viewModel.commitError == nil {
+                            Text("PENDING")
+                                .font(EgoTheme.mono(.caption))
+                                .foregroundColor(EgoTheme.amber)
+                        }
+                    }
+                    .transition(.opacity)
                 }
 
                 if let error = viewModel.commitError {
@@ -675,31 +820,54 @@ private struct CommittingPhaseView: View {
                             .foregroundColor(EgoTheme.green)
                             .padding(.vertical, 8)
                     }
-                } else {
-                    HStack(spacing: 8) {
-                        Text("[0.01458]")
-                            .font(EgoTheme.mono(.caption))
-                            .foregroundColor(EgoTheme.textMuted)
-                        Text("SYS: Assigning fix #001\(dots)")
-                            .font(EgoTheme.mono(.caption))
-                            .foregroundColor(EgoTheme.textPrimary)
-                        Text("PENDING")
-                            .font(EgoTheme.mono(.caption))
-                            .foregroundColor(EgoTheme.amber)
-                    }
                 }
             }
             .padding(24)
             .glassCard()
+            .overlay(
+                Rectangle()
+                    .stroke(successFlash ? EgoTheme.green : .clear, lineWidth: 1)
+            )
+            .offset(x: errorShake)
 
             Spacer()
         }
         .padding(.horizontal, 24)
         .task {
+            // Stagger line reveals
+            for i in 2...sysLines.count {
+                try? await Task.sleep(nanoseconds: 400_000_000)
+                guard !Task.isCancelled else { return }
+                withAnimation(.easeOut(duration: 0.2)) {
+                    visibleLines = i
+                }
+            }
+            // Dots animation on final line
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 400_000_000)
                 guard !Task.isCancelled else { break }
                 dots = dots.count >= 3 ? "" : dots + "."
+            }
+        }
+        .onChange(of: viewModel.isComplete) { _, complete in
+            if complete {
+                withAnimation(.easeIn(duration: 0.3)) {
+                    successFlash = true
+                }
+            }
+        }
+        .onChange(of: viewModel.commitError) { _, error in
+            if error != nil {
+                // Horizontal shake
+                withAnimation(.default) { errorShake = -4 }
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: 50_000_000)
+                    withAnimation(.default) { errorShake = 4 }
+                    try? await Task.sleep(nanoseconds: 50_000_000)
+                    withAnimation(.default) { errorShake = -2 }
+                    try? await Task.sleep(nanoseconds: 50_000_000)
+                    withAnimation(.default) { errorShake = 0 }
+                }
             }
         }
     }
