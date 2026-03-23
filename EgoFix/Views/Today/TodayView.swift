@@ -376,7 +376,15 @@ struct TodayView: View {
         case .debrief(let content):
             DebriefView(
                 content: content,
-                onDismiss: { viewModel.dismissDebrief() }
+                onDismiss: { viewModel.dismissDebrief() },
+                onShare: {
+                    if let fix = viewModel.currentFix {
+                        var text = fix.prompt
+                        if let comment = fix.inlineComment { text += "\n\n// \(comment)" }
+                        text += "\n\n\u{2014} EgoFix"
+                        shareContent = ShareContent(text: text, fixId: fix.id)
+                    }
+                }
             )
             .transition(.opacity)
 

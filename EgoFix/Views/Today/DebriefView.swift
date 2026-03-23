@@ -4,6 +4,7 @@ import SwiftUI
 struct DebriefView: View {
     let content: DebriefContent
     let onDismiss: () -> Void
+    var onShare: (() -> Void)? = nil
 
     @State private var appeared = false
 
@@ -33,8 +34,20 @@ struct DebriefView: View {
             .opacity(appeared ? 1 : 0)
             .offset(y: appeared ? 0 : 10)
 
-            FigmaCTAButton(label: "CONTINUE", action: onDismiss)
-                .opacity(appeared ? 1 : 0)
+            HStack(spacing: 12) {
+                FigmaCTAButton(label: "CONTINUE", action: onDismiss)
+
+                if let onShare {
+                    Button(action: onShare) {
+                        Text("[ share fix ]")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textMuted)
+                            .padding(.vertical, 17)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .opacity(appeared ? 1 : 0)
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.4)) {
