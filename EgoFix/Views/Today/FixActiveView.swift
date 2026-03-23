@@ -27,9 +27,9 @@ struct FixActiveView: View {
                         .font(EgoTheme.label())
                         .tracking(1.5)
                         .foregroundColor(EgoTheme.green)
+                        .greenGlow()
                         .opacity(pulseOpacity)
                 }
-                .greenGlow()
                 .padding(.bottom, 16)
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("Fix active, running")
@@ -91,6 +91,18 @@ struct FixActiveView: View {
             // CTA: Check in
             FigmaCTAButton(label: "CHECK IN", action: onCheckIn)
                 .accessibilityHint("Report how the fix went today")
+
+            // Inline crash button — always visible during active fix
+            Button(action: onCrash) {
+                Text("[ ! crash ]")
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(.red.opacity(0.6))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Log a crash")
+            .accessibilityHint("Record an ego crash event")
         }
     }
 

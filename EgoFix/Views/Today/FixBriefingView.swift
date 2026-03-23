@@ -51,10 +51,22 @@ struct FixBriefingView: View {
             FigmaCTAButton(label: "ACCEPT FIX", action: onAccept)
                 .accessibilityHint("Accept today's fix and begin working on it")
 
-            // Secondary: Skip
-            FigmaSecondaryButton(label: "SKIP", action: onSkip)
-                .accessibilityLabel("Skip fix")
-                .accessibilityHint("Skip today's fix without attempting it")
+            // Secondary: Skip — visible but understated
+            Button(action: onSkip) {
+                Text("SKIP")
+                    .font(EgoTheme.mono(.callout))
+                    .tracking(1.4)
+                    .foregroundColor(EgoTheme.textMuted)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .overlay(
+                        Rectangle()
+                            .stroke(EgoTheme.borderSubtle, lineWidth: 1)
+                    )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Skip fix")
+            .accessibilityHint("Skip today's fix without attempting it")
         }
     }
 }

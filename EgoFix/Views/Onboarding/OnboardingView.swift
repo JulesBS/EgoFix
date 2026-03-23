@@ -41,7 +41,8 @@ struct OnboardingView: View {
                                 soulRenderer?.animator.setCubeFlickerTarget(indices: indices, color: 1)
                             }
                             viewModel.selectScenarioOption(optionId, forScenario: index)
-                        }
+                        },
+                        onBack: index > 0 ? { viewModel.goBackToScenario(index - 1) } : nil
                     )
                     .transition(.asymmetric(
                         insertion: .move(edge: .trailing).combined(with: .opacity),
@@ -171,15 +172,20 @@ private struct AwakeningPhaseView: View {
                 .allowsHitTesting(false)
 
             VStack(spacing: 0) {
-                // 3D ASCII soul animation with corner brackets — fixed size, never scales down
-                OnboardingSoulView(
-                    onRendererReady: { r in soulRenderer = r },
-                    onRendererFailed: { rendererFailed = true }
-                )
-                .frame(width: 200, height: 200)
-                .cornerBrackets()
-                .padding(.top, 40)
-                .padding(.bottom, 24)
+                // 3D ASCII soul animation — matches BootSequenceView sizing
+                GeometryReader { geo in
+                    let size = min(geo.size.width - 48, 280)
+                    OnboardingSoulView(
+                        onRendererReady: { r in soulRenderer = r },
+                        onRendererFailed: { rendererFailed = true }
+                    )
+                    .frame(width: size, height: size)
+                    .cornerBrackets()
+                    .frame(maxWidth: .infinity)
+                }
+                .aspectRatio(1, contentMode: .fit)
+                .padding(.top, 20)
+                .padding(.bottom, 16)
 
                 // Scrollable text + button area
                 ScrollView {
@@ -195,7 +201,7 @@ private struct AwakeningPhaseView: View {
                         }
 
                         if showButton {
-                            FigmaCTAButton(label: "INITIALIZE SEQUENCE", action: {
+                            FigmaCTAButton(label: "BEGIN SCAN", action: {
                                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                 onBeginScan()
                             })
@@ -309,6 +315,7 @@ private struct ScenarioPhaseView: View {
     let scenarioIndex: Int
     let totalScenarios: Int
     let onSelect: (String) -> Void
+    var onBack: (() -> Void)? = nil
 
     @State private var showSituation = false
     @State private var revealedOptions: Int = 0
@@ -318,8 +325,18 @@ private struct ScenarioPhaseView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Progress indicator top-right
+            // Progress indicator with optional back
             HStack {
+                if let onBack {
+                    Button(action: onBack) {
+                        Text("[ back ]")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textMuted)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Go back")
+                    .accessibilityHint("Return to previous scenario")
+                }
                 Spacer()
                 Text("\(scenarioIndex + 1) / \(totalScenarios)")
                     .font(EgoTheme.label())
@@ -466,8 +483,10 @@ private struct ReframePhaseView: View {
                         withAnimation(.easeIn(duration: 0.5).delay(0.3)) {
                             showTapHint = true
                         }
+                        // Scale reading time with text length (min 1.5s, ~20ms/char)
+                        let readingNs = UInt64(max(1.5, Double(text.count) * 0.02) * 1_000_000_000)
                         autoAdvanceTask = Task { @MainActor in
-                            try? await Task.sleep(nanoseconds: 1_500_000_000)
+                            try? await Task.sleep(nanoseconds: readingNs)
                             guard !Task.isCancelled else { return }
                             onComplete()
                         }

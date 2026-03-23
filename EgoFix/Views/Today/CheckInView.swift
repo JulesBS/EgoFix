@@ -35,7 +35,7 @@ struct CheckInView: View {
                 Text("DEBRIEF")
                     .font(EgoTheme.label())
                     .tracking(1.5)
-                    .foregroundColor(EgoTheme.amber)
+                    .foregroundColor(EgoTheme.textMuted)
                     .padding(.bottom, 16)
 
                 checkInContent

@@ -199,6 +199,16 @@ final class OnboardingViewModel: ObservableObject {
         phase = .scenario(index: 0)
     }
 
+    /// Go back to re-answer a scenario (clears previous selection)
+    func goBackToScenario(_ scenarioIndex: Int) {
+        scenarioSelections.removeValue(forKey: scenarioIndex)
+        accumulatedWeights = ScenarioWeightCalculator.accumulateWeights(
+            from: scenarioSelections,
+            scenarios: scenarios
+        )
+        phase = .scenario(index: scenarioIndex)
+    }
+
     /// Called when the user selects a scenario option
     func selectScenarioOption(_ optionId: String, forScenario scenarioIndex: Int) {
         scenarioSelections[scenarioIndex] = optionId

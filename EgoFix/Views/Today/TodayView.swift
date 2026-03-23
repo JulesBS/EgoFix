@@ -174,7 +174,7 @@ struct TodayView: View {
 
     private var showCrashButton: Bool {
         switch viewModel.state {
-        case .fixBriefing, .fixActive: return true
+        case .fixBriefing, .fixActive, .checkIn: return true
         default: return false
         }
     }
