@@ -23,6 +23,7 @@ final class OnboardingViewModel: ObservableObject {
     @Published var selectedBugId: UUID?
     @Published var isComplete = false
     @Published var isLoading = false
+    @Published var commitError: String?
 
     /// Maps scenario index → selected option ID
     @Published var scenarioSelections: [Int: String] = [:]
@@ -198,6 +199,13 @@ final class OnboardingViewModel: ObservableObject {
 
     // MARK: - Phase Transitions
 
+    /// Fallback: skip directly to reveal phase (e.g., when scenario data is missing)
+    func skipToReveal() {
+        calculateRankedBugs()
+        if rankedBugs.isEmpty { rankedBugs = allBugs }
+        phase = .reveal
+    }
+
     /// Called when the awakening phase is complete (user taps "Begin scan")
     func beginScenarios() {
         guard !scenarios.isEmpty else {
@@ -253,6 +261,7 @@ final class OnboardingViewModel: ObservableObject {
               let selectedBug = allBugs.first(where: { $0.id == selectedId }) else { return }
 
         isLoading = true
+        commitError = nil
 
         do {
             // Activate selected bug
@@ -281,7 +290,9 @@ final class OnboardingViewModel: ObservableObject {
                 rank += 1
             }
 
-            let user = UserProfile(bugPriorities: priorities)
+            // Reuse existing profile if present (e.g., replay onboarding) to avoid duplicates
+            let user = (try? await userRepository.get()) ?? UserProfile(bugPriorities: priorities)
+            user.bugPriorities = priorities
             try await userRepository.save(user)
 
             // Assign first fix immediately
@@ -296,6 +307,7 @@ final class OnboardingViewModel: ObservableObject {
             isComplete = true
         } catch {
             NSLog("[OnboardingViewModel] Commit failed: %@", "\(error)")
+            commitError = "Failed to assign fix. Tap to retry."
         }
 
         isLoading = false

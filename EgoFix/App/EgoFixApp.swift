@@ -32,6 +32,7 @@ struct EgoFixApp: App {
                     configurations: [modelConfiguration]
                 )
             } catch {
+                #if DEBUG
                 // If schema changed, try to delete and recreate (development only)
                 print("Schema changed, attempting to recreate database: \(error)")
                 let fm = FileManager.default
@@ -61,6 +62,9 @@ struct EgoFixApp: App {
                     for: schema,
                     configurations: [modelConfiguration]
                 )
+                #else
+                fatalError("SwiftData schema migration failed: \(error)")
+                #endif
             }
         } catch {
             fatalError("Could not initialize ModelContainer: \(error)")

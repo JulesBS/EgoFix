@@ -14,6 +14,8 @@ struct OnboardingSoulView: UIViewRepresentable {
     var onRendererReady: ((OnboardingSoulRenderer) -> Void)? = nil
     /// Optional callback when renderer fails to initialize (e.g., no Metal support).
     var onRendererFailed: (() -> Void)? = nil
+    /// When true, pauses the Metal render loop to save GPU/battery.
+    var isPaused: Bool = false
 
     func makeUIView(context: Context) -> MTKView {
         let metalView = MTKView()
@@ -21,7 +23,7 @@ struct OnboardingSoulView: UIViewRepresentable {
         metalView.colorPixelFormat = .bgra8Unorm
         metalView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
         metalView.preferredFramesPerSecond = 30
-        metalView.isPaused = false
+        metalView.isPaused = isPaused
         metalView.enableSetNeedsDisplay = false
         metalView.isOpaque = true
         metalView.backgroundColor = .black
@@ -43,7 +45,9 @@ struct OnboardingSoulView: UIViewRepresentable {
         return metalView
     }
 
-    func updateUIView(_ uiView: MTKView, context: Context) {}
+    func updateUIView(_ uiView: MTKView, context: Context) {
+        uiView.isPaused = isPaused
+    }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 

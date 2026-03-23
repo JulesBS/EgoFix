@@ -47,6 +47,11 @@ struct OnboardingView: View {
                         insertion: .move(edge: .trailing).combined(with: .opacity),
                         removal: .opacity
                     ))
+                } else {
+                    // Fallback: scenario missing — skip to reveal to avoid soft-lock
+                    Color.clear.onAppear {
+                        viewModel.skipToReveal()
+                    }
                 }
 
             case .reframe(let index):
@@ -83,7 +88,7 @@ struct OnboardingView: View {
                 // Soul already split during awakening education — no trigger needed here
 
             case .committing:
-                CommittingPhaseView()
+                CommittingPhaseView(viewModel: viewModel)
                     .transition(.opacity)
             }
         }
@@ -263,7 +268,9 @@ private struct AwakeningPhaseView: View {
         }
 
         let postDelay = lines[index].postDelay
-        DispatchQueue.main.asyncAfter(deadline: .now() + postDelay) {
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(postDelay * 1_000_000_000))
+            guard !Task.isCancelled else { return }
             if index + 1 < lines.count {
                 animateLine(index + 1)
             } else {
@@ -372,8 +379,10 @@ private struct ScenarioPhaseView: View {
     }
 
     private func revealOptions() {
-        for i in 0..<scenario.options.count {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.15) {
+        Task { @MainActor in
+            for i in 0..<scenario.options.count {
+                try? await Task.sleep(nanoseconds: UInt64(0.15 * 1_000_000_000))
+                guard !Task.isCancelled else { return }
                 withAnimation(.easeOut(duration: 0.3)) {
                     revealedOptions = i + 1
                 }
@@ -389,30 +398,30 @@ private struct ReframePhaseView: View {
     let onComplete: () -> Void
     let onTextComplete: () -> Void
 
-    @State private var showText = false
     @State private var textFinished = false
+    @State private var autoAdvanceTask: Task<Void, Never>?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Spacer()
 
-            if showText {
-                TypewriterText(
-                    text: text,
-                    characterDelay: 0.025,
-                    color: EgoTheme.green,
-                    font: .system(size: 16, weight: .regular, design: .monospaced),
-                    onComplete: {
-                        textFinished = true
-                        onTextComplete()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            onComplete()
-                        }
+            TypewriterText(
+                text: text,
+                characterDelay: 0.025,
+                color: EgoTheme.green,
+                font: .system(size: 16, weight: .regular, design: .monospaced),
+                onComplete: {
+                    textFinished = true
+                    onTextComplete()
+                    autoAdvanceTask = Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 1_500_000_000)
+                        guard !Task.isCancelled else { return }
+                        onComplete()
                     }
-                )
-                .greenGlow()
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
+                }
+            )
+            .greenGlow()
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer()
         }
@@ -420,11 +429,12 @@ private struct ReframePhaseView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             if textFinished {
+                autoAdvanceTask?.cancel()
                 onComplete()
             }
         }
-        .onAppear {
-            showText = true
+        .onDisappear {
+            autoAdvanceTask?.cancel()
         }
     }
 }
@@ -668,6 +678,7 @@ private struct BugDiagnosticTile: View {
 // MARK: - Phase 4: Committing
 
 private struct CommittingPhaseView: View {
+    @ObservedObject var viewModel: OnboardingViewModel
     @State private var dots = ""
 
     var body: some View {
@@ -687,16 +698,36 @@ private struct CommittingPhaseView: View {
                         .foregroundColor(EgoTheme.green)
                 }
 
-                HStack(spacing: 8) {
-                    Text("[0.01458]")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textMuted)
-                    Text("SYS: Assigning fix #001\(dots)")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textPrimary)
-                    Text("PENDING")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.amber)
+                if let error = viewModel.commitError {
+                    HStack(spacing: 8) {
+                        Text("[ERROR]")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(.red)
+                        Text(error)
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textPrimary)
+                    }
+
+                    Button {
+                        Task { await viewModel.commitAndAssignFirstFix() }
+                    } label: {
+                        Text("[ RETRY ]")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.green)
+                            .padding(.vertical, 8)
+                    }
+                } else {
+                    HStack(spacing: 8) {
+                        Text("[0.01458]")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textMuted)
+                        Text("SYS: Assigning fix #001\(dots)")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textPrimary)
+                        Text("PENDING")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.amber)
+                    }
                 }
             }
             .padding(24)
@@ -705,18 +736,12 @@ private struct CommittingPhaseView: View {
             Spacer()
         }
         .padding(.horizontal, 24)
-        .onAppear {
-            animateDots()
-        }
-    }
-
-    private func animateDots() {
-        func cycle() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 400_000_000)
+                guard !Task.isCancelled else { break }
                 dots = dots.count >= 3 ? "" : dots + "."
-                cycle()
             }
         }
-        cycle()
     }
 }

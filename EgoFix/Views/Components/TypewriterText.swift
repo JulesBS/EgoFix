@@ -26,51 +26,36 @@ struct TypewriterText: View {
                     .font(font)
                     .foregroundColor(color)
                     .opacity(cursorVisible ? 1 : 0)
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                            cursorVisible = false
+                        }
+                    }
             }
 
             Spacer(minLength: 0)
         }
-        .onAppear {
-            startTyping()
-            if showCursor {
-                startCursorBlink()
-            }
+        .task {
+            await typeText()
         }
     }
 
-    private func startTyping() {
+    private func typeText() async {
         guard displayedCount < text.count else {
             finish()
             return
         }
-
-        typeNextCharacter()
-    }
-
-    private func typeNextCharacter() {
-        guard displayedCount < text.count else {
-            finish()
-            return
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + characterDelay) {
+        while displayedCount < text.count {
+            try? await Task.sleep(nanoseconds: UInt64(characterDelay * 1_000_000_000))
+            guard !Task.isCancelled else { return }
             displayedCount += 1
-            typeNextCharacter()
         }
+        finish()
     }
 
     private func finish() {
+        guard !completed else { return }
         completed = true
         onComplete?()
-    }
-
-    private func startCursorBlink() {
-        func blink() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                cursorVisible.toggle()
-                blink()
-            }
-        }
-        blink()
     }
 }

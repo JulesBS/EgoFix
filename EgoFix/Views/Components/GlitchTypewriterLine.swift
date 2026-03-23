@@ -27,8 +27,8 @@ struct GlitchTypewriterLine: View {
         Text(currentText)
             .font(.system(.body, design: .monospaced))
             .foregroundColor(color)
-            .onAppear {
-                startTyping()
+            .task {
+                await runAnimation()
             }
     }
 
@@ -43,51 +43,41 @@ struct GlitchTypewriterLine: View {
         }
     }
 
-    private func startTyping() {
-        typeNext()
-    }
-
-    private func typeNext() {
-        guard displayedCount < text.count else {
-            // Done typing, start glitch
-            glitchDisplay = text
-            phase = .glitching
-            performGlitch(step: 0)
-            return
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + characterDelay) {
+    private func runAnimation() async {
+        // Type phase
+        while displayedCount < text.count {
+            try? await Task.sleep(nanoseconds: UInt64(characterDelay * 1_000_000_000))
+            guard !Task.isCancelled else { return }
             displayedCount += 1
-            typeNext()
-        }
-    }
-
-    private func performGlitch(step: Int) {
-        guard step < glitchSteps else {
-            phase = .done
-            glitchDisplay = text
-            onComplete()
-            return
         }
 
-        if step >= glitchSteps - 2 {
-            glitchDisplay = text
-        } else {
-            var chars = Array(text)
-            if let range = text.range(of: glitchWord) {
-                let start = text.distance(from: text.startIndex, to: range.lowerBound)
-                let end = text.distance(from: text.startIndex, to: range.upperBound)
-                for i in start..<end {
-                    if let c = glitchCharacters.randomElement() {
-                        chars[i] = c
+        // Glitch phase
+        glitchDisplay = text
+        phase = .glitching
+
+        for step in 0..<glitchSteps {
+            guard !Task.isCancelled else { return }
+            if step >= glitchSteps - 2 {
+                glitchDisplay = text
+            } else {
+                var chars = Array(text)
+                if let range = text.range(of: glitchWord) {
+                    let start = text.distance(from: text.startIndex, to: range.lowerBound)
+                    let end = text.distance(from: text.startIndex, to: range.upperBound)
+                    for i in start..<end {
+                        if let c = glitchCharacters.randomElement() {
+                            chars[i] = c
+                        }
                     }
                 }
+                glitchDisplay = String(chars)
             }
-            glitchDisplay = String(chars)
+            try? await Task.sleep(nanoseconds: UInt64(glitchStepDuration * 1_000_000_000))
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + glitchStepDuration) {
-            performGlitch(step: step + 1)
-        }
+        guard !Task.isCancelled else { return }
+        phase = .done
+        glitchDisplay = text
+        onComplete()
     }
 }
