@@ -3,22 +3,21 @@ import SwiftUI
 /// Minimal terminal-style settings screen.
 struct SettingsView: View {
     @ObservedObject var progressTracker: AppProgressTracker
-    let bugRepository: BugRepository?
 
-    @AppStorage("hasSeenBoot") private var hasSeenBoot = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showResetConfirmation = false
+    @State private var showReplayConfirmation = false
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     // HEADER
                     Text("SETTINGS")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.4))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .padding(.bottom, 24)
 
                     // ABOUT
@@ -44,12 +43,37 @@ struct SettingsView: View {
                         .padding(.top, 12)
                         .padding(.bottom, 24)
 
+                    // DEBUG
+                    sectionHeader("DEBUG")
+
+                    NavigationLink(destination: SoulDebugView().terminalBackButton()) {
+                        Text("SOUL RENDERER")
+                            .font(EgoTheme.mono())
+                            .foregroundColor(EgoTheme.green)
+                            .padding(.vertical, 12)
+                    }
+
+                    commentLine("// 3D ASCII animation preview.")
+                        .padding(.top, 4)
+                        .padding(.bottom, 16)
+
+                    Button(action: { showReplayConfirmation = true }) {
+                        Text("REPLAY ONBOARDING")
+                            .font(EgoTheme.mono())
+                            .foregroundColor(EgoTheme.green)
+                            .padding(.vertical, 12)
+                    }
+
+                    commentLine("// Resets onboarding flag.")
+                        .padding(.top, 4)
+                        .padding(.bottom, 24)
+
                     // DANGER ZONE
                     sectionHeader("DANGER ZONE")
 
                     Button(action: { showResetConfirmation = true }) {
-                        Text("[ Reset all data ]")
-                            .font(.system(.body, design: .monospaced))
+                        Text("RESET ALL DATA")
+                            .font(EgoTheme.mono())
                             .foregroundColor(.red)
                             .padding(.vertical, 12)
                     }
@@ -62,6 +86,14 @@ struct SettingsView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Replay onboarding?", isPresented: $showReplayConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Reset", role: .destructive) {
+                replayOnboarding()
+            }
+        } message: {
+            Text("This resets the onboarding flag. Close and reopen the app to replay the full onboarding.")
+        }
         .alert("Reset all data?", isPresented: $showResetConfirmation) {
             Button("Cancel", role: .cancel) {}
             Button("Reset", role: .destructive) {
@@ -76,20 +108,20 @@ struct SettingsView: View {
 
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
-            .font(.system(.caption2, design: .monospaced))
-            .foregroundColor(.green)
+            .font(EgoTheme.label())
+            .foregroundColor(EgoTheme.green)
             .padding(.bottom, 12)
     }
 
     private func settingsRow(_ label: String, value: String) -> some View {
         HStack {
             Text(label)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.6))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textPrimary)
             Spacer()
             Text(value)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textPrimary)
         }
         .padding(.vertical, 6)
     }
@@ -97,27 +129,32 @@ struct SettingsView: View {
     private func featureRow(_ label: String, unlocked: Bool) -> some View {
         HStack {
             Text(label)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.6))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textPrimary)
             Spacer()
             Text(unlocked ? "unlocked" : "locked")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(unlocked ? .green : Color(white: 0.3))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(unlocked ? .green : EgoTheme.textMuted)
         }
         .padding(.vertical, 6)
     }
 
     private func commentLine(_ text: String) -> some View {
         Text(text)
-            .font(.system(.caption2, design: .monospaced))
-            .foregroundColor(Color(white: 0.3))
+            .font(EgoTheme.label())
+            .foregroundColor(EgoTheme.textMuted)
+    }
+
+    // MARK: - Replay Onboarding
+
+    private func replayOnboarding() {
+        hasCompletedOnboarding = false
     }
 
     // MARK: - Reset
 
     private func resetAllData() {
         // Reset AppStorage flags
-        hasSeenBoot = false
         hasCompletedOnboarding = false
 
         // Reset progress tracker

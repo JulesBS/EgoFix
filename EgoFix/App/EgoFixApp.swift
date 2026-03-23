@@ -34,14 +34,29 @@ struct EgoFixApp: App {
             } catch {
                 // If schema changed, try to delete and recreate (development only)
                 print("Schema changed, attempting to recreate database: \(error)")
-                let storeURL = URL.applicationSupportDirectory.appending(path: "default.store")
                 let fm = FileManager.default
-                // Remove all SQLite companion files (-shm, -wal) alongside the main store
-                for suffix in ["", "-shm", "-wal"] {
-                    let fileURL = storeURL.deletingLastPathComponent()
-                        .appending(path: "default.store\(suffix)")
-                    try? fm.removeItem(at: fileURL)
+                let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+                    ?? URL.applicationSupportDirectory
+
+                // Deduplicate candidate store URLs
+                var seen = Set<String>()
+                let candidates = [
+                    appSupport.appending(path: "default.store"),
+                    URL.applicationSupportDirectory.appending(path: "default.store"),
+                    modelConfiguration.url
+                ].filter { seen.insert($0.absoluteString).inserted }
+
+                for storeURL in candidates {
+                    for suffix in ["", "-shm", "-wal"] {
+                        let fileURL = storeURL.deletingLastPathComponent()
+                            .appending(path: storeURL.lastPathComponent + suffix)
+                        try? fm.removeItem(at: fileURL)
+                    }
                 }
+
+                // Ensure the directory exists before recreating
+                try? fm.createDirectory(at: appSupport, withIntermediateDirectories: true)
+
                 modelContainer = try ModelContainer(
                     for: schema,
                     configurations: [modelConfiguration]

@@ -85,6 +85,9 @@ final class TodayViewModel: ObservableObject {
     @Published var showWeeklyDiagnostic = false
     @Published var weeklySummary: WeeklySummaryData?
 
+    /// When the current fix was accepted (for elapsed time display)
+    var fixAcceptedAt: Date? { currentCompletion?.fixAcceptedAt }
+
     // Header data
     @Published var currentVersion: String = "1.0"
     @Published var currentStreak: Int = 0

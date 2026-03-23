@@ -10,37 +10,47 @@ struct CheckInView: View {
     let onFailed: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
-            Text("CHECK IN")
-                .font(.system(.headline, design: .monospaced))
-                .foregroundColor(.green)
+        VStack(alignment: .leading, spacing: 16) {
+            // MISSION — small prompt reminder (deemphasized)
+            VStack(alignment: .leading, spacing: 0) {
+                Text("MISSION")
+                    .font(EgoTheme.label())
+                    .tracking(1.5)
+                    .foregroundColor(EgoTheme.textMuted)
+                    .padding(.bottom, 8)
 
-            Text(fix.prompt)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.5))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 16)
+                Text(fix.prompt)
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .glassCard()
 
-            checkInContent
+            // DEBRIEF — interaction-specific content
+            VStack(alignment: .leading, spacing: 0) {
+                Text("DEBRIEF")
+                    .font(EgoTheme.label())
+                    .tracking(1.5)
+                    .foregroundColor(EgoTheme.amber)
+                    .padding(.bottom, 16)
 
+                checkInContent
+            }
+            .padding(24)
+            .glassCard()
+
+            // Submit button for non-standard types
             if fix.interactionType != .standard &&
                fix.interactionType != .abstain &&
                fix.interactionType != .reversal {
-                // Show apply button when interaction data is ready
                 if interactionManager.canMarkApplied {
-                    Button(action: onApplied) {
-                        Text("[ Done ]")
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.green)
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 24)
-                            .background(Color.green.opacity(0.1))
-                            .cornerRadius(2)
-                    }
+                    FigmaCTAButton(label: "SUBMIT", action: onApplied)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
             }
         }
-        .padding(.top, 8)
     }
 
     @ViewBuilder
@@ -48,305 +58,378 @@ struct CheckInView: View {
         switch fix.interactionType {
         case .standard, .reversal:
             standardCheckIn
-
         case .counter:
             counterCheckIn
-
         case .observation:
             observationCheckIn
-
         case .abstain:
             abstainCheckIn
-
         case .substitute:
             substituteCheckIn
-
         case .journal:
             journalCheckIn
-
         case .body:
             standardCheckIn
-
         case .predict:
             predictCheckIn
-
         case .audit:
             auditCheckIn
-
         case .scenario:
             scenarioCheckIn
-
         case .multiStep:
             multiStepCheckIn
-
         case .timed, .quiz:
-            // These shouldn't reach check-in — they're immediate in-app
             standardCheckIn
         }
     }
 
-    // MARK: - Check-In Variants
+    // MARK: - Standard / Reversal / Body
 
     private var standardCheckIn: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("How'd it go?")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(.system(size: 18, weight: .light, design: .monospaced))
+                .foregroundColor(EgoTheme.textPrimary)
+                .padding(.bottom, 4)
 
-            VStack(spacing: 8) {
-                Button(action: onApplied) {
-                    Text("[ Applied ]")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.green)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.green.opacity(0.1))
-                        .cornerRadius(2)
+            Button(action: onApplied) {
+                HStack {
+                    Spacer()
+                    Text("APPLIED")
+                        .font(EgoTheme.mono(.callout))
+                        .tracking(2)
+                        .foregroundColor(EgoTheme.green)
+                    Spacer()
                 }
-
-                Button(action: onFailed) {
-                    Text("[ Tried, couldn't ]")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.red)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                }
-
-                Button(action: onSkipped) {
-                    Text("[ Didn't attempt ]")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.gray)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                }
+                .padding(.vertical, 14)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.green.opacity(0.4), lineWidth: 1))
             }
-            .padding(.horizontal, 24)
+            .buttonStyle(.plain)
+
+            Button(action: onFailed) {
+                HStack {
+                    Spacer()
+                    Text("TRIED, COULDN'T")
+                        .font(EgoTheme.mono(.callout))
+                        .tracking(1.4)
+                        .foregroundColor(.red.opacity(0.8))
+                    Spacer()
+                }
+                .padding(.vertical, 14)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+
+            Button(action: onSkipped) {
+                HStack {
+                    Spacer()
+                    Text("DIDN'T ATTEMPT")
+                        .font(EgoTheme.mono(.callout))
+                        .tracking(1.4)
+                        .foregroundColor(EgoTheme.textMuted)
+                    Spacer()
+                }
+                .padding(.vertical, 14)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
         }
     }
+
+    // MARK: - Counter
 
     private var counterCheckIn: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 0) {
             Text("How many times?")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
+                .padding(.bottom, 20)
 
-            HStack(spacing: 24) {
+            HStack(spacing: 0) {
                 Button(action: { interactionManager.decrementCounter() }) {
-                    Text("[ - ]")
-                        .font(.system(.title2, design: .monospaced))
-                        .foregroundColor(.gray)
+                    Text("\u{2212}")
+                        .font(.system(size: 24, weight: .light, design: .monospaced))
+                        .foregroundColor(EgoTheme.textMuted)
+                        .frame(width: 56, height: 56)
+                        .background(EgoTheme.surface)
+                        .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 }
+                .buttonStyle(.plain)
 
                 Text("\(interactionManager.counterValue)")
-                    .font(.system(.title, design: .monospaced))
-                    .foregroundColor(.green)
-                    .frame(minWidth: 60)
+                    .font(.system(size: 36, weight: .light, design: .monospaced))
+                    .foregroundColor(EgoTheme.green)
+                    .greenGlow()
+                    .frame(maxWidth: .infinity)
 
                 Button(action: { interactionManager.incrementCounter() }) {
-                    Text("[ + ]")
-                        .font(.system(.title2, design: .monospaced))
-                        .foregroundColor(.green)
+                    Text("+")
+                        .font(.system(size: 24, weight: .light, design: .monospaced))
+                        .foregroundColor(EgoTheme.green)
+                        .frame(width: 56, height: 56)
+                        .background(EgoTheme.surface)
+                        .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 }
+                .buttonStyle(.plain)
             }
         }
+        .padding(24)
+        .glassCard()
     }
+
+    // MARK: - Observation
 
     private var observationCheckIn: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("What did you notice?")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
 
             TextField("", text: $interactionManager.observationReport, axis: .vertical)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
-                .padding(12)
-                .background(Color(white: 0.1))
-                .cornerRadius(2)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
+                .padding(16)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 .lineLimit(3...6)
-                .padding(.horizontal, 16)
         }
+        .padding(24)
+        .glassCard()
     }
+
+    // MARK: - Abstain
 
     private var abstainCheckIn: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("Did you make it through?")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(.system(size: 18, weight: .light, design: .monospaced))
+                .foregroundColor(EgoTheme.textPrimary)
+                .padding(.bottom, 4)
 
-            VStack(spacing: 8) {
-                Button(action: {
-                    interactionManager.abstainCompleted = true
-                    onApplied()
-                }) {
-                    Text("[ Made it ]")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.green)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.green.opacity(0.1))
-                        .cornerRadius(2)
+            Button(action: {
+                interactionManager.abstainCompleted = true
+                onApplied()
+            }) {
+                HStack {
+                    Spacer()
+                    Text("MADE IT")
+                        .font(EgoTheme.mono(.callout))
+                        .tracking(2)
+                        .foregroundColor(EgoTheme.green)
+                    Spacer()
                 }
-
-                Button(action: {
-                    interactionManager.abstainCompleted = false
-                    onFailed()
-                }) {
-                    Text("[ Broke it ]")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.red)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                }
+                .padding(.vertical, 14)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.green.opacity(0.4), lineWidth: 1))
             }
-            .padding(.horizontal, 24)
+            .buttonStyle(.plain)
+
+            Button(action: {
+                interactionManager.abstainCompleted = false
+                onFailed()
+            }) {
+                HStack {
+                    Spacer()
+                    Text("BROKE IT")
+                        .font(EgoTheme.mono(.callout))
+                        .tracking(1.4)
+                        .foregroundColor(.red.opacity(0.8))
+                    Spacer()
+                }
+                .padding(.vertical, 14)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
+            }
+            .buttonStyle(.plain)
         }
     }
 
-    private var substituteCheckIn: some View {
-        VStack(spacing: 16) {
-            Text("Urges vs. substitutions")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+    // MARK: - Substitute
 
-            HStack(spacing: 32) {
+    private var substituteCheckIn: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Urges vs. substitutions")
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
+
+            HStack(spacing: 1) {
                 VStack(spacing: 8) {
-                    Text("Urges")
-                        .font(.system(.caption, design: .monospaced))
+                    Text("URGES")
+                        .font(EgoTheme.label())
+                        .tracking(1)
                         .foregroundColor(.red)
                     HStack(spacing: 12) {
                         Button(action: { if interactionManager.urgeCount > 0 { interactionManager.urgeCount -= 1 } }) {
-                            Text("-").font(.system(.body, design: .monospaced)).foregroundColor(.gray)
+                            Text("\u{2212}").font(EgoTheme.mono()).foregroundColor(EgoTheme.textMuted)
                         }
                         Text("\(interactionManager.urgeCount)")
-                            .font(.system(.title3, design: .monospaced))
+                            .font(.system(size: 28, weight: .light, design: .monospaced))
                             .foregroundColor(.red)
                         Button(action: { interactionManager.urgeCount += 1 }) {
-                            Text("+").font(.system(.body, design: .monospaced)).foregroundColor(.red)
+                            Text("+").font(EgoTheme.mono()).foregroundColor(.red)
                         }
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(EgoTheme.bg)
 
                 VStack(spacing: 8) {
-                    Text("Substituted")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.green)
+                    Text("SUBSTITUTED")
+                        .font(EgoTheme.label())
+                        .tracking(1)
+                        .foregroundColor(EgoTheme.green)
                     HStack(spacing: 12) {
                         Button(action: { if interactionManager.substituteCount > 0 { interactionManager.substituteCount -= 1 } }) {
-                            Text("-").font(.system(.body, design: .monospaced)).foregroundColor(.gray)
+                            Text("\u{2212}").font(EgoTheme.mono()).foregroundColor(EgoTheme.textMuted)
                         }
                         Text("\(interactionManager.substituteCount)")
-                            .font(.system(.title3, design: .monospaced))
-                            .foregroundColor(.green)
+                            .font(.system(size: 28, weight: .light, design: .monospaced))
+                            .foregroundColor(EgoTheme.green)
                         Button(action: { interactionManager.substituteCount += 1 }) {
-                            Text("+").font(.system(.body, design: .monospaced)).foregroundColor(.green)
+                            Text("+").font(EgoTheme.mono()).foregroundColor(EgoTheme.green)
                         }
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .background(EgoTheme.bg)
             }
+            .background(EgoTheme.borderSubtle)
         }
     }
+
+    // MARK: - Journal
 
     private var journalCheckIn: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Reflect on today")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
 
             TextField("", text: $interactionManager.journalText, axis: .vertical)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
-                .padding(12)
-                .background(Color(white: 0.1))
-                .cornerRadius(2)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
+                .padding(16)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 .lineLimit(3...8)
-                .padding(.horizontal, 16)
         }
+        .padding(24)
+        .glassCard()
     }
 
+    // MARK: - Predict
+
     private var predictCheckIn: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("What actually happened?")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
 
             if !interactionManager.predictionText.isEmpty {
                 Text("You predicted: \(interactionManager.predictionText)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.4))
-                    .padding(.horizontal, 16)
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             TextField("", text: $interactionManager.observationText, axis: .vertical)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
-                .padding(12)
-                .background(Color(white: 0.1))
-                .cornerRadius(2)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
+                .padding(16)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 .lineLimit(3...6)
-                .padding(.horizontal, 16)
         }
+        .padding(24)
+        .glassCard()
     }
 
+    // MARK: - Audit
+
     private var auditCheckIn: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("End-of-day review")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
 
             if let config = fix.auditConfig {
                 ForEach(config.categories, id: \.id) { category in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(category.label)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.gray)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(category.label.uppercased())
+                            .font(EgoTheme.label())
+                            .tracking(1)
+                            .foregroundColor(EgoTheme.textMuted)
 
                         TextField("", text: auditBinding(for: category.id))
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color(white: 0.1))
-                            .cornerRadius(2)
+                            .font(EgoTheme.mono())
+                            .foregroundColor(EgoTheme.textPrimary)
+                            .padding(12)
+                            .background(EgoTheme.surface)
+                            .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                     }
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(24)
+        .glassCard()
     }
+
+    // MARK: - Scenario
 
     private var scenarioCheckIn: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 0) {
             if let config = fix.scenarioConfig {
                 Text(config.situation)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
+                    .font(.system(size: 16, weight: .light, design: .monospaced))
+                    .foregroundColor(EgoTheme.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.bottom, 16)
 
-                ForEach(config.options, id: \.id) { option in
-                    Button(action: { interactionManager.selectScenarioOption(option) }) {
-                        Text("[ \(option.text) ]")
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(interactionManager.selectedScenarioOptionId == option.id ? .green : .gray)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                            .background(
-                                interactionManager.selectedScenarioOptionId == option.id
-                                    ? Color.green.opacity(0.1) : Color.clear
-                            )
-                            .cornerRadius(2)
+                Rectangle()
+                    .fill(EgoTheme.borderSubtle)
+                    .frame(height: 0.5)
+                    .padding(.bottom, 16)
+
+                VStack(spacing: 8) {
+                    ForEach(config.options, id: \.id) { option in
+                        let isSelected = interactionManager.selectedScenarioOptionId == option.id
+                        Button(action: { interactionManager.selectScenarioOption(option) }) {
+                            Text(option.text)
+                                .font(EgoTheme.mono())
+                                .foregroundColor(isSelected ? EgoTheme.green : EgoTheme.textPrimary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 12)
+                                .overlay(
+                                    Rectangle()
+                                        .stroke(
+                                            isSelected ? EgoTheme.green.opacity(0.6) : EgoTheme.border,
+                                            lineWidth: 1
+                                        )
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(interactionManager.scenarioAnswered)
                     }
-                    .disabled(interactionManager.scenarioAnswered)
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(24)
+        .glassCard()
     }
 
+    // MARK: - Multi-Step
+
     private var multiStepCheckIn: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Step checklist")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
+                .padding(.bottom, 4)
 
             if let config = fix.multiStepConfig {
                 ForEach(Array(config.steps.enumerated()), id: \.element.id) { index, step in
@@ -354,32 +437,44 @@ struct CheckInView: View {
                     let isSkipped = interactionManager.completedSteps.contains { $0.stepId == step.id && $0.skipped }
                     let isCurrent = index == interactionManager.currentStepIndex && !interactionManager.allStepsProcessed
 
-                    HStack {
+                    HStack(alignment: .top) {
                         Text(isCompleted ? "[x]" : isSkipped ? "[-]" : "[ ]")
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(isCompleted ? .green : isSkipped ? .yellow : .gray)
+                            .font(EgoTheme.mono())
+                            .foregroundColor(isCompleted ? EgoTheme.green : isSkipped ? EgoTheme.amber : EgoTheme.textMuted)
+                            .frame(width: 28)
 
                         Text(step.prompt)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(isCurrent ? .white : Color(white: 0.5))
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(isCurrent ? EgoTheme.textPrimary : EgoTheme.textMuted)
 
                         Spacer()
 
                         if isCurrent {
                             HStack(spacing: 8) {
                                 Button(action: { interactionManager.completeCurrentStep() }) {
-                                    Text("Done").font(.system(.caption2, design: .monospaced)).foregroundColor(.green)
+                                    Text("Done")
+                                        .font(EgoTheme.label())
+                                        .foregroundColor(EgoTheme.green)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(EgoTheme.surface)
                                 }
                                 Button(action: { interactionManager.skipCurrentStep() }) {
-                                    Text("Skip").font(.system(.caption2, design: .monospaced)).foregroundColor(.gray)
+                                    Text("Skip")
+                                        .font(EgoTheme.label())
+                                        .foregroundColor(EgoTheme.textMuted)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
                                 }
                             }
                         }
                     }
+                    .padding(.vertical, 4)
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(24)
+        .glassCard()
     }
 
     // MARK: - Helpers

@@ -27,48 +27,73 @@ struct TodayView: View {
         self.makeBugLibraryViewModel = makeBugLibraryViewModel
     }
 
+    /// Soul opacity varies by intensity to create subtle ambient breathing
+    private var soulOpacity: Double {
+        switch viewModel.currentIntensity {
+        case .quiet: return 0.08
+        case .present: return 0.12
+        case .loud: return 0.18
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
-                Color.black.ignoresSafeArea()
+                EgoTheme.bg.ignoresSafeArea()
+
+                // SOUL — ambient background layer
+                BugSoulView(
+                    slug: viewModel.currentBugSlug ?? "need-to-be-right",
+                    intensity: viewModel.currentIntensity,
+                    size: .large,
+                    reaction: viewModel.soulReaction
+                )
+                .frame(height: 280)
+                .opacity(soulOpacity)
+                .blur(radius: 1)
+                .allowsHitTesting(false)
 
                 ScrollView {
-                    VStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 0) {
                         // HEADER BAR
                         headerBar
-                            .padding(.bottom, 16)
+                            .padding(.bottom, 4)
 
-                        // SOUL (hero) — reacts to outcomes, never disappears
-                        BugSoulView(
-                            slug: viewModel.currentBugSlug ?? "need-to-be-right",
-                            intensity: viewModel.currentIntensity,
-                            size: .large,
-                            reaction: viewModel.soulReaction
-                        )
-                        .frame(height: 200)
-                        .padding(.bottom, 8)
+                        // Divider
+                        Rectangle()
+                            .fill(EgoTheme.greenSubtle)
+                            .frame(height: 0.5)
+                            .padding(.bottom, 24)
+
+                        // STATE LABEL
+                        stateLabel
+                            .padding(.bottom, 4)
 
                         // STATUS LINE
                         Text(viewModel.statusLine)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.gray)
+                            .font(EgoTheme.label())
+                            .foregroundColor(EgoTheme.textMuted)
                             .padding(.bottom, 24)
 
                         // MAIN CONTENT — transitions between states
                         mainContent
                             .animation(.easeOut(duration: 0.25), value: viewModel.state.stateKey)
 
-                        // CRASH BUTTON
-                        crashButton
-                            .padding(.top, 32)
-                            .padding(.bottom, 24)
+                        // CRASH BUTTON (briefing + active states)
+                        if showCrashButton {
+                            crashButton
+                                .padding(.top, 24)
+                        }
+
+                        Spacer()
+                            .frame(height: 32)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 24)
                     .padding(.top, 8)
                 }
             }
 
-            // NAV BAR (appears after full nav unlock)
+            // NAV BAR
             if progressTracker.isFullNavUnlocked {
                 AppNavBar(
                     activeDestination: nil,
@@ -105,6 +130,133 @@ struct TodayView: View {
         }
     }
 
+    // MARK: - State Label
+
+    private var stateLabelColor: Color {
+        switch viewModel.state {
+        case .checkIn: return EgoTheme.amber
+        default: return EgoTheme.green
+        }
+    }
+
+    private var stateLabel: some View {
+        Text(stateLabelText)
+            .font(EgoTheme.label())
+            .tracking(2.2)
+            .foregroundColor(stateLabelColor)
+            .shadow(color: stateLabelColor.opacity(0.4), radius: 4)
+    }
+
+    private var stateLabelText: String {
+        switch viewModel.state {
+        case .loading: return "LOADING"
+        case .diagnostic, .diagnosticComplete: return "WEEKLY_DIAGNOSTIC"
+        case .noFix: return "NO_FIX"
+        case .fixBriefing: return "TODAY'S_FIX"
+        case .fixEducation: return "FIX_ACCEPTED"
+        case .fixActive: return "FIX_ACTIVE"
+        case .checkIn: return "FIX_REPORT"
+        case .fixAvailable: return "FIX_AVAILABLE"
+        case .completed(let outcome, _):
+            switch outcome {
+            case .applied: return "FIX_APPLIED"
+            case .skipped: return "FIX_SKIPPED"
+            case .failed: return "FIX_FAILED"
+            case .pending: return "PENDING"
+            }
+        case .debrief: return "DEBRIEF"
+        case .doneForToday: return "SYSTEM_STABLE"
+        case .pattern: return "PATTERN_DETECTED"
+        }
+    }
+
+    private var showCrashButton: Bool {
+        switch viewModel.state {
+        case .fixBriefing, .fixActive: return true
+        default: return false
+        }
+    }
+
+    // MARK: - Header Bar
+
+    private var headerBar: some View {
+        HStack {
+            // Version (tap → settings)
+            Button(action: { navigationPath.append(AppDestination.settings) }) {
+                Text("v\(viewModel.currentVersion)")
+                    .font(EgoTheme.label())
+                    .tracking(1)
+                    .foregroundColor(EgoTheme.green)
+            }
+
+            Spacer()
+
+            // Status badge
+            StatusBadge(text: statusBadgeText, color: statusBadgeColor)
+
+            // Streak
+            Text(StatusLineProvider.formatStreak(viewModel.currentStreak))
+                .font(EgoTheme.label())
+                .foregroundColor(EgoTheme.textMuted)
+                .padding(.leading, 12)
+        }
+    }
+
+    private var statusBadgeText: String {
+        switch viewModel.state {
+        case .fixBriefing: return "PENDING"
+        case .fixEducation: return "ACCEPTED"
+        case .fixActive: return "ACTIVE"
+        case .checkIn: return "REPORTING"
+        case .completed(let outcome, _):
+            switch outcome {
+            case .applied: return "APPLIED"
+            case .skipped: return "SKIPPED"
+            case .failed: return "FAILED"
+            case .pending: return "PENDING"
+            }
+        case .doneForToday: return "IDLE"
+        default: return "SYS"
+        }
+    }
+
+    private var statusBadgeColor: Color {
+        switch viewModel.state {
+        case .fixBriefing, .checkIn: return EgoTheme.amber
+        case .fixEducation, .fixActive: return EgoTheme.green
+        case .completed(let outcome, _):
+            switch outcome {
+            case .applied: return EgoTheme.green
+            case .skipped: return EgoTheme.amber
+            case .failed: return .red
+            case .pending: return EgoTheme.textMuted
+            }
+        default: return EgoTheme.textMuted
+        }
+    }
+
+    // MARK: - Crash Button (full-width, styled)
+
+    private var crashButton: some View {
+        Button(action: { showCrash = true }) {
+            HStack {
+                Spacer()
+                Text("! CRASH")
+                    .font(EgoTheme.mono(.callout))
+                    .tracking(1.4)
+                    .foregroundColor(.red)
+                Spacer()
+            }
+            .padding(.vertical, 14)
+            .background(EgoTheme.surface)
+            .overlay(
+                Rectangle()
+                    .stroke(Color.red.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
     // MARK: - Navigation Destinations
 
     @ViewBuilder
@@ -132,36 +284,12 @@ struct TodayView: View {
             }
         case .settings:
             SettingsView(
-                progressTracker: progressTracker,
-                bugRepository: nil
+                progressTracker: progressTracker
             )
             .terminalBackButton()
-        }
-    }
-
-    // MARK: - Header Bar
-
-    private var headerBar: some View {
-        HStack {
-            // Version — left
-            Text("v\(viewModel.currentVersion)")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.green)
-
-            Spacer()
-
-            // Streak — right
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(StatusLineProvider.formatStreak(viewModel.currentStreak))
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray)
-
-                if let milestone = StatusLineProvider.streakMilestoneComment(for: viewModel.currentStreak) {
-                    Text(milestone)
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(Color(white: 0.3))
-                }
-            }
+        case .soulDebug:
+            SoulDebugView()
+                .terminalBackButton()
         }
     }
 
@@ -171,12 +299,10 @@ struct TodayView: View {
     private var mainContent: some View {
         switch viewModel.state {
         case .loading:
-            VStack(spacing: 8) {
-                Text("> loading...")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray)
-            }
-            .padding(.top, 40)
+            Text("> loading...")
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
+                .padding(.top, 40)
 
         case .diagnostic:
             inlineDiagnosticContent
@@ -211,6 +337,7 @@ struct TodayView: View {
             FixActiveView(
                 fix: fix,
                 bugTitle: viewModel.currentBugTitle,
+                acceptedAt: viewModel.fixAcceptedAt,
                 onCheckIn: { viewModel.beginCheckIn() },
                 onCrash: { showCrash = true }
             )
@@ -272,24 +399,23 @@ struct TodayView: View {
     // MARK: - Done-for-Today
 
     private var doneForTodayContent: some View {
-        VStack(spacing: 24) {
+        VStack(alignment: .leading, spacing: 20) {
             Text(viewModel.doneStatusLine)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
 
             if let summary = viewModel.weeklySummary {
-                VStack(spacing: 8) {
-                    HStack(spacing: 16) {
-                        summaryPill(count: summary.applied, label: "applied", color: .green)
-                        summaryPill(count: summary.skipped, label: "skipped", color: .yellow)
-                        summaryPill(count: summary.failed, label: "failed", color: .red)
-                    }
-
-                    Text(summary.comment)
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(Color(white: 0.3))
+                // Bento summary tiles
+                HStack(spacing: 1) {
+                    bentoTile(count: summary.applied, label: "APPLIED", color: EgoTheme.green)
+                    bentoTile(count: summary.skipped, label: "SKIPPED", color: EgoTheme.amber)
+                    bentoTile(count: summary.failed, label: "FAILED", color: .red)
                 }
-                .padding(.top, 8)
+                .background(EgoTheme.borderSubtle)
+
+                Text(summary.comment)
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             // Progressive footer links
@@ -297,37 +423,35 @@ struct TodayView: View {
                 FooterLinks(tracker: progressTracker) { destination in
                     navigationPath.append(destination)
                 }
-                .padding(.top, 16)
+                .padding(.top, 8)
             }
         }
-        .padding(.top, 24)
     }
 
-    private func summaryPill(count: Int, label: String, color: Color) -> some View {
-        VStack(spacing: 2) {
+    private func bentoTile(count: Int, label: String, color: Color) -> some View {
+        VStack(spacing: 4) {
             Text("\(count)")
-                .font(.system(.body, design: .monospaced))
+                .font(.system(size: 28, weight: .light, design: .monospaced))
                 .foregroundColor(color)
             Text(label)
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundColor(Color(white: 0.4))
+                .font(EgoTheme.label())
+                .tracking(1)
+                .foregroundColor(EgoTheme.textMuted)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 20)
+        .background(EgoTheme.bg)
     }
 
     // MARK: - Inline Diagnostic
 
     private var inlineDiagnosticContent: some View {
-        VStack(spacing: 24) {
-            Text("WEEKLY DIAGNOSTIC")
-                .font(.system(.headline, design: .monospaced))
-                .foregroundColor(.green)
-
+        VStack(alignment: .leading, spacing: 20) {
             if let current = viewModel.currentDiagnosticBug {
                 if viewModel.diagnosticNeedsContext {
-                    // Context question
                     Text("Where was it loudest?")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textPrimary)
 
                     VStack(spacing: 8) {
                         diagnosticContextButton("Work", context: .work)
@@ -335,116 +459,99 @@ struct TodayView: View {
                         diagnosticContextButton("Social", context: .social)
                         diagnosticContextButton("Family", context: .family)
                         diagnosticContextButton("Online", context: .online)
-                        Button(action: { viewModel.skipDiagnosticContext() }) {
-                            Text("[ Unsure ]")
-                                .font(.system(.body, design: .monospaced))
-                                .foregroundColor(.gray.opacity(0.6))
-                                .padding(.vertical, 8)
+                        FigmaSecondaryButton(label: "UNSURE") {
+                            viewModel.skipDiagnosticContext()
                         }
                     }
                 } else {
-                    // Intensity question
                     Text("This week, \(current.bug.slug) was...")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textPrimary)
 
-                    VStack(spacing: 12) {
-                        IntensityButton(label: "Quiet", color: .green, action: { viewModel.setDiagnosticIntensity(.quiet) })
-                        IntensityButton(label: "Present", color: .yellow, action: { viewModel.setDiagnosticIntensity(.present) })
-                        IntensityButton(label: "Loud", color: .red, action: { viewModel.setDiagnosticIntensity(.loud) })
+                    VStack(spacing: 10) {
+                        intensityButton(label: "QUIET", color: EgoTheme.green, action: { viewModel.setDiagnosticIntensity(.quiet) })
+                        intensityButton(label: "PRESENT", color: EgoTheme.amber, action: { viewModel.setDiagnosticIntensity(.present) })
+                        intensityButton(label: "LOUD", color: .red, action: { viewModel.setDiagnosticIntensity(.loud) })
                     }
                 }
 
                 if viewModel.diagnosticRemainingCount > 0 {
                     Text("// \(viewModel.diagnosticRemainingCount) more \(viewModel.diagnosticRemainingCount == 1 ? "bug" : "bugs") to check")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.3))
-                        .padding(.top, 8)
+                        .font(EgoTheme.label())
+                        .foregroundColor(EgoTheme.textMuted)
+                        .padding(.top, 4)
                 }
             }
 
-            Button(action: { Task { await viewModel.skipDiagnostic() } }) {
-                Text("[ skip \u{2192} ]")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.5))
+            FigmaSecondaryButton(label: "SKIP") {
+                Task { await viewModel.skipDiagnostic() }
             }
         }
-        .padding(.top, 8)
         .animation(.easeOut(duration: 0.25), value: viewModel.diagnosticBugIndex)
     }
 
     private func diagnosticContextButton(_ label: String, context: EventContext) -> some View {
         Button(action: { viewModel.setDiagnosticContext(context) }) {
-            Text("[ \(label) ]")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.gray)
-                .padding(.vertical, 8)
+            Text(label)
+                .font(EgoTheme.mono(.callout))
+                .tracking(1.4)
+                .foregroundColor(EgoTheme.textPrimary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
         }
+        .buttonStyle(.plain)
+    }
+
+    private func intensityButton(label: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(label)
+                .font(EgoTheme.mono(.callout))
+                .tracking(2)
+                .foregroundColor(color)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(color.opacity(0.3), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
     }
 
     private var inlineDiagnosticCompleteContent: some View {
-        VStack(spacing: 16) {
-            Text("DIAGNOSTIC COMPLETE")
-                .font(.system(.headline, design: .monospaced))
-                .foregroundColor(.green)
-
+        VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(viewModel.diagnosticResults, id: \.bugTitle) { result in
                     HStack {
                         Text(result.bugTitle)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.white)
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textPrimary)
                         Spacer()
-                        Text(result.intensity.rawValue)
-                            .font(.system(.caption, design: .monospaced))
+                        Text(result.intensity.rawValue.uppercased())
+                            .font(EgoTheme.label())
+                            .tracking(1)
                             .foregroundColor(intensityColor(result.intensity))
                     }
                 }
             }
-            .padding(.horizontal, 32)
+            .padding(20)
+            .glassCard()
 
-            VStack(spacing: 4) {
-                Text("// Data logged.")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.3))
-                Text("// Tomorrow's fix will account for this.")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.3))
-            }
-            .padding(.top, 8)
+            Text("// Data logged. Tomorrow's fix will account for this.")
+                .font(EgoTheme.label())
+                .foregroundColor(EgoTheme.textMuted)
 
-            Button(action: { Task { await viewModel.continuePastDiagnostic() } }) {
-                Text("[ Continue \u{2192} ]")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.gray)
-                    .padding()
+            FigmaCTAButton(label: "CONTINUE", showArrow: true) {
+                Task { await viewModel.continuePastDiagnostic() }
             }
         }
-        .padding(.top, 8)
     }
 
     private func intensityColor(_ intensity: BugIntensity) -> Color {
         switch intensity {
-        case .quiet: return .green
-        case .present: return .yellow
+        case .quiet: return EgoTheme.green
+        case .present: return EgoTheme.amber
         case .loud: return .red
-        }
-    }
-
-    // MARK: - Crash Button
-
-    private var crashButton: some View {
-        Button(action: { showCrash = true }) {
-            Text("[ ! ]")
-                .font(.system(.caption, design: .monospaced))
-                .fontWeight(.bold)
-                .foregroundColor(.red)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color.red.opacity(0.1))
-                .cornerRadius(2)
-                .shadow(color: .red.opacity(0.5), radius: 5, x: 0, y: 0)
         }
     }
 
@@ -452,21 +559,16 @@ struct TodayView: View {
 
     private func generateShareContent(for fix: Fix) -> ShareContent {
         var text = fix.prompt
-
         if let comment = fix.inlineComment {
             text += "\n\n// \(comment)"
         }
-
-        text += "\n\n— EgoFix"
-
+        text += "\n\n\u{2014} EgoFix"
         return ShareContent(text: text, fixId: fix.id)
     }
 }
 
 // MARK: - Inline Completion View
 
-/// Outcome display rendered inline within the Today scroll.
-/// Auto-transitions to done-for-today after animation completes.
 struct InlineCompletionView: View {
     let outcome: FixOutcome
     var educationTidbit: String?
@@ -477,59 +579,70 @@ struct InlineCompletionView: View {
     @State private var showEducation = false
     @State private var typedMessage = ""
 
+    private var outcomeColor: Color {
+        switch outcome {
+        case .applied: return EgoTheme.green
+        case .skipped: return EgoTheme.amber
+        case .failed: return .red
+        case .pending: return EgoTheme.textMuted
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            // Status symbol
+            Spacer()
+                .frame(height: 32)
+
+            // Symbol
             Text(symbol)
                 .font(.system(size: 48, design: .monospaced))
-                .foregroundColor(titleColor)
+                .foregroundColor(outcomeColor)
                 .scaleEffect(appeared ? 1 : 0.5)
                 .opacity(appeared ? 1 : 0)
-                .shadow(color: titleColor.opacity(0.5), radius: 8, x: 0, y: 0)
+                .shadow(color: outcomeColor.opacity(0.5), radius: 8)
 
+            // Title (tracked)
             Text(title)
-                .font(.system(.title2, design: .monospaced))
-                .foregroundColor(titleColor)
+                .font(EgoTheme.mono(.title2))
+                .tracking(2)
+                .foregroundColor(outcomeColor)
+                .greenGlow()
                 .padding(.top, 16)
                 .opacity(appeared ? 1 : 0)
 
-            // Typing animation for message
+            // Typing message
             Text(typedMessage + (showMessage && typedMessage.count < message.count ? "_" : ""))
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
                 .multilineTextAlignment(.center)
                 .padding(.top, 12)
                 .opacity(showMessage ? 1 : 0)
 
-            // Micro-education tidbit
+            // Education tidbit in glass card
             if let tidbit = educationTidbit {
                 Text(tidbit)
-                    .font(.system(.callout, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textPrimary)
+                    .multilineTextAlignment(.leading)
+                    .padding(20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .glassCard()
                     .padding(.top, 24)
                     .opacity(showEducation ? 1 : 0)
                     .offset(y: showEducation ? 0 : 10)
             }
         }
-        .padding(.vertical, 32)
         .onAppear {
             withAnimation(.easeOut(duration: 0.3)) {
                 appeared = true
             }
-
-            // Start typing animation after symbol appears
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 showMessage = true
                 typeMessage()
             }
-
             withAnimation(.easeOut(duration: 0.4).delay(1.5)) {
                 showEducation = true
             }
-
-            // Auto-transition to done after animation completes (~3 seconds)
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                 onAnimationComplete?()
             }
@@ -542,15 +655,12 @@ struct InlineCompletionView: View {
 
         func typeNextCharacter() {
             guard currentIndex < characters.count else { return }
-
             typedMessage.append(characters[currentIndex])
             currentIndex += 1
-
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) {
                 typeNextCharacter()
             }
         }
-
         typeNextCharacter()
     }
 
@@ -569,15 +679,6 @@ struct InlineCompletionView: View {
         case .skipped: return "FIX SKIPPED"
         case .failed: return "FIX FAILED"
         case .pending: return "PENDING"
-        }
-    }
-
-    private var titleColor: Color {
-        switch outcome {
-        case .applied: return .green
-        case .skipped: return .yellow
-        case .failed: return .red
-        case .pending: return .gray
         }
     }
 

@@ -8,45 +8,47 @@ struct FixBriefingView: View {
     let onSkip: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
-            Text("TODAY'S FIX")
-                .font(.system(.headline, design: .monospaced))
-                .foregroundColor(.green)
+        VStack(alignment: .leading, spacing: 16) {
+            // Glass card: fix prompt + comment
+            VStack(alignment: .leading, spacing: 0) {
+                // Node label
+                Text("FIX / #\(fix.id.uuidString.prefix(4).uppercased())")
+                    .font(EgoTheme.label())
+                    .tracking(1)
+                    .foregroundColor(EgoTheme.textMuted)
+                    .padding(.bottom, 16)
 
-            Text(fix.prompt)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 16)
+                // Prompt
+                Text(fix.prompt)
+                    .font(.system(size: 18, weight: .light, design: .monospaced))
+                    .foregroundColor(EgoTheme.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.bottom, 16)
 
-            if let comment = fix.inlineComment {
-                Text("// \(comment)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.4))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 24)
-            }
-
-            HStack(spacing: 24) {
-                Button(action: onAccept) {
-                    Text("[ Accept fix ]")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.green)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 16)
-                        .background(Color.green.opacity(0.1))
-                        .cornerRadius(2)
+                // Divider
+                if fix.inlineComment != nil {
+                    Rectangle()
+                        .fill(EgoTheme.borderSubtle)
+                        .frame(height: 0.5)
+                        .padding(.bottom, 12)
                 }
 
-                Button(action: onSkip) {
-                    Text("[ Skip ]")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.gray)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 16)
+                // Inline comment
+                if let comment = fix.inlineComment {
+                    Text("// \(comment)")
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
+            .padding(24)
+            .glassCard()
+
+            // CTA: Accept
+            FigmaCTAButton(label: "ACCEPT FIX", action: onAccept)
+
+            // Secondary: Skip
+            FigmaSecondaryButton(label: "SKIP", action: onSkip)
         }
-        .padding(.top, 8)
     }
 }

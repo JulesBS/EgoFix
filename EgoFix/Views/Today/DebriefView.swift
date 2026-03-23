@@ -8,37 +8,34 @@ struct DebriefView: View {
     @State private var appeared = false
 
     var body: some View {
-        VStack(spacing: 24) {
-            Text(content.title)
-                .font(.system(.headline, design: .monospaced))
-                .foregroundColor(.green)
-                .opacity(appeared ? 1 : 0)
+        VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(content.title)
+                    .font(.system(size: 18, weight: .light, design: .monospaced))
+                    .foregroundColor(EgoTheme.green)
+                    .greenGlow()
+                    .padding(.bottom, 16)
 
-            Text(content.body)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 24)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 10)
+                Text(content.body)
+                    .font(EgoTheme.mono())
+                    .foregroundColor(EgoTheme.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineSpacing(4)
+                    .padding(.bottom, 12)
 
-            Text(content.comment)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.4))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 24)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 10)
-
-            Button(action: onDismiss) {
-                Text("[ Continue \u{2192} ]")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.gray)
-                    .padding(.vertical, 12)
+                Text(content.comment)
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
+            .padding(24)
+            .glassCard()
             .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 10)
+
+            FigmaCTAButton(label: "CONTINUE", action: onDismiss)
+                .opacity(appeared ? 1 : 0)
         }
-        .padding(.top, 16)
         .onAppear {
             withAnimation(.easeOut(duration: 0.4)) {
                 appeared = true

@@ -4,37 +4,26 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var progressTracker = AppProgressTracker()
-    @State private var showOnboarding = true
-    @State private var showBootSequence = true
-    @State private var bootSequenceChecked = false
-
-    @AppStorage("hasSeenBoot") private var hasSeenBoot = false
+    @State private var seedDataLoaded = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
-            if showBootSequence && bootSequenceChecked {
-                BootSequenceView(
-                    isFirstLaunch: !hasSeenBoot,
+            if !seedDataLoaded {
+                // Loading state — seed data not yet loaded
+                EmptyView()
+            } else if !hasCompletedOnboarding {
+                OnboardingView(
+                    viewModel: makeOnboardingViewModel(),
                     onComplete: {
                         withAnimation(.easeOut(duration: 0.3)) {
-                            hasSeenBoot = true
-                            showBootSequence = false
+                            hasCompletedOnboarding = true
                         }
                     }
                 )
-            } else if showOnboarding && !showBootSequence {
-                let vm = makeOnboardingViewModel()
-                OnboardingView(
-                    viewModel: vm,
-                    onComplete: {
-                        hasCompletedOnboarding = true
-                        showOnboarding = false
-                    }
-                )
-            } else if !showBootSequence {
+            } else {
                 NavigationStack {
                     TodayView(
                         viewModel: makeTodayViewModel(),
@@ -51,18 +40,7 @@ struct ContentView: View {
         .preferredColorScheme(.dark)
         .task {
             await loadSeedData()
-            await checkOnboarding()
-            bootSequenceChecked = true
-            if hasSeenBoot && hasCompletedOnboarding {
-                showBootSequence = false
-                showOnboarding = false
-            } else if hasSeenBoot && !hasCompletedOnboarding {
-                showBootSequence = false
-                showOnboarding = true
-            } else if !hasSeenBoot {
-                showBootSequence = true
-                showOnboarding = true
-            }
+            seedDataLoaded = true
         }
     }
 
@@ -77,21 +55,21 @@ struct ContentView: View {
         }
     }
 
-    private func checkOnboarding() async {
-        let viewModel = makeOnboardingViewModel()
-        let needed = await viewModel.checkOnboardingNeeded()
-        if !needed {
-            hasCompletedOnboarding = true
-            showOnboarding = false
-        }
-    }
-
     // MARK: - Factory Methods
 
     private func makeOnboardingViewModel() -> OnboardingViewModel {
         let bugRepo = LocalBugRepository(modelContext: modelContext)
         let userRepo = LocalUserRepository(modelContext: modelContext)
-        return OnboardingViewModel(bugRepository: bugRepo, userRepository: userRepo)
+        let fixRepo = LocalFixRepository(modelContext: modelContext)
+        let fixCompletionRepo = LocalFixCompletionRepository(modelContext: modelContext)
+        let analyticsRepo = LocalAnalyticsEventRepository(modelContext: modelContext)
+        return OnboardingViewModel(
+            bugRepository: bugRepo,
+            userRepository: userRepo,
+            fixRepository: fixRepo,
+            fixCompletionRepository: fixCompletionRepo,
+            analyticsEventRepository: analyticsRepo
+        )
     }
 
     private func makeTodayViewModel() -> TodayViewModel {

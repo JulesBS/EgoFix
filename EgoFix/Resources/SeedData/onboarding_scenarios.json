@@ -1,0 +1,119 @@
+[
+  {
+    "id": "scenario-1",
+    "situation": "A friend cancels plans last-minute.",
+    "options": [
+      {
+        "id": "a",
+        "text": "I'd say it's fine but feel stung for hours.",
+        "weights": {
+          "need-to-be-liked": 0.8,
+          "need-to-deflect": 0.3
+        }
+      },
+      {
+        "id": "b",
+        "text": "I'd need to know the real reason.",
+        "weights": {
+          "need-to-control": 0.8,
+          "need-to-be-right": 0.3
+        }
+      },
+      {
+        "id": "c",
+        "text": "I'd wonder what I did wrong.",
+        "weights": {
+          "need-to-be-liked": 0.5,
+          "need-to-compare": 0.6
+        }
+      },
+      {
+        "id": "d",
+        "text": "I'd tell three other people about it.",
+        "weights": {
+          "need-to-narrate": 0.8,
+          "need-to-impress": 0.2
+        }
+      }
+    ],
+    "reframe": "// That reaction? Automatic. Your ego filled in the story before your brain caught up."
+  },
+  {
+    "id": "scenario-2",
+    "situation": "Someone at work takes credit for your idea in a meeting.",
+    "options": [
+      {
+        "id": "a",
+        "text": "I'd find a way to prove it was mine.",
+        "weights": {
+          "need-to-be-right": 0.8,
+          "need-to-control": 0.3
+        }
+      },
+      {
+        "id": "b",
+        "text": "I'd say nothing but replay it all day.",
+        "weights": {
+          "need-to-narrate": 0.7,
+          "need-to-deflect": 0.4
+        }
+      },
+      {
+        "id": "c",
+        "text": "I'd drop hints about my other wins.",
+        "weights": {
+          "need-to-impress": 0.8,
+          "need-to-compare": 0.3
+        }
+      },
+      {
+        "id": "d",
+        "text": "I'd laugh it off and change the subject.",
+        "weights": {
+          "need-to-deflect": 0.8,
+          "need-to-be-liked": 0.4
+        }
+      }
+    ],
+    "reframe": "// The sting isn't about the idea. It's about what the idea meant about you."
+  },
+  {
+    "id": "scenario-3",
+    "situation": "You post something personal online. Zero engagement.",
+    "options": [
+      {
+        "id": "a",
+        "text": "I'd delete it before anyone notices.",
+        "weights": {
+          "need-to-be-liked": 0.7,
+          "need-to-control": 0.4
+        }
+      },
+      {
+        "id": "b",
+        "text": "I'd check repeatedly to see if it changes.",
+        "weights": {
+          "need-to-compare": 0.8,
+          "need-to-impress": 0.4
+        }
+      },
+      {
+        "id": "c",
+        "text": "I'd post something clever to recover.",
+        "weights": {
+          "need-to-impress": 0.7,
+          "need-to-deflect": 0.5
+        }
+      },
+      {
+        "id": "d",
+        "text": "I'd build a narrative about why it didn't land.",
+        "weights": {
+          "need-to-narrate": 0.8,
+          "need-to-be-right": 0.3
+        }
+      }
+    ],
+    "reframe": "// Silence shouldn't feel like a verdict. But your ego doesn't know that yet."
+  }
+]

@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Terminal Back Button
 
-/// Replaces the default iOS back chevron with a monospaced `[ ← today ]` button.
+/// Replaces the default iOS back chevron with a themed back button.
 private struct TerminalBackButton: ViewModifier {
     @Environment(\.dismiss) private var dismiss
 
@@ -12,9 +12,14 @@ private struct TerminalBackButton: ViewModifier {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: { dismiss() }) {
-                        Text("[ \u{2190} today ]")
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.gray)
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.left")
+                                .font(.system(size: 10, weight: .medium))
+                            Text("TODAY")
+                                .tracking(1.5)
+                        }
+                        .font(EgoTheme.label())
+                        .foregroundColor(EgoTheme.textMuted)
                     }
                 }
             }
@@ -34,9 +39,10 @@ enum AppDestination: Hashable {
     case bugLibrary
     case docs
     case settings
+    case soulDebug
 }
 
-/// Monospaced text nav bar shown after full nav unlocks (day 14+, 10+ fixes).
+/// Bottom nav bar shown after full nav unlocks (day 14+, 10+ fixes).
 struct AppNavBar: View {
     let activeDestination: AppDestination?
     let isHistoryUnlocked: Bool
@@ -46,22 +52,22 @@ struct AppNavBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            navButton(label: "today", destination: nil, isActive: activeDestination == nil)
+            navButton(label: "TODAY", destination: nil, isActive: activeDestination == nil)
 
             if isHistoryUnlocked {
-                navButton(label: "history", destination: .history, isActive: activeDestination == .history)
+                navButton(label: "HISTORY", destination: .history, isActive: activeDestination == .history)
             }
 
             if isPatternsUnlocked {
-                navButton(label: "patterns", destination: .patterns, isActive: activeDestination == .patterns)
+                navButton(label: "PATTERNS", destination: .patterns, isActive: activeDestination == .patterns)
             }
 
             Button(action: { showOverflow.toggle() }) {
                 Text("···")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .padding(.vertical, 14)
             }
             .popover(isPresented: $showOverflow, attachmentAnchor: .point(.top)) {
                 OverflowMenu(onSelect: { dest in
@@ -71,21 +77,30 @@ struct AppNavBar: View {
                 .presentationCompactAdaptation(.popover)
             }
         }
-        .background(Color(white: 0.04))
+        .background(EgoTheme.bg)
         .overlay(alignment: .top) {
             Rectangle()
-                .fill(Color(white: 0.12))
-                .frame(height: 1)
+                .fill(EgoTheme.borderSubtle)
+                .frame(height: 0.5)
         }
     }
 
     private func navButton(label: String, destination: AppDestination?, isActive: Bool) -> some View {
         Button(action: { onSelect(destination) }) {
-            Text(label)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(isActive ? .green : Color(white: 0.4))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
+            VStack(spacing: 0) {
+                // Active indicator bar
+                Rectangle()
+                    .fill(isActive ? EgoTheme.green : Color.clear)
+                    .frame(height: 1)
+                    .shadow(color: isActive ? EgoTheme.greenGlow : .clear, radius: 4)
+
+                Text(label)
+                    .font(EgoTheme.label())
+                    .tracking(1.5)
+                    .foregroundColor(isActive ? EgoTheme.green : EgoTheme.textMuted)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+            }
         }
     }
 }
@@ -96,23 +111,24 @@ private struct OverflowMenu: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            overflowButton("bug library", destination: .bugLibrary)
-            overflowButton("docs", destination: .docs)
-            overflowButton("settings", destination: .settings)
+            overflowButton("BUG LIBRARY", destination: .bugLibrary)
+            overflowButton("DOCS", destination: .docs)
+            overflowButton("SETTINGS", destination: .settings)
         }
         .padding(.vertical, 4)
-        .frame(width: 160)
-        .background(Color(white: 0.08))
+        .frame(width: 180)
+        .background(EgoTheme.surface)
     }
 
     private func overflowButton(_ label: String, destination: AppDestination) -> some View {
         Button(action: { onSelect(destination) }) {
             Text(label)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.6))
+                .font(EgoTheme.label())
+                .tracking(1)
+                .foregroundColor(EgoTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                .padding(.vertical, 12)
         }
     }
 }
@@ -125,51 +141,48 @@ struct FooterLinks: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // History unlock
             if tracker.isHistoryUnlocked {
                 if tracker.shouldShowHistoryUnlockPrompt {
                     UnlockPromptView(
                         comment: "// 3 fixes logged.\n// Your history is building.",
-                        linkLabel: "[ View changelog → ]",
+                        linkLabel: "VIEW CHANGELOG",
                         onTap: {
                             tracker.markHistoryUnlockSeen()
                             onNavigate(.history)
                         }
                     )
                 } else {
-                    footerLink("[ changelog → ]", destination: .history)
+                    footerLink("CHANGELOG", destination: .history)
                 }
             }
 
-            // Patterns unlock
             if tracker.isPatternsUnlocked {
                 if tracker.shouldShowPatternsUnlockPrompt {
                     UnlockPromptView(
                         comment: "// First pattern detected.\n// The app noticed something.",
-                        linkLabel: "[ View pattern → ]",
+                        linkLabel: "VIEW PATTERN",
                         onTap: {
                             tracker.markPatternsUnlockSeen()
                             onNavigate(.patterns)
                         }
                     )
                 } else {
-                    footerLink("[ patterns → ]", destination: .patterns)
+                    footerLink("PATTERNS", destination: .patterns)
                 }
             }
 
-            // Bug library unlock
             if tracker.isBugLibraryUnlocked {
                 if tracker.shouldShowBugLibraryUnlockPrompt {
                     UnlockPromptView(
                         comment: "// v1.1 — your first update.\n// You can explore your bugs anytime.",
-                        linkLabel: "[ bug library → ]",
+                        linkLabel: "BUG LIBRARY",
                         onTap: {
                             tracker.markBugLibraryUnlockSeen()
                             onNavigate(.bugLibrary)
                         }
                     )
                 } else {
-                    footerLink("[ bug library → ]", destination: .bugLibrary)
+                    footerLink("BUG LIBRARY", destination: .bugLibrary)
                 }
             }
         }
@@ -177,9 +190,15 @@ struct FooterLinks: View {
 
     private func footerLink(_ label: String, destination: AppDestination) -> some View {
         Button(action: { onNavigate(destination) }) {
-            Text(label)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.4))
+            HStack(spacing: 6) {
+                Text(label)
+                    .font(EgoTheme.label())
+                    .tracking(1.5)
+                    .foregroundColor(EgoTheme.textMuted)
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 8, weight: .medium))
+                    .foregroundColor(EgoTheme.textMuted)
+            }
         }
     }
 }
@@ -197,10 +216,9 @@ struct UnlockPromptView: View {
             TypewriterText(
                 text: comment,
                 characterDelay: 0.025,
-                color: Color(white: 0.35),
-                font: .system(.caption, design: .monospaced),
+                color: EgoTheme.textMuted,
+                font: EgoTheme.mono(.caption),
                 onComplete: {
-                    // Link fades in 0.5s after comment finishes typing
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         withAnimation(.easeOut(duration: 0.3)) {
                             showLink = true
@@ -211,9 +229,15 @@ struct UnlockPromptView: View {
 
             if showLink {
                 Button(action: onTap) {
-                    Text(linkLabel)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.green)
+                    HStack(spacing: 6) {
+                        Text(linkLabel)
+                            .font(EgoTheme.label())
+                            .tracking(1.5)
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 8, weight: .medium))
+                    }
+                    .foregroundColor(EgoTheme.green)
+                    .greenGlow()
                 }
                 .transition(.opacity)
             }
