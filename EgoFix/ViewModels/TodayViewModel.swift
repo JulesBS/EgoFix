@@ -279,8 +279,21 @@ final class TodayViewModel: ObservableObject {
 
     // MARK: - Weekly Diagnostic
 
+    private var diagnosticChecked = false
+
     func checkWeeklyDiagnostic() async {
+        // Only check once per session, and never after an outcome is already marked
+        guard !diagnosticChecked else { return }
+        diagnosticChecked = true
+
         guard let service = weeklyDiagnosticService else { return }
+
+        // Don't interrupt if we're already past the fix flow
+        switch state {
+        case .completed, .debrief, .doneForToday: return
+        default: break
+        }
+
         do {
             if try await service.shouldPromptDiagnostic() {
                 let bugs = try await service.getBugsForDiagnostic()
