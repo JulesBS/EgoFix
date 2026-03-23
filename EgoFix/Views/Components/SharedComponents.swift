@@ -107,3 +107,52 @@ struct TerminalDivider: View {
             .frame(height: 0.5)
     }
 }
+
+// MARK: - Interaction Components
+
+/// Header row for interaction views: type label (left) + status (right).
+struct InteractionHeader: View {
+    let type: String
+    let status: String
+    var typeColor: Color = EgoTheme.green
+
+    var body: some View {
+        HStack {
+            Text(type)
+                .font(EgoTheme.label())
+                .foregroundColor(typeColor)
+            Spacer()
+            Text(status)
+                .font(EgoTheme.label())
+                .foregroundColor(EgoTheme.textMuted)
+        }
+    }
+}
+
+/// Inline comment display for fixes.
+struct InlineCommentView: View {
+    let comment: String?
+
+    var body: some View {
+        if let comment {
+            Text("// \(comment)")
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
+                .italic()
+        }
+    }
+}
+
+/// Card shell modifier for interaction views.
+extension View {
+    func interactionCard(borderColor: Color = EgoTheme.border) -> some View {
+        self
+            .padding(16)
+            .background(EgoTheme.surface.opacity(0.3))
+            .cornerRadius(4)
+            .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(borderColor, lineWidth: 1)
+            )
+    }
+}

@@ -6,15 +6,7 @@ struct PredictInteractionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("PREDICT")
-                    .font(EgoTheme.label())
-                    .foregroundColor(.green)
-                Spacer()
-                Text(interactionManager.predictPhase == .predicting ? "Phase 1: Predict" : "Phase 2: Observe")
-                    .font(EgoTheme.label())
-                    .foregroundColor(EgoTheme.textMuted)
-            }
+            InteractionHeader(type: "PREDICT", status: interactionManager.predictPhase == .predicting ? "Phase 1: Predict" : "Phase 2: Observe")
 
             Text(fix.prompt)
                 .font(EgoTheme.mono())
@@ -80,19 +72,8 @@ struct PredictInteractionView: View {
                 }
             }
 
-            if let comment = fix.inlineComment {
-                Text("// \(comment)")
-                    .font(EgoTheme.mono(.caption))
-                    .foregroundColor(EgoTheme.textMuted)
-                    .italic()
-            }
+            InlineCommentView(comment: fix.inlineComment)
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(EgoTheme.border, lineWidth: 1)
-        )
+        .interactionCard()
     }
 }

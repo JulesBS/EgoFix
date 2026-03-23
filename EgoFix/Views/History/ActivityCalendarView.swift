@@ -55,7 +55,7 @@ struct ActivityCalendarView: View {
             Button(action: previousMonth) {
                 Text("[ < ]")
                     .font(EgoTheme.mono(.caption))
-                    .foregroundColor(currentMonthIndex > 0 ? .green : EgoTheme.textMuted)
+                    .foregroundColor(currentMonthIndex > 0 ? EgoTheme.green : EgoTheme.textMuted)
             }
             .disabled(currentMonthIndex == 0)
 
@@ -70,7 +70,7 @@ struct ActivityCalendarView: View {
             Button(action: nextMonth) {
                 Text("[ > ]")
                     .font(EgoTheme.mono(.caption))
-                    .foregroundColor(currentMonthIndex < months.count - 1 ? .green : EgoTheme.textMuted)
+                    .foregroundColor(currentMonthIndex < months.count - 1 ? EgoTheme.green : EgoTheme.textMuted)
             }
             .disabled(currentMonthIndex >= months.count - 1)
         }

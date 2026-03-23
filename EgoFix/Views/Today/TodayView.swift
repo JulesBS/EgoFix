@@ -299,9 +299,7 @@ struct TodayView: View {
     private var mainContent: some View {
         switch viewModel.state {
         case .loading:
-            Text("> loading...")
-                .font(EgoTheme.mono(.caption))
-                .foregroundColor(EgoTheme.textMuted)
+            TerminalLoading()
                 .padding(.top, 40)
 
         case .diagnostic:

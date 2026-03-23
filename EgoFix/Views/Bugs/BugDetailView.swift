@@ -42,8 +42,8 @@ struct BugDetailView: View {
                     .foregroundColor(statusColor)
                 Spacer()
                 Button(action: { dismiss() }) {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .medium))
+                    Text("[ x ]")
+                        .font(EgoTheme.mono(.caption))
                         .foregroundColor(EgoTheme.textMuted)
                 }
             }

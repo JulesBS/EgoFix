@@ -6,15 +6,7 @@ struct ReversalInteractionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("REVERSAL")
-                    .font(EgoTheme.label())
-                    .foregroundColor(.purple)
-                Spacer()
-                Text("Do the opposite")
-                    .font(EgoTheme.label())
-                    .foregroundColor(EgoTheme.textMuted)
-            }
+            InteractionHeader(type: "REVERSAL", status: "Do the opposite", typeColor: .purple)
 
             Text(fix.prompt)
                 .font(EgoTheme.mono())
@@ -25,19 +17,8 @@ struct ReversalInteractionView: View {
                 .font(EgoTheme.mono(.caption))
                 .foregroundColor(EgoTheme.textPrimary)
 
-            if let comment = fix.inlineComment {
-                Text("// \(comment)")
-                    .font(EgoTheme.mono(.caption))
-                    .foregroundColor(EgoTheme.textMuted)
-                    .italic()
-            }
+            InlineCommentView(comment: fix.inlineComment)
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(EgoTheme.border, lineWidth: 1)
-        )
+        .interactionCard()
     }
 }

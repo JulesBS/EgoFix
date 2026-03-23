@@ -9,17 +9,7 @@ struct StandardInteractionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
-            HStack {
-                Text("STANDARD")
-                    .font(EgoTheme.label())
-                    .foregroundColor(.green)
-
-                Spacer()
-
-                Text("Ready")
-                    .font(EgoTheme.label())
-                    .foregroundColor(EgoTheme.textMuted)
-            }
+            InteractionHeader(type: "STANDARD", status: "Ready")
 
             // Prompt display
             Text(fix.prompt)
@@ -59,20 +49,9 @@ struct StandardInteractionView: View {
             }
 
             // Inline comment
-            if let comment = fix.inlineComment {
-                Text("// \(comment)")
-                    .font(EgoTheme.mono(.caption))
-                    .foregroundColor(EgoTheme.textMuted)
-                    .italic()
-            }
+            InlineCommentView(comment: fix.inlineComment)
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(EgoTheme.border, lineWidth: 1)
-        )
+        .interactionCard()
     }
 }
 

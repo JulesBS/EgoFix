@@ -179,30 +179,9 @@ private struct AwakeningPhaseView: View {
                         }
                     }
 
-                    // CTA button (Figma: uppercase tracked, surface bg, border)
                     if showButton {
-                        Button(action: onBeginScan) {
-                            HStack {
-                                Spacer()
-                                Text("INITIALIZE SEQUENCE")
-                                    .font(EgoTheme.mono(.callout))
-                                    .tracking(2.8)
-                                    .foregroundColor(Color(red: 0.922, green: 1.0, blue: 0.886))
-                                Image(systemName: "arrow.right")
-                                    .font(.system(size: 12, weight: .medium))
-                                    .foregroundColor(Color(red: 0.922, green: 1.0, blue: 0.886))
-                                Spacer()
-                            }
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 17)
-                            .background(EgoTheme.surface)
-                            .overlay(
-                                Rectangle()
-                                    .stroke(EgoTheme.border, lineWidth: 1)
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .padding(.top, 26)
+                        FigmaCTAButton(label: "INITIALIZE SEQUENCE", action: onBeginScan)
+                            .padding(.top, 26)
                         .transition(.opacity)
                     }
                 }
@@ -458,7 +437,9 @@ private struct BugRevealPhaseView: View {
                     .greenGlow()
                     .padding(.bottom, 8)
 
-                Text("// Your responses lit up these patterns.\n// Select the one to debug first.")
+                Text(viewModel.scenarioSelections.isEmpty
+                    ? "// Select the pattern to debug first."
+                    : "// Your responses lit up these patterns.\n// Select the one to debug first.")
                     .font(EgoTheme.label())
                     .foregroundColor(EgoTheme.textMuted)
                     .padding(.bottom, 24)
@@ -533,31 +514,10 @@ private struct BugRevealPhaseView: View {
                     .foregroundColor(EgoTheme.textMuted)
                     .padding(.top, 20)
 
-                // Begin debugging button (Figma CTA style)
                 if viewModel.selectedBugId != nil {
-                    Button(action: onCommit) {
-                        HStack {
-                            Spacer()
-                            Text("BEGIN DEBUGGING")
-                                .font(EgoTheme.mono(.callout))
-                                .tracking(2.8)
-                                .foregroundColor(Color(red: 0.922, green: 1.0, blue: 0.886))
-                            Image(systemName: "arrow.right")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(Color(red: 0.922, green: 1.0, blue: 0.886))
-                            Spacer()
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 17)
-                        .background(EgoTheme.surface)
-                        .overlay(
-                            Rectangle()
-                                .stroke(EgoTheme.border, lineWidth: 1)
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, 24)
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    FigmaCTAButton(label: "BEGIN DEBUGGING", action: onCommit)
+                        .padding(.top, 24)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
 
                 Spacer()

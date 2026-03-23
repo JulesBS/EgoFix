@@ -15,23 +15,7 @@ struct ScenarioInteractionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
-            HStack {
-                Text("SCENARIO")
-                    .font(EgoTheme.label())
-                    .foregroundColor(.green)
-
-                Spacer()
-
-                if interactionManager.scenarioAnswered {
-                    Text("Completed")
-                        .font(EgoTheme.label())
-                        .foregroundColor(.green)
-                } else {
-                    Text("Choose response")
-                        .font(EgoTheme.label())
-                        .foregroundColor(EgoTheme.textMuted)
-                }
-            }
+            InteractionHeader(type: "SCENARIO", status: interactionManager.scenarioAnswered ? "Completed" : "Choose response")
 
             // Situation description
             if let situation = config?.situation {
@@ -83,13 +67,7 @@ struct ScenarioInteractionView: View {
                 }
             }
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(borderColor, lineWidth: 1)
-        )
+        .interactionCard(borderColor: borderColor)
     }
 
     // MARK: - Option Row

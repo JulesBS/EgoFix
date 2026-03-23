@@ -23,9 +23,7 @@ struct HistoryView: View {
 
                 if viewModel.isLoading {
                     Spacer()
-                    Text("> loading...")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textMuted)
+                    TerminalLoading()
                     Spacer()
                 } else {
                     switch viewModel.selectedView {
@@ -45,25 +43,7 @@ struct HistoryView: View {
     }
 
     private var tabSelector: some View {
-        HStack(spacing: 8) {
-            ForEach(HistoryViewType.allCases, id: \.self) { viewType in
-                let isSelected = viewModel.selectedView == viewType
-                Button(action: { viewModel.selectedView = viewType }) {
-                    Text(viewType.rawValue.uppercased())
-                        .font(EgoTheme.label())
-                        .tracking(1.5)
-                        .foregroundColor(isSelected ? EgoTheme.green : EgoTheme.textMuted)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(isSelected ? EgoTheme.green.opacity(0.1) : Color.clear)
-                        .overlay(
-                            Rectangle()
-                                .stroke(isSelected ? EgoTheme.green.opacity(0.3) : Color.clear, lineWidth: 1)
-                        )
-                }
-            }
-            Spacer()
-        }
+        TerminalTabSelector(tabs: HistoryViewType.allCases, selected: $viewModel.selectedView)
     }
 
     private var statsContent: some View {

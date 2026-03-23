@@ -18,12 +18,16 @@ final class OnboardingViewModelTests: XCTestCase {
         fixRepo = MockFixRepository()
         fixCompletionRepo = MockFixCompletionRepository()
         analyticsRepo = MockAnalyticsEventRepository()
+        let dailyFixService = DailyFixService(
+            fixRepository: fixRepo,
+            fixCompletionRepository: fixCompletionRepo,
+            userRepository: userRepo,
+            analyticsEventRepository: analyticsRepo
+        )
         viewModel = OnboardingViewModel(
             bugRepository: bugRepo,
             userRepository: userRepo,
-            fixRepository: fixRepo,
-            fixCompletionRepository: fixCompletionRepo,
-            analyticsEventRepository: analyticsRepo
+            dailyFixService: dailyFixService
         )
     }
 
@@ -316,29 +320,7 @@ final class OnboardingViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.isComplete)
     }
 
-    // MARK: - Onboarding Check
-
-    func test_OnboardingViewModel_checkOnboardingNeeded_trueWhenNoUser() async {
-        let needed = await viewModel.checkOnboardingNeeded()
-        XCTAssertTrue(needed)
-    }
-
-    func test_OnboardingViewModel_checkOnboardingNeeded_falseWhenUserHasPriorities() async throws {
-        let user = UserProfile(
-            bugPriorities: [BugPriority(bugId: UUID(), rank: 1)]
-        )
-        try await userRepo.save(user)
-
-        let needed = await viewModel.checkOnboardingNeeded()
-        XCTAssertFalse(needed)
-    }
-
-    // MARK: - Nickname & Comment Tests
-
-    func test_OnboardingViewModel_nickname_returnsSlugs() {
-        XCTAssertEqual(viewModel.nickname(for: "need-to-be-right"), "need-to-be-right")
-        XCTAssertEqual(viewModel.nickname(for: "unknown"), "unknown")
-    }
+    // MARK: - Comment Tests
 
     func test_OnboardingViewModel_inlineComment_existsForAllBugs() {
         for slug in slugs {

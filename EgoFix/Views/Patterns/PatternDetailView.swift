@@ -29,8 +29,8 @@ struct PatternDetailView: View {
                     HStack {
                         Spacer()
                         Button(action: onDismiss) {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 12, weight: .medium))
+                            Text("[ x ]")
+                                .font(EgoTheme.mono(.caption))
                                 .foregroundColor(EgoTheme.textMuted)
                         }
                     }
@@ -81,8 +81,7 @@ struct PatternDetailView: View {
                         )
                     }
 
-                    Divider()
-                        .background(EgoTheme.borderSubtle)
+                    TerminalDivider()
                         .padding(.vertical, 8)
 
                     // Recommendations section

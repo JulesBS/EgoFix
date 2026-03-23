@@ -49,9 +49,7 @@ final class OnboardingViewModel: ObservableObject {
 
     private let bugRepository: BugRepository
     private let userRepository: UserRepository
-    private let fixRepository: FixRepository
-    private let fixCompletionRepository: FixCompletionRepository
-    private let analyticsEventRepository: AnalyticsEventRepository
+    private let dailyFixService: DailyFixService
 
     // MARK: Static Content
 
@@ -105,31 +103,19 @@ final class OnboardingViewModel: ObservableObject {
         ],
     ]
 
-    /// Canonical bug display order
-    static let slugOrder = [
-        "need-to-be-right",
-        "need-to-be-liked",
-        "need-to-control",
-        "need-to-compare",
-        "need-to-impress",
-        "need-to-deflect",
-        "need-to-narrate",
-    ]
+    /// Canonical bug display order — single source of truth
+    static let slugOrder = ScenarioWeightCalculator.allBugSlugs
 
     // MARK: Init
 
     init(
         bugRepository: BugRepository,
         userRepository: UserRepository,
-        fixRepository: FixRepository,
-        fixCompletionRepository: FixCompletionRepository,
-        analyticsEventRepository: AnalyticsEventRepository
+        dailyFixService: DailyFixService
     ) {
         self.bugRepository = bugRepository
         self.userRepository = userRepository
-        self.fixRepository = fixRepository
-        self.fixCompletionRepository = fixCompletionRepository
-        self.analyticsEventRepository = analyticsEventRepository
+        self.dailyFixService = dailyFixService
     }
 
     // MARK: - Loading
@@ -175,10 +161,6 @@ final class OnboardingViewModel: ObservableObject {
     }
 
     // MARK: - Accessors
-
-    func nickname(for slug: String) -> String {
-        slug
-    }
 
     func inlineComment(for slug: String) -> String {
         Self.inlineComments[slug] ?? ""
@@ -296,12 +278,6 @@ final class OnboardingViewModel: ObservableObject {
             try await userRepository.save(user)
 
             // Assign first fix immediately
-            let dailyFixService = DailyFixService(
-                fixRepository: fixRepository,
-                fixCompletionRepository: fixCompletionRepository,
-                userRepository: userRepository,
-                analyticsEventRepository: analyticsEventRepository
-            )
             _ = try await dailyFixService.assignDailyFix()
 
             isComplete = true
@@ -313,15 +289,4 @@ final class OnboardingViewModel: ObservableObject {
         isLoading = false
     }
 
-    // MARK: - Legacy Compatibility
-
-    /// Check if onboarding is needed (no user profile exists)
-    func checkOnboardingNeeded() async -> Bool {
-        do {
-            let user = try await userRepository.get()
-            return user == nil || user!.bugPriorities.isEmpty
-        } catch {
-            return true
-        }
-    }
 }

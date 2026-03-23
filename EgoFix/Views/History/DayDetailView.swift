@@ -18,14 +18,13 @@ struct DayDetailView: View {
                     Spacer()
 
                     Button(action: onDismiss) {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 12, weight: .medium))
+                        Text("[ x ]")
+                            .font(EgoTheme.mono(.caption))
                             .foregroundColor(EgoTheme.textMuted)
                     }
                 }
 
-                Divider()
-                    .background(EgoTheme.borderSubtle)
+                TerminalDivider()
 
                 // Activity breakdown
                 VStack(alignment: .leading, spacing: 16) {

@@ -6,15 +6,7 @@ struct AbstainInteractionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("ABSTAIN")
-                    .font(EgoTheme.label())
-                    .foregroundColor(.red)
-                Spacer()
-                Text("Don't do the thing")
-                    .font(EgoTheme.label())
-                    .foregroundColor(EgoTheme.textMuted)
-            }
+            InteractionHeader(type: "ABSTAIN", status: "Don't do the thing", typeColor: .red)
 
             Text(fix.prompt)
                 .font(EgoTheme.mono())
@@ -39,19 +31,8 @@ struct AbstainInteractionView: View {
                 .toggleStyle(SwitchToggleStyle(tint: .red))
             }
 
-            if let comment = fix.inlineComment {
-                Text("// \(comment)")
-                    .font(EgoTheme.mono(.caption))
-                    .foregroundColor(EgoTheme.textMuted)
-                    .italic()
-            }
+            InlineCommentView(comment: fix.inlineComment)
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(EgoTheme.border, lineWidth: 1)
-        )
+        .interactionCard()
     }
 }

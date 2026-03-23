@@ -10,10 +10,8 @@ struct TimedInteractionView: View {
             HStack {
                 Text("TIMER")
                     .font(EgoTheme.label())
-                    .foregroundColor(.green)
-
+                    .foregroundColor(EgoTheme.green)
                 Spacer()
-
                 Text(interactionManager.formattedTime)
                     .font(EgoTheme.mono(.title2))
                     .fontWeight(.bold)
@@ -40,13 +38,7 @@ struct TimedInteractionView: View {
                     .foregroundColor(EgoTheme.textMuted)
             }
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(borderColor, lineWidth: 1)
-        )
+        .interactionCard(borderColor: borderColor)
     }
 
     // MARK: - Timer Button

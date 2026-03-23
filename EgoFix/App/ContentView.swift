@@ -5,6 +5,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var progressTracker = AppProgressTracker()
     @State private var seedDataLoaded = false
+    @State private var onboardingVM: OnboardingViewModel?
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
@@ -12,14 +13,14 @@ struct ContentView: View {
             EgoTheme.bg.ignoresSafeArea()
 
             if !seedDataLoaded {
-                // Loading state — seed data not yet loaded
-                EmptyView()
+                TerminalLoading()
             } else if !hasCompletedOnboarding {
                 OnboardingView(
-                    viewModel: makeOnboardingViewModel(),
+                    viewModel: onboardingVM ?? makeAndCacheOnboardingVM(),
                     onComplete: {
                         withAnimation(.easeOut(duration: 0.3)) {
                             hasCompletedOnboarding = true
+                            onboardingVM = nil
                         }
                     }
                 )
@@ -57,18 +58,28 @@ struct ContentView: View {
 
     // MARK: - Factory Methods
 
+    private func makeAndCacheOnboardingVM() -> OnboardingViewModel {
+        let vm = makeOnboardingViewModel()
+        onboardingVM = vm
+        return vm
+    }
+
     private func makeOnboardingViewModel() -> OnboardingViewModel {
         let bugRepo = LocalBugRepository(modelContext: modelContext)
         let userRepo = LocalUserRepository(modelContext: modelContext)
         let fixRepo = LocalFixRepository(modelContext: modelContext)
         let fixCompletionRepo = LocalFixCompletionRepository(modelContext: modelContext)
         let analyticsRepo = LocalAnalyticsEventRepository(modelContext: modelContext)
+        let dailyFixService = DailyFixService(
+            fixRepository: fixRepo,
+            fixCompletionRepository: fixCompletionRepo,
+            userRepository: userRepo,
+            analyticsEventRepository: analyticsRepo
+        )
         return OnboardingViewModel(
             bugRepository: bugRepo,
             userRepository: userRepo,
-            fixRepository: fixRepo,
-            fixCompletionRepository: fixCompletionRepo,
-            analyticsEventRepository: analyticsRepo
+            dailyFixService: dailyFixService
         )
     }
 

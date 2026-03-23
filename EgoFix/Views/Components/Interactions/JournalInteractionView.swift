@@ -7,15 +7,7 @@ struct JournalInteractionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("JOURNAL")
-                    .font(EgoTheme.label())
-                    .foregroundColor(.blue)
-                Spacer()
-                Text("2-3 sentences")
-                    .font(EgoTheme.label())
-                    .foregroundColor(EgoTheme.textMuted)
-            }
+            InteractionHeader(type: "JOURNAL", status: "2-3 sentences", typeColor: .blue)
 
             Text(fix.prompt)
                 .font(EgoTheme.mono())
@@ -36,19 +28,8 @@ struct JournalInteractionView: View {
                 .shadow(color: isTextFieldFocused ? .blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 0)
                 .focused($isTextFieldFocused)
 
-            if let comment = fix.inlineComment {
-                Text("// \(comment)")
-                    .font(EgoTheme.mono(.caption))
-                    .foregroundColor(EgoTheme.textMuted)
-                    .italic()
-            }
+            InlineCommentView(comment: fix.inlineComment)
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(EgoTheme.border, lineWidth: 1)
-        )
+        .interactionCard()
     }
 }

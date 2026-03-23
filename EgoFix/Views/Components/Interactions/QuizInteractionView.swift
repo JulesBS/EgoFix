@@ -15,23 +15,7 @@ struct QuizInteractionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
-            HStack {
-                Text("ASSESSMENT")
-                    .font(EgoTheme.label())
-                    .foregroundColor(.green)
-
-                Spacer()
-
-                if interactionManager.quizAnswered {
-                    Text("Submitted")
-                        .font(EgoTheme.label())
-                        .foregroundColor(.green)
-                } else {
-                    Text("Select one")
-                        .font(EgoTheme.label())
-                        .foregroundColor(EgoTheme.textMuted)
-                }
-            }
+            InteractionHeader(type: "ASSESSMENT", status: interactionManager.quizAnswered ? "Submitted" : "Select one")
 
             // Question
             if let question = config?.question {
@@ -72,13 +56,7 @@ struct QuizInteractionView: View {
                 }
             }
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(borderColor, lineWidth: 1)
-        )
+        .interactionCard(borderColor: borderColor)
     }
 
     // MARK: - Option Row

@@ -11,17 +11,7 @@ struct CounterInteractionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
-            HStack {
-                Text("COUNTER")
-                    .font(EgoTheme.label())
-                    .foregroundColor(.green)
-
-                Spacer()
-
-                Text("Today")
-                    .font(EgoTheme.label())
-                    .foregroundColor(EgoTheme.textMuted)
-            }
+            InteractionHeader(type: "COUNTER", status: "Today")
 
             // Counter prompt
             if let prompt = config?.counterPrompt {
@@ -102,13 +92,7 @@ struct CounterInteractionView: View {
                     .foregroundColor(targetColor)
             }
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(borderColor, lineWidth: 1)
-        )
+        .interactionCard(borderColor: borderColor)
     }
 
     // MARK: - Computed Properties

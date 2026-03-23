@@ -75,8 +75,8 @@ struct CrashBugSelectView: View {
                 Spacer()
 
                 Button(action: onCancel) {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .medium))
+                    Text("[ x ]")
+                        .font(EgoTheme.mono(.caption))
                         .foregroundColor(EgoTheme.textMuted)
                 }
             }
@@ -85,9 +85,7 @@ struct CrashBugSelectView: View {
                 Spacer()
                 HStack {
                     Spacer()
-                    Text("> loading...")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textMuted)
+                    TerminalLoading()
                     Spacer()
                 }
                 Spacer()

@@ -18,8 +18,7 @@ struct DocsView: View {
                         .font(EgoTheme.mono(.caption))
                         .foregroundColor(EgoTheme.textMuted)
 
-                    Divider()
-                        .background(EgoTheme.borderSubtle)
+                    TerminalDivider()
 
                     // Bug Library link
                     Button(action: { showBugLibrary = true }) {
@@ -43,8 +42,7 @@ struct DocsView: View {
                         .font(EgoTheme.mono(.caption))
                         .foregroundColor(EgoTheme.textMuted)
 
-                    Divider()
-                        .background(EgoTheme.borderSubtle)
+                    TerminalDivider()
 
                     DocSectionView(
                         title: "What is a Bug?",

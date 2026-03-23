@@ -12,9 +12,7 @@ struct PatternsView: View {
             EgoTheme.bg.ignoresSafeArea()
 
             if viewModel.isLoading {
-                Text("> loading...")
-                    .font(EgoTheme.mono(.caption))
-                    .foregroundColor(EgoTheme.textMuted)
+                TerminalLoading()
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
@@ -107,7 +105,7 @@ struct PatternsView: View {
                     .foregroundColor(EgoTheme.textMuted)
             }
             .font(EgoTheme.mono(.caption))
-            .foregroundColor(isSelected ? .green : .white)
+            .foregroundColor(isSelected ? EgoTheme.green : EgoTheme.textPrimary)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(isSelected ? Color.green.opacity(0.15) : Color.gray.opacity(0.1))

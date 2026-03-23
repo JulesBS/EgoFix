@@ -22,11 +22,8 @@ struct MultiStepInteractionView: View {
             HStack {
                 Text("STEP \(interactionManager.currentStepIndex + 1)/\(interactionManager.totalSteps)")
                     .font(EgoTheme.label())
-                    .foregroundColor(.green)
-
+                    .foregroundColor(EgoTheme.green)
                 Spacer()
-
-                // Progress dots
                 progressDots
             }
 
@@ -41,12 +38,7 @@ struct MultiStepInteractionView: View {
                     .lineSpacing(4)
 
                 // Optional inline comment
-                if let comment = step.inlineComment {
-                    Text("// \(comment)")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textMuted)
-                        .italic()
-                }
+                InlineCommentView(comment: step.inlineComment)
 
                 // Optional validation
                 if let validation = step.validation {
@@ -95,13 +87,7 @@ struct MultiStepInteractionView: View {
                 .padding(.top, 8)
             }
         }
-        .padding(16)
-        .background(EgoTheme.surface.opacity(0.3))
-        .cornerRadius(4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 4)
-                .stroke(borderColor, lineWidth: 1)
-        )
+        .interactionCard(borderColor: borderColor)
     }
 
     // MARK: - Progress Dots

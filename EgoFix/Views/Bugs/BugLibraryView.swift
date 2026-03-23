@@ -14,9 +14,7 @@ struct BugLibraryView: View {
                 EgoTheme.bg.ignoresSafeArea()
 
                 if viewModel.isLoading {
-                    Text("> loading...")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textMuted)
+                    TerminalLoading()
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {

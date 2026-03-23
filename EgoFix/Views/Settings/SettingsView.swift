@@ -134,7 +134,7 @@ struct SettingsView: View {
             Spacer()
             Text(unlocked ? "unlocked" : "locked")
                 .font(EgoTheme.mono(.caption))
-                .foregroundColor(unlocked ? .green : EgoTheme.textMuted)
+                .foregroundColor(unlocked ? EgoTheme.green : EgoTheme.textMuted)
         }
         .padding(.vertical, 6)
     }

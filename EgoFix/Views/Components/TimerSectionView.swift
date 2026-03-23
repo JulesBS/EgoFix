@@ -9,7 +9,7 @@ struct TimerSectionView: View {
             HStack {
                 Text("TIMER")
                     .font(EgoTheme.label())
-                    .foregroundColor(.green)
+                    .foregroundColor(EgoTheme.green)
 
                 Spacer()
 
@@ -48,7 +48,7 @@ struct TimerSectionView: View {
             Button(action: { Task { await timerManager.startTimer() } }) {
                 Text("[ Start ]")
                     .font(EgoTheme.mono(.callout))
-                    .foregroundColor(.green)
+                    .foregroundColor(EgoTheme.green)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(Color.green.opacity(0.1))
@@ -59,7 +59,7 @@ struct TimerSectionView: View {
             Button(action: { Task { await timerManager.pauseTimer() } }) {
                 Text("[ Pause ]")
                     .font(EgoTheme.mono(.callout))
-                    .foregroundColor(.yellow)
+                    .foregroundColor(EgoTheme.amber)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(Color.yellow.opacity(0.1))
@@ -71,7 +71,7 @@ struct TimerSectionView: View {
                 Button(action: { Task { await timerManager.resumeTimer() } }) {
                     Text("[ Resume ]")
                         .font(EgoTheme.mono(.callout))
-                        .foregroundColor(.green)
+                        .foregroundColor(EgoTheme.green)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(Color.green.opacity(0.1))
@@ -90,10 +90,10 @@ struct TimerSectionView: View {
         case .completed:
             HStack(spacing: 8) {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
+                    .foregroundColor(EgoTheme.green)
                 Text("COMPLETE")
                     .font(EgoTheme.mono(.callout))
-                    .foregroundColor(.green)
+                    .foregroundColor(EgoTheme.green)
             }
             .padding(.vertical, 8)
         }
@@ -183,7 +183,7 @@ struct CompactTimerView: View {
         case .completed:
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 10))
-                .foregroundColor(.green)
+                .foregroundColor(EgoTheme.green)
         }
     }
 
@@ -236,7 +236,7 @@ struct CompactInteractionTimerView: View {
         case .completed:
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 10))
-                .foregroundColor(.green)
+                .foregroundColor(EgoTheme.green)
         }
     }
 
