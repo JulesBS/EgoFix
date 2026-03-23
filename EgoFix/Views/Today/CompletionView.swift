@@ -44,7 +44,7 @@ struct CompletionView: View {
                 // Micro-education tidbit
                 if let tidbit = educationTidbit {
                     Text(tidbit)
-                        .font(.system(.callout, design: .monospaced))
+                        .font(EgoTheme.mono(.callout))
                         .foregroundColor(EgoTheme.textMuted)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)

@@ -125,8 +125,10 @@ private struct AwakeningPhaseView: View {
         enum LineStyle { case terminal, narrative }
     }
 
-    // Index of the line that triggers the soul split animation
-    private let splitTriggerLineIndex = 12
+    // The soul split triggers on the first line that glitches "bugs"
+    private var splitTriggerLineIndex: Int {
+        lines.firstIndex(where: { $0.glitchWord == "bugs" }) ?? lines.count - 1
+    }
 
     private let lines: [BootLine] = [
         // Part 1: What ego IS — soul in ORBIT
@@ -190,7 +192,7 @@ private struct AwakeningPhaseView: View {
             }
         }
         .onAppear {
-            animateLine(0)
+            currentLine = 0
         }
     }
 
@@ -251,7 +253,7 @@ private struct AwakeningPhaseView: View {
             try? await Task.sleep(nanoseconds: UInt64(postDelay * 1_000_000_000))
             guard !Task.isCancelled else { return }
             if index + 1 < lines.count {
-                animateLine(index + 1)
+                currentLine = index + 1
             } else {
                 withAnimation(.easeIn(duration: 0.5)) {
                     showButton = true
@@ -260,9 +262,6 @@ private struct AwakeningPhaseView: View {
         }
     }
 
-    private func animateLine(_ index: Int) {
-        currentLine = index
-    }
 }
 
 // MARK: - Phase 2a: Scenario
@@ -554,7 +553,7 @@ private struct BugDiagnosticTile: View {
         Button(action: onSelect) {
             VStack(alignment: .leading, spacing: 0) {
                 // Node label (Figma: "Status / Node 01")
-                Text("STATUS / NODE 0\(nodeIndex)")
+                Text("STATUS / NODE \(String(format: "%02d", nodeIndex))")
                     .font(EgoTheme.label())
                     .tracking(1)
                     .foregroundColor(EgoTheme.textMuted)
@@ -603,8 +602,8 @@ private struct BugDiagnosticTile: View {
                     }
                     .frame(height: 4)
 
-                    // Score percentage
-                    Text("\(Int(matchScore * 100))%")
+                    // Signal strength label
+                    Text(matchScore > 0.7 ? "HIGH" : matchScore > 0.4 ? "MED" : "LOW")
                         .font(EgoTheme.label())
                         .foregroundColor(EgoTheme.textMuted)
                         .frame(width: 32, alignment: .trailing)

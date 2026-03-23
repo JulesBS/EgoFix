@@ -12,7 +12,7 @@ struct FixBriefingView: View {
             // Glass card: fix prompt + comment
             VStack(alignment: .leading, spacing: 0) {
                 // Node label
-                Text("FIX / #\(fix.id.uuidString.prefix(4).uppercased())")
+                Text("FIX / #\(String(format: "%04d", abs(fix.id.hashValue) % 10000))")
                     .font(EgoTheme.label())
                     .tracking(1)
                     .foregroundColor(EgoTheme.textMuted)

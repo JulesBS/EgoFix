@@ -72,14 +72,47 @@ var quizConfig: QuizConfig? {
 
 ## Design System - Brutalist IDE Aesthetic
 
-- **Background**: Pure black (`Color.black`)
-- **Text**: White primary, gray secondary
-- **Fonts**: Always monospaced (`.system(.body, design: .monospaced)`)
-- **Colors**: Green (success/validation), Yellow (warning), Red (error/failure)
-- **Accent colors**: Cyan, Mint, Indigo, Pink, Teal for interaction types
-- **Corners**: Minimal rounding (2-4pt)
-- **Spacing**: Generous padding (16-24pt)
-- **Never**: Gradients, soft colors, nature imagery, wellness aesthetic, emojis in app copy
+All design tokens live in `EgoTheme.swift` (single source of truth).
+
+### Colors
+- **Background**: `EgoTheme.bg` — #131313 (warm dark, not pure black)
+- **Text primary**: `EgoTheme.textPrimary` — #E5E2E1 (warm off-white)
+- **Text muted**: `EgoTheme.textMuted` — #84967E (sage green for secondary text, labels, comments)
+- **Green accent**: `EgoTheme.green` — #00FF41 (success, validation, active states)
+- **Amber**: `EgoTheme.amber` — #FDAF00 (warning, pending)
+- **Red**: `.red` (error, crash — no custom token yet)
+- **Accent colors**: Cyan, Mint, Indigo, Pink, Teal, Purple, Orange, Blue for interaction types
+- **Surface**: `EgoTheme.surface` — #353534 (card/button backgrounds)
+- **Border**: `EgoTheme.border` — olive-green at 0.4 opacity
+- **Glass**: `.glassCard()` modifier — `.ultraThinMaterial` + dark glass base
+
+### Typography
+- **Body text**: `EgoTheme.mono()` — system monospaced at body size
+- **Labels**: `EgoTheme.label()` — caption2 monospaced, use with `.tracking(1.5-2.8)`
+- **Headings**: `EgoTheme.heading(size)` — light weight monospaced
+
+### Spacing
+- 4pt (tight) → 8pt (small) → 12pt (medium) → 16pt (default) → 24pt (large) → 32pt (xl)
+
+### Shared Components
+- `InteractionHeader` — type label + status for fix interaction views
+- `InlineCommentView` — italic `// comment` display
+- `.interactionCard(borderColor:)` — card shell for all 14 interaction views
+- `FigmaCTAButton` — uppercase tracked CTA with arrow
+- `FigmaSecondaryButton` — text-only secondary action
+- `TerminalLoading` — animated `> loading...` indicator
+- `TerminalEmptyState` — comment-style empty state
+- `TerminalTabSelector` — horizontal tab bar
+- `TerminalDivider` — 0.5pt themed divider
+- `CornerBracket` / `.cornerBrackets()` — corner bracket decoration
+- `.greenGlow()` — green shadow matching Figma spec
+- `.glassCard()` — glass-morphism card with border
+
+### Rules
+- **Always** use `EgoTheme` tokens, never hardcode colors or fonts
+- **Corners**: Minimal rounding (2-4pt) or sharp (0pt for glass cards)
+- **Dismiss buttons**: ASCII `[ x ]`, not SF Symbols
+- **Never**: Gradients, nature imagery, wellness aesthetic, emojis in app copy
 
 ## Fix Interaction Types
 

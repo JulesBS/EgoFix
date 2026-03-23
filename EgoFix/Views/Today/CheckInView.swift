@@ -256,50 +256,38 @@ struct CheckInView: View {
                 .foregroundColor(EgoTheme.textPrimary)
 
             HStack(spacing: 1) {
-                VStack(spacing: 8) {
-                    Text("URGES")
-                        .font(EgoTheme.label())
-                        .tracking(1)
-                        .foregroundColor(.red)
-                    HStack(spacing: 12) {
-                        Button(action: { if interactionManager.urgeCount > 0 { interactionManager.urgeCount -= 1 } }) {
-                            Text("\u{2212}").font(EgoTheme.mono()).foregroundColor(EgoTheme.textMuted)
-                        }
-                        Text("\(interactionManager.urgeCount)")
-                            .font(.system(size: 28, weight: .light, design: .monospaced))
-                            .foregroundColor(.red)
-                        Button(action: { interactionManager.urgeCount += 1 }) {
-                            Text("+").font(EgoTheme.mono()).foregroundColor(.red)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-                .background(EgoTheme.bg)
-
-                VStack(spacing: 8) {
-                    Text("SUBSTITUTED")
-                        .font(EgoTheme.label())
-                        .tracking(1)
-                        .foregroundColor(EgoTheme.green)
-                    HStack(spacing: 12) {
-                        Button(action: { if interactionManager.substituteCount > 0 { interactionManager.substituteCount -= 1 } }) {
-                            Text("\u{2212}").font(EgoTheme.mono()).foregroundColor(EgoTheme.textMuted)
-                        }
-                        Text("\(interactionManager.substituteCount)")
-                            .font(.system(size: 28, weight: .light, design: .monospaced))
-                            .foregroundColor(EgoTheme.green)
-                        Button(action: { interactionManager.substituteCount += 1 }) {
-                            Text("+").font(EgoTheme.mono()).foregroundColor(EgoTheme.green)
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-                .background(EgoTheme.bg)
+                counterColumn(label: "URGES", color: .red, count: interactionManager.urgeCount,
+                              onDecrement: { if interactionManager.urgeCount > 0 { interactionManager.urgeCount -= 1 } },
+                              onIncrement: { interactionManager.urgeCount += 1 })
+                counterColumn(label: "SUBSTITUTED", color: EgoTheme.green, count: interactionManager.substituteCount,
+                              onDecrement: { if interactionManager.substituteCount > 0 { interactionManager.substituteCount -= 1 } },
+                              onIncrement: { interactionManager.substituteCount += 1 })
             }
             .background(EgoTheme.borderSubtle)
         }
+    }
+
+    private func counterColumn(label: String, color: Color, count: Int, onDecrement: @escaping () -> Void, onIncrement: @escaping () -> Void) -> some View {
+        VStack(spacing: 8) {
+            Text(label)
+                .font(EgoTheme.label())
+                .tracking(1)
+                .foregroundColor(color)
+            HStack(spacing: 12) {
+                Button(action: onDecrement) {
+                    Text("\u{2212}").font(EgoTheme.mono()).foregroundColor(EgoTheme.textMuted)
+                }
+                Text("\(count)")
+                    .font(.system(size: 28, weight: .light, design: .monospaced))
+                    .foregroundColor(color)
+                Button(action: onIncrement) {
+                    Text("+").font(EgoTheme.mono()).foregroundColor(color)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 20)
+        .background(EgoTheme.bg)
     }
 
     // MARK: - Journal
