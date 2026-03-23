@@ -31,7 +31,7 @@ EgoFix is an iOS app for ego reduction through daily missions ("fixes"). Users i
 EgoFix/
 ├── Models/           # SwiftData @Model classes
 ├── Views/            # SwiftUI views organized by feature
-│   ├── Today/        # Daily mission flow (briefing → active → check-in)
+│   ├── Today/        # Daily mission flow (briefing → active → done)
 │   ├── History/      # Past completions
 │   ├── Onboarding/   # Bug selection flow
 │   ├── Settings/     # Notification times, preferences
@@ -265,7 +265,7 @@ Widget sizes: systemSmall, systemMedium, accessoryRectangular, accessoryCircular
 
 | When | Content | ID |
 |------|---------|-----|
-| Morning (configurable, default 8am) | "Fix #042 is ready." | `morning_reminder` |
+| Morning (configurable, default 8am) | "Your daily fix is ready." | `morning_reminder` |
 | Wind-down (configurable, default 9pm) | "Time to check in on Fix #042." | `fix_winddown_{id}` |
 | Weekly (stable streak ≥7 days) | "Still running smoothly?" | `anti_notification` |
 
@@ -344,7 +344,7 @@ xcodebuild test -scheme EgoFix -destination 'platform=iOS Simulator,name=iPhone 
 | `ViewModels/FixInteractionManager.swift` | Manages all 14 interaction type states |
 | `Views/Today/FixBriefingView.swift` | Morning teaser card (no prompt) |
 | `Views/Today/FixActiveView.swift` | Active mission (countdown, education, 2-step outcome) |
-| `Views/Today/CheckInView.swift` | Check-in with 2-step outcome flow |
+| `Views/Today/NoFixView.swift` | No-fix state with retry button |
 | `Views/Components/FixCardView.swift` | Immediate fix display (timed/quiz/scenario) |
 | `Services/DailyFixService.swift` | Fix assignment and completion logic |
 | `Services/AppProgressTracker.swift` | Wind-down time, morning time, feature unlock tracking |

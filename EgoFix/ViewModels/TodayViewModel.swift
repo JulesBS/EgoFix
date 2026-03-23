@@ -29,16 +29,6 @@ enum TodayViewState {
     }
 }
 
-/// Stub — DebriefService still references this type but debrief flow is removed
-struct DebriefContent: Identifiable {
-    let id = UUID()
-    let title: String
-    let body: String
-    let comment: String
-    let template: DebriefTemplate
-    enum DebriefTemplate { case comparisonToSelf, crossBug, tomorrowPreview, milestone }
-}
-
 struct WeeklySummaryData: Identifiable {
     let id = UUID()
     let applied: Int
@@ -114,7 +104,7 @@ final class TodayViewModel: ObservableObject {
     private let fixCompletionRepository: FixCompletionRepository?
     private let diagnosticEngine: DiagnosticEngine?
     private let bugIntensityProvider: BugIntensityProvider?
-    private let debriefService: DebriefService?
+    // debriefService removed — debrief flow deleted
     private let sharedStorage = SharedStorageManager.shared
     private(set) var progressTracker: AppProgressTracker?
 
@@ -132,7 +122,6 @@ final class TodayViewModel: ObservableObject {
         fixCompletionRepository: FixCompletionRepository? = nil,
         diagnosticEngine: DiagnosticEngine? = nil,
         bugIntensityProvider: BugIntensityProvider? = nil,
-        debriefService: DebriefService? = nil,
         progressTracker: AppProgressTracker? = nil
     ) {
         self.dailyFixService = dailyFixService
@@ -148,7 +137,6 @@ final class TodayViewModel: ObservableObject {
         self.fixCompletionRepository = fixCompletionRepository
         self.diagnosticEngine = diagnosticEngine
         self.bugIntensityProvider = bugIntensityProvider
-        self.debriefService = debriefService
         self.progressTracker = progressTracker
         self.interactionManager = FixInteractionManager(timerService: timerService)
     }
@@ -644,13 +632,11 @@ final class TodayViewModel: ObservableObject {
             return .fixActive(completion, fix)
         } else {
             // Sync widget to waiting state
-            let hash = abs(fix.id.hashValue)
-            let fixNumber = String(format: "%04d", hash % 10000)
             sharedStorage.updateForMissionWaiting(
                 bugSlug: currentBugSlug ?? "",
                 typeLabel: fix.interactionType.typeLabel,
                 severity: fix.severity.rawValue,
-                fixNumber: fixNumber
+                fixNumber: fix.fixNumber
             )
             return .fixBriefing(completion, fix)
         }

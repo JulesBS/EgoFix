@@ -151,11 +151,6 @@ struct ContentView: View {
             crashRepository: crashRepo
         )
 
-        let debriefService = DebriefService(
-            fixCompletionRepository: fixCompletionRepo,
-            bugRepository: bugRepo
-        )
-
         return TodayViewModel(
             dailyFixService: dailyFixService,
             fixRepository: fixRepo,
@@ -170,7 +165,6 @@ struct ContentView: View {
             fixCompletionRepository: fixCompletionRepo,
             diagnosticEngine: diagnosticEngine,
             bugIntensityProvider: bugIntensityProvider,
-            debriefService: debriefService,
             progressTracker: progressTracker
         )
     }

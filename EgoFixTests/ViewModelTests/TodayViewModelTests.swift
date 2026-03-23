@@ -29,44 +29,7 @@ final class TodayViewModelTests: XCTestCase {
         XCTAssertEqual(state.stateKey, "fixActive")
     }
 
-    func test_TodayViewState_checkInExists() {
-        let fix = Fix(bugId: UUID(), type: .daily, severity: .medium, prompt: "Test", validation: "v")
-        let completion = FixCompletion(fixId: fix.id, userId: UUID())
-        let state = TodayViewState.checkIn(completion, fix)
-        XCTAssertEqual(state.stateKey, "checkIn")
-    }
-
-    func test_TodayViewState_debriefExists() {
-        let content = DebriefContent(
-            title: "DEBRIEF",
-            body: "Applied today.",
-            comment: "// Data logged.",
-            template: .tomorrowPreview
-        )
-        let state = TodayViewState.debrief(content)
-        XCTAssertEqual(state.stateKey, "debrief")
-    }
-
-    func test_TodayViewState_completedHoldsOutcomeAndTidbit() {
-        let state = TodayViewState.completed(.applied, "A tidbit")
-        if case .completed(let outcome, let tidbit) = state {
-            XCTAssertEqual(outcome, .applied)
-            XCTAssertEqual(tidbit, "A tidbit")
-        } else {
-            XCTFail("Expected completed state")
-        }
-    }
-
-    func test_completedState_canHaveNilTidbit() {
-        // After moving education pre-fix, completed state should work with nil tidbit
-        let state = TodayViewState.completed(.applied, nil)
-        if case .completed(let outcome, let tidbit) = state {
-            XCTAssertEqual(outcome, .applied)
-            XCTAssertNil(tidbit)
-        } else {
-            XCTFail("Expected completed state")
-        }
-    }
+    // Tests for .checkIn, .completed, .debrief removed — those states no longer exist
 
     // MARK: - Done status messages
 
