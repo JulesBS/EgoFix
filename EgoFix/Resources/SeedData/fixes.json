@@ -605,7 +605,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "One serious conversation",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": null
       }
     }
   },
@@ -679,7 +680,27 @@
     "interactionType": "body",
     "prompt": "Notice where in your body you feel the urge to share an experience before it's over.",
     "validation": "Did you notice a physical sensation tied to the urge to narrate?",
-    "inlineComment": "The body reaches for the phone before the mind decides."
+    "inlineComment": "The body reaches for the phone before the mind decides.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Jaw",
+          "Chest",
+          "Stomach",
+          "Throat",
+          "Hands",
+          "Shoulders"
+        ],
+        "sensationDescriptors": [
+          "Buzzing",
+          "Pressure",
+          "Restlessness",
+          "Tightness",
+          "Heat",
+          "Agitation"
+        ]
+      }
+    }
   },
   {
     "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeee04",
@@ -1081,7 +1102,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full workday with zero corrections of any kind",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 28800
       }
     }
   },
@@ -1096,7 +1118,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Entire weekend without fact-checking to win an argument",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": null
       }
     },
     "inlineComment": "If the fact doesn't get cited, does the knowledge still matter to you?"
@@ -1277,7 +1300,27 @@
     "interactionType": "body",
     "prompt": "Next time you suppress a correction, scan your body. Where does the tension live? Jaw? Chest? Hands? Name the location out loud.",
     "validation": "Did you notice and name a specific body location? Mark Applied if you identified where the urge lives physically.",
-    "inlineComment": "The correction you didn't say is still in your body somewhere."
+    "inlineComment": "The correction you didn't say is still in your body somewhere.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Jaw",
+          "Throat",
+          "Chest",
+          "Hands",
+          "Shoulders",
+          "Stomach"
+        ],
+        "sensationDescriptors": [
+          "Tension",
+          "Clenching",
+          "Heat",
+          "Tightness",
+          "Pressure",
+          "Buzzing"
+        ]
+      }
+    }
   },
   {
     "id": "10000000-0000-0000-0000-100000000031",
@@ -1715,7 +1758,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full day without over-explaining your decisions",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 50400
       }
     }
   },
@@ -1730,7 +1774,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "One full week without unnecessary apologies",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": null
       }
     },
     "inlineComment": "Most apologies aren't remorse. They're preemptive conflict avoidance."
@@ -1853,7 +1898,27 @@
     "interactionType": "body",
     "prompt": "Next time you swallow an honest opinion to keep the peace, notice what your body does. Tight throat? Sinking stomach? Heat in your face?",
     "validation": "Did you notice a physical sensation tied to the moment you suppressed yourself? Name it. Mark Applied if you identified the sensation.",
-    "inlineComment": "Your body knows when you've abandoned yourself."
+    "inlineComment": "Your body knows when you've abandoned yourself.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Throat",
+          "Chest",
+          "Stomach",
+          "Shoulders",
+          "Face",
+          "Hands"
+        ],
+        "sensationDescriptors": [
+          "Tightness",
+          "Sinking",
+          "Hollowness",
+          "Heat",
+          "Constriction",
+          "Numbness"
+        ]
+      }
+    }
   },
   {
     "id": "20000000-0000-0000-0000-200000000029",
@@ -1863,7 +1928,27 @@
     "interactionType": "body",
     "prompt": "You just agreed with something you don't believe. Freeze. Scan from throat to stomach. What's there?",
     "validation": "Did you pause and scan your body immediately after the false agreement? Mark Applied if you noticed a sensation and named it.",
-    "inlineComment": "The body keeps score of every time you abandon yourself for approval."
+    "inlineComment": "The body keeps score of every time you abandon yourself for approval.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Throat",
+          "Chest",
+          "Stomach",
+          "Shoulders",
+          "Face",
+          "Hands"
+        ],
+        "sensationDescriptors": [
+          "Tightness",
+          "Sinking",
+          "Hollowness",
+          "Heat",
+          "Constriction",
+          "Numbness"
+        ]
+      }
+    }
   },
   {
     "id": "20000000-0000-0000-0000-200000000030",
@@ -2371,7 +2456,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Until dinner without mentioning any credentials, titles, or affiliations",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 36000
       }
     }
   },
@@ -2387,7 +2473,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full day without humble-bragging in any form",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 50400
       }
     }
   },
@@ -2402,7 +2489,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full weekend without checking likes, views, or engagement on posts",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": null
       }
     },
     "inlineComment": "The metrics aren't feedback. They're a dopamine slot machine."
@@ -2567,7 +2655,27 @@
     "interactionType": "body",
     "prompt": "Next time you resist the urge to impress someone, scan your body. Where does the tension live? Is it your throat wanting to speak? Your chest tightening? Your jaw? Name the location.",
     "validation": "Did you notice and name a specific body location where the performing urge lives? Mark Applied if you found it.",
-    "inlineComment": "The flex you swallowed is still in your body somewhere."
+    "inlineComment": "The flex you swallowed is still in your body somewhere.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Chest",
+          "Throat",
+          "Face",
+          "Stomach",
+          "Hands",
+          "Shoulders"
+        ],
+        "sensationDescriptors": [
+          "Tightness",
+          "Heat",
+          "Flutter",
+          "Pressure",
+          "Buzzing",
+          "Restlessness"
+        ]
+      }
+    }
   },
   {
     "id": "30000000-0000-0000-0000-300000000036",
@@ -2996,7 +3104,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full morning with zero unsolicited instructions of any kind",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 14400
       }
     }
   },
@@ -3011,7 +3120,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "2 hours without checking any shared workspace or group communication",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 7200
       }
     },
     "inlineComment": "Two hours without checking won't break anything. But it might break the pattern."
@@ -3192,7 +3302,27 @@
     "interactionType": "body",
     "prompt": "Next time a plan changes or someone does something their way instead of yours, scan your body. Where does the tension arrive? Shoulders? Stomach? Jaw? Hands? Name the location.",
     "validation": "Did you notice and name a specific location where the control urge shows up physically? Mark Applied if you caught the body before the behavior.",
-    "inlineComment": "The grip isn't just mental. Your body is clenching something too."
+    "inlineComment": "The grip isn't just mental. Your body is clenching something too.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Jaw",
+          "Hands",
+          "Chest",
+          "Shoulders",
+          "Stomach",
+          "Back"
+        ],
+        "sensationDescriptors": [
+          "Tension",
+          "Gripping",
+          "Tightness",
+          "Rigidity",
+          "Pressure",
+          "Heaviness"
+        ]
+      }
+    }
   },
   {
     "id": "40000000-0000-0000-0000-400000000031",
@@ -3313,23 +3443,6 @@
     "prompt": "Compliment someone today on something you're quietly jealous of. Mean it.",
     "validation": "Did you give a genuine compliment on something that triggers your comparison instinct? Mark Applied if you did.",
     "inlineComment": "The discomfort is diagnostic."
-  },
-  {
-    "id": "50000000-0000-0000-0000-500000000003",
-    "bugSlug": "need-to-compare",
-    "type": "daily",
-    "severity": "low",
-    "interactionType": "counter",
-    "prompt": "Count: Comparison Thoughts",
-    "validation": "Tap the counter each time you mentally compare yourself to someone else today. Just notice the number.",
-    "inlineComment": "The number is the point. Not lowering it. Seeing it.",
-    "configuration": {
-      "counter": {
-        "counterPrompt": "Times I compared myself to someone else",
-        "minTarget": null,
-        "maxTarget": null
-      }
-    }
   },
   {
     "id": "50000000-0000-0000-0000-500000000004",
@@ -3655,7 +3768,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full day without checking any metrics or rankings",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 50400
       }
     }
   },
@@ -3670,7 +3784,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full day without asking about others' status markers",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 50400
       }
     },
     "inlineComment": "Status markers are data points for comparison. Cut off the supply."
@@ -3845,7 +3960,27 @@
     "interactionType": "body",
     "prompt": "Next time you see someone's success and feel that pang, locate it in your body. Chest? Stomach? Throat? Stay with it for 30 seconds.",
     "validation": "Did you notice a physical sensation tied to comparison? Describe where you felt it. Mark Applied if you located it.",
-    "inlineComment": "Your body knows what jealousy feels like before your mind admits it."
+    "inlineComment": "Your body knows what jealousy feels like before your mind admits it.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Chest",
+          "Stomach",
+          "Throat",
+          "Face",
+          "Jaw",
+          "Shoulders"
+        ],
+        "sensationDescriptors": [
+          "Sinking",
+          "Tightness",
+          "Heat",
+          "Hollowness",
+          "Ache",
+          "Constriction"
+        ]
+      }
+    }
   },
   {
     "id": "50000000-0000-0000-0000-500000000031",
@@ -3855,7 +3990,27 @@
     "interactionType": "body",
     "prompt": "You just compared yourself to someone and felt the drop. Where is it? Scan from head to chest to stomach. Name the sensation: tightness, heat, sinking, hollowness.",
     "validation": "Did you identify the physical sensation of comparison? Mark Applied if you located and named it.",
-    "inlineComment": "The drop is real. It lives somewhere specific. Name it and it shrinks."
+    "inlineComment": "The drop is real. It lives somewhere specific. Name it and it shrinks.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Chest",
+          "Stomach",
+          "Throat",
+          "Face",
+          "Jaw",
+          "Shoulders"
+        ],
+        "sensationDescriptors": [
+          "Sinking",
+          "Tightness",
+          "Heat",
+          "Hollowness",
+          "Ache",
+          "Constriction"
+        ]
+      }
+    }
   },
   {
     "id": "50000000-0000-0000-0000-500000000032",
@@ -4384,7 +4539,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "One full conversation with zero jokes or sarcasm",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": null
       }
     }
   },
@@ -4399,7 +4555,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full day without 'I'm fine', 'All good', or any equivalent deflection response",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 50400
       }
     },
     "inlineComment": "'I'm fine' is a locked door. Try leaving it open today."
@@ -4554,7 +4711,27 @@
     "interactionType": "body",
     "prompt": "When you deflect with humor or a subject change, freeze for a moment. Scan your body. What sensation were you running from? Chest tightness? Throat closing? Heat in your face? Name the location.",
     "validation": "Did you notice and name a specific physical sensation connected to the deflection? Mark Applied if you located it in your body.",
-    "inlineComment": "The joke moves fast so you don't have to feel this."
+    "inlineComment": "The joke moves fast so you don't have to feel this.",
+    "configuration": {
+      "body": {
+        "scanRegions": [
+          "Chest",
+          "Throat",
+          "Stomach",
+          "Face",
+          "Hands",
+          "Shoulders"
+        ],
+        "sensationDescriptors": [
+          "Tightness",
+          "Flutter",
+          "Heat",
+          "Constriction",
+          "Restlessness",
+          "Numbness"
+        ]
+      }
+    }
   },
   {
     "id": "60000000-0000-0000-0000-600000000036",
@@ -5058,7 +5235,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "From waking to noon",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 18000
       }
     }
   },
@@ -5073,7 +5251,8 @@
     "configuration": {
       "abstain": {
         "durationDescription": "Full day, no venting",
-        "endTime": null
+        "endTime": null,
+        "durationSeconds": 50400
       }
     },
     "inlineComment": "Venting feels like release. It's actually rehearsal. The pattern deepens each time."

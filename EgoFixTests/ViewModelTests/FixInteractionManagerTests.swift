@@ -721,7 +721,7 @@ final class FixInteractionManagerTests: XCTestCase {
 
     // MARK: - Abstain Interaction Tests
 
-    func test_abstainSetup_resetsState() async {
+    func test_abstainSetup_toggleMode_resetsState() async {
         let manager = makeManager()
         let fix = Fix(
             bugId: UUID(),
@@ -731,11 +731,34 @@ final class FixInteractionManagerTests: XCTestCase {
             prompt: "Go one meeting without offering unsolicited advice",
             validation: "Did you abstain?"
         )
-        fix.setConfiguration(AbstainConfig(durationDescription: "One meeting", endTime: nil))
+        fix.setConfiguration(AbstainConfig(durationDescription: "One meeting", endTime: nil, durationSeconds: nil))
 
         await manager.setup(for: fix, fixCompletionId: UUID())
 
         XCTAssertEqual(manager.interactionType, .abstain)
+        XCTAssertFalse(manager.abstainCompleted)
+        XCTAssertFalse(manager.abstainTimerMode)
+        XCTAssertTrue(manager.abstainSlips.isEmpty)
+    }
+
+    func test_abstainSetup_timerMode_whenDurationSet() async {
+        let manager = makeManager()
+        let fix = Fix(
+            bugId: UUID(),
+            type: .daily,
+            severity: .medium,
+            interactionType: .abstain,
+            prompt: "Go the full workday without correcting anyone",
+            validation: "Did you abstain?"
+        )
+        fix.setConfiguration(AbstainConfig(durationDescription: "Full workday", endTime: nil, durationSeconds: 28800))
+
+        await manager.setup(for: fix, fixCompletionId: UUID())
+
+        XCTAssertTrue(manager.abstainTimerMode)
+        XCTAssertEqual(manager.abstainDurationSeconds, 28800)
+        XCTAssertEqual(manager.abstainRemainingSeconds, 28800)
+        XCTAssertFalse(manager.abstainTimerRunning)
         XCTAssertFalse(manager.abstainCompleted)
     }
 
@@ -749,7 +772,7 @@ final class FixInteractionManagerTests: XCTestCase {
             prompt: "Abstain fix",
             validation: "Did you abstain?"
         )
-        fix.setConfiguration(AbstainConfig(durationDescription: "One hour", endTime: nil))
+        fix.setConfiguration(AbstainConfig(durationDescription: "One hour", endTime: nil, durationSeconds: nil))
 
         await manager.setup(for: fix, fixCompletionId: UUID())
 
@@ -766,12 +789,33 @@ final class FixInteractionManagerTests: XCTestCase {
             prompt: "Abstain fix",
             validation: "Did you abstain?"
         )
-        fix.setConfiguration(AbstainConfig(durationDescription: "One hour", endTime: nil))
+        fix.setConfiguration(AbstainConfig(durationDescription: "One hour", endTime: nil, durationSeconds: nil))
 
         await manager.setup(for: fix, fixCompletionId: UUID())
         manager.abstainCompleted = true
 
         XCTAssertTrue(manager.canMarkApplied)
+    }
+
+    func test_abstain_logSlip_addsToArray() async {
+        let manager = makeManager()
+        let fix = Fix(
+            bugId: UUID(),
+            type: .daily,
+            severity: .medium,
+            interactionType: .abstain,
+            prompt: "Abstain",
+            validation: "Done?"
+        )
+        fix.setConfiguration(AbstainConfig(durationDescription: "Full day", endTime: nil, durationSeconds: 28800))
+
+        await manager.setup(for: fix, fixCompletionId: UUID())
+        manager.logAbstainSlip(note: "Corrected someone")
+        manager.logAbstainSlip()
+
+        XCTAssertEqual(manager.abstainSlips.count, 2)
+        XCTAssertEqual(manager.abstainSlips[0].note, "Corrected someone")
+        XCTAssertNil(manager.abstainSlips[1].note)
     }
 
     func test_abstain_generatesOutcomeData_completed() async {
@@ -784,7 +828,7 @@ final class FixInteractionManagerTests: XCTestCase {
             prompt: "Abstain",
             validation: "Done?"
         )
-        fix.setConfiguration(AbstainConfig(durationDescription: "One hour", endTime: nil))
+        fix.setConfiguration(AbstainConfig(durationDescription: "One hour", endTime: nil, durationSeconds: nil))
 
         await manager.setup(for: fix, fixCompletionId: UUID())
         manager.abstainCompleted = true
@@ -795,9 +839,10 @@ final class FixInteractionManagerTests: XCTestCase {
         let outcome = try? JSONDecoder().decode(AbstainOutcome.self, from: data!)
         XCTAssertEqual(outcome?.completed, true)
         XCTAssertEqual(outcome?.slipCount, 0)
+        XCTAssertEqual(outcome?.timerUsed, false)
     }
 
-    func test_abstain_generatesOutcomeData_notCompleted() async {
+    func test_abstain_generatesOutcomeData_withSlips() async {
         let manager = makeManager()
         let fix = Fix(
             bugId: UUID(),
@@ -807,19 +852,21 @@ final class FixInteractionManagerTests: XCTestCase {
             prompt: "Abstain",
             validation: "Done?"
         )
-        fix.setConfiguration(AbstainConfig(durationDescription: "One hour", endTime: nil))
+        fix.setConfiguration(AbstainConfig(durationDescription: "Full workday", endTime: nil, durationSeconds: 28800))
 
         await manager.setup(for: fix, fixCompletionId: UUID())
-        manager.abstainCompleted = false
+        manager.logAbstainSlip(note: "Slipped once")
+        manager.abstainCompleted = true
 
-        // Force canMarkApplied by setting completed, then unset to test outcome
-        // Actually, let's test the outcome directly
         let data = manager.generateOutcomeData()
         XCTAssertNotNil(data)
 
         let outcome = try? JSONDecoder().decode(AbstainOutcome.self, from: data!)
-        XCTAssertEqual(outcome?.completed, false)
+        XCTAssertEqual(outcome?.completed, true)
         XCTAssertEqual(outcome?.slipCount, 1)
+        XCTAssertEqual(outcome?.slips.count, 1)
+        XCTAssertEqual(outcome?.timerUsed, true)
+        XCTAssertEqual(outcome?.durationSeconds, 28800)
     }
 
     // MARK: - Substitute Interaction Tests
@@ -1107,8 +1154,7 @@ final class FixInteractionManagerTests: XCTestCase {
 
     // MARK: - Body Interaction Tests
 
-    func test_bodySetup_setsType() async {
-        let manager = makeManager()
+    private func makeBodyFix() -> Fix {
         let fix = Fix(
             bugId: UUID(),
             type: .daily,
@@ -1117,43 +1163,110 @@ final class FixInteractionManagerTests: XCTestCase {
             prompt: "Notice where in your body you feel tension when someone disagrees with you",
             validation: "Did you notice?"
         )
+        fix.setConfiguration(BodyConfig(
+            scanRegions: ["Jaw", "Chest", "Hands"],
+            sensationDescriptors: ["Tension", "Heat", "Tightness"]
+        ))
+        return fix
+    }
+
+    func test_bodySetup_setsTypeAndConfig() async {
+        let manager = makeManager()
+        let fix = makeBodyFix()
 
         await manager.setup(for: fix, fixCompletionId: UUID())
 
         XCTAssertEqual(manager.interactionType, .body)
+        XCTAssertNotNil(manager.bodyConfig)
+        XCTAssertEqual(manager.bodyConfig?.scanRegions.count, 3)
+        XCTAssertTrue(manager.selectedBodyRegions.isEmpty)
+        XCTAssertTrue(manager.selectedBodySensations.isEmpty)
     }
 
-    func test_body_canAlwaysMarkApplied() async {
+    func test_body_cannotMarkApplied_initially() async {
         let manager = makeManager()
-        let fix = Fix(
-            bugId: UUID(),
-            type: .daily,
-            severity: .medium,
-            interactionType: .body,
-            prompt: "Body fix",
-            validation: "Notice"
-        )
+        let fix = makeBodyFix()
 
         await manager.setup(for: fix, fixCompletionId: UUID())
+
+        XCTAssertFalse(manager.canMarkApplied)
+    }
+
+    func test_body_cannotMarkApplied_withOnlyRegion() async {
+        let manager = makeManager()
+        let fix = makeBodyFix()
+
+        await manager.setup(for: fix, fixCompletionId: UUID())
+        manager.toggleBodyRegion("Jaw")
+
+        XCTAssertFalse(manager.canMarkApplied)
+    }
+
+    func test_body_cannotMarkApplied_withOnlySensation() async {
+        let manager = makeManager()
+        let fix = makeBodyFix()
+
+        await manager.setup(for: fix, fixCompletionId: UUID())
+        manager.toggleBodySensation("Tension")
+
+        XCTAssertFalse(manager.canMarkApplied)
+    }
+
+    func test_body_canMarkApplied_withRegionAndSensation() async {
+        let manager = makeManager()
+        let fix = makeBodyFix()
+
+        await manager.setup(for: fix, fixCompletionId: UUID())
+        manager.toggleBodyRegion("Jaw")
+        manager.toggleBodySensation("Tension")
 
         XCTAssertTrue(manager.canMarkApplied)
     }
 
-    func test_body_generatesNoOutcomeData() async {
+    func test_body_toggleRegion_addsAndRemoves() async {
         let manager = makeManager()
-        let fix = Fix(
-            bugId: UUID(),
-            type: .daily,
-            severity: .medium,
-            interactionType: .body,
-            prompt: "Body fix",
-            validation: "Notice"
-        )
+        let fix = makeBodyFix()
 
         await manager.setup(for: fix, fixCompletionId: UUID())
 
+        manager.toggleBodyRegion("Jaw")
+        XCTAssertTrue(manager.selectedBodyRegions.contains("Jaw"))
+
+        manager.toggleBodyRegion("Jaw")
+        XCTAssertFalse(manager.selectedBodyRegions.contains("Jaw"))
+    }
+
+    func test_body_toggleSensation_addsAndRemoves() async {
+        let manager = makeManager()
+        let fix = makeBodyFix()
+
+        await manager.setup(for: fix, fixCompletionId: UUID())
+
+        manager.toggleBodySensation("Heat")
+        XCTAssertTrue(manager.selectedBodySensations.contains("Heat"))
+
+        manager.toggleBodySensation("Heat")
+        XCTAssertFalse(manager.selectedBodySensations.contains("Heat"))
+    }
+
+    func test_body_generatesOutcomeData() async {
+        let manager = makeManager()
+        let fix = makeBodyFix()
+
+        await manager.setup(for: fix, fixCompletionId: UUID())
+        manager.toggleBodyRegion("Jaw")
+        manager.toggleBodyRegion("Chest")
+        manager.toggleBodySensation("Tension")
+
         let data = manager.generateOutcomeData()
-        XCTAssertNil(data)
+        XCTAssertNotNil(data)
+
+        let outcome = try? JSONDecoder().decode(BodyOutcome.self, from: data!)
+        XCTAssertNotNil(outcome)
+        XCTAssertEqual(outcome?.selectedRegions.count, 2)
+        XCTAssertEqual(outcome?.selectedSensations.count, 1)
+        XCTAssertTrue(outcome?.selectedRegions.contains("Jaw") ?? false)
+        XCTAssertTrue(outcome?.selectedSensations.contains("Tension") ?? false)
     }
 
     // MARK: - Audit Interaction Tests

@@ -171,4 +171,85 @@ final class FixCompletionDataTests: XCTestCase {
 
         XCTAssertEqual(event.delta, -1)
     }
+
+    // MARK: - BodyOutcome Tests
+
+    func test_BodyOutcome_encodesAndDecodes() throws {
+        let outcome = BodyOutcome(
+            selectedRegions: ["Jaw", "Chest"],
+            selectedSensations: ["Tension", "Heat"]
+        )
+
+        let data = try JSONEncoder().encode(outcome)
+        let decoded = try JSONDecoder().decode(BodyOutcome.self, from: data)
+
+        XCTAssertEqual(decoded, outcome)
+        XCTAssertEqual(decoded.selectedRegions, ["Jaw", "Chest"])
+        XCTAssertEqual(decoded.selectedSensations, ["Tension", "Heat"])
+    }
+
+    func test_BodyOutcome_handlesEmptyArrays() throws {
+        let outcome = BodyOutcome(selectedRegions: [], selectedSensations: [])
+
+        let data = try JSONEncoder().encode(outcome)
+        let decoded = try JSONDecoder().decode(BodyOutcome.self, from: data)
+
+        XCTAssertEqual(decoded, outcome)
+        XCTAssertTrue(decoded.selectedRegions.isEmpty)
+        XCTAssertTrue(decoded.selectedSensations.isEmpty)
+    }
+
+    // MARK: - AbstainOutcome Tests
+
+    func test_AbstainOutcome_backwardCompatInit() {
+        let outcome = AbstainOutcome(completed: true, slipCount: 0)
+
+        XCTAssertTrue(outcome.completed)
+        XCTAssertEqual(outcome.slipCount, 0)
+        XCTAssertTrue(outcome.slips.isEmpty)
+        XCTAssertFalse(outcome.timerUsed)
+        XCTAssertNil(outcome.durationSeconds)
+    }
+
+    func test_AbstainOutcome_withSlips_encodesAndDecodes() throws {
+        let now = Date()
+        let outcome = AbstainOutcome(
+            completed: true,
+            slipCount: 2,
+            slips: [
+                .init(timestamp: now, note: "Corrected someone in chat"),
+                .init(timestamp: now.addingTimeInterval(3600), note: nil)
+            ],
+            timerUsed: true,
+            durationSeconds: 28800
+        )
+
+        let data = try JSONEncoder().encode(outcome)
+        let decoded = try JSONDecoder().decode(AbstainOutcome.self, from: data)
+
+        XCTAssertEqual(decoded.completed, true)
+        XCTAssertEqual(decoded.slipCount, 2)
+        XCTAssertEqual(decoded.slips.count, 2)
+        XCTAssertEqual(decoded.slips[0].note, "Corrected someone in chat")
+        XCTAssertNil(decoded.slips[1].note)
+        XCTAssertTrue(decoded.timerUsed)
+        XCTAssertEqual(decoded.durationSeconds, 28800)
+    }
+
+    func test_AbstainOutcome_toggleMode_encodesAndDecodes() throws {
+        let outcome = AbstainOutcome(
+            completed: false,
+            slipCount: 1,
+            slips: [.init(timestamp: Date(), note: nil)],
+            timerUsed: false,
+            durationSeconds: nil
+        )
+
+        let data = try JSONEncoder().encode(outcome)
+        let decoded = try JSONDecoder().decode(AbstainOutcome.self, from: data)
+
+        XCTAssertFalse(decoded.timerUsed)
+        XCTAssertNil(decoded.durationSeconds)
+        XCTAssertEqual(decoded.slips.count, 1)
+    }
 }

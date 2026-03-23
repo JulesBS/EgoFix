@@ -7,9 +7,8 @@ enum TodayViewState {
     case diagnostic                      // weekly diagnostic inline
     case diagnosticComplete              // diagnostic just finished, show summary
     case noFix
-    case fixBriefing(FixCompletion, Fix)        // morning — see today's fix
-    case fixEducation(FixCompletion, Fix, String) // post-accept — why this pattern exists
-    case fixActive(FixCompletion, Fix)           // during day — fix accepted
+    case fixBriefing(FixCompletion, Fix)        // morning — mission teaser (no prompt)
+    case fixActive(FixCompletion, Fix)           // during day — mission accepted, prompt revealed
     case checkIn(FixCompletion, Fix)            // evening — report outcome
     case fixAvailable(FixCompletion, Fix)       // for timed/quiz (immediate in-app)
     case completed(FixOutcome, String?)  // outcome + optional micro-education tidbit
@@ -25,7 +24,6 @@ enum TodayViewState {
         case .diagnosticComplete: return "diagnosticComplete"
         case .noFix: return "noFix"
         case .fixBriefing: return "fixBriefing"
-        case .fixEducation: return "fixEducation"
         case .fixActive: return "fixActive"
         case .checkIn: return "checkIn"
         case .fixAvailable: return "fixAvailable"
@@ -85,8 +83,14 @@ final class TodayViewModel: ObservableObject {
     @Published var showWeeklyDiagnostic = false
     @Published var weeklySummary: WeeklySummaryData?
 
-    /// When the current fix was accepted (for elapsed time display)
+    /// When the current fix was accepted
     var fixAcceptedAt: Date? { currentCompletion?.fixAcceptedAt }
+
+    // Mission state
+    @Published var educationTeaser: String?
+    @Published var educationDeepDive: String?
+    @Published var missionEndDate: Date?
+    @Published var isReturningFix: Bool = false
 
     // Header data
     @Published var currentVersion: String = "1.0"
@@ -124,7 +128,7 @@ final class TodayViewModel: ObservableObject {
     private let bugIntensityProvider: BugIntensityProvider?
     private let debriefService: DebriefService?
     private let sharedStorage = SharedStorageManager.shared
-    private let progressTracker: AppProgressTracker?
+    private(set) var progressTracker: AppProgressTracker?
 
     init(
         dailyFixService: DailyFixService,
@@ -225,18 +229,46 @@ final class TodayViewModel: ObservableObject {
         let fixNumber = String(format: "%04d", hash % 10000)
         let outcome = currentCompletion?.outcome ?? .pending
 
-        if interactionManager.isTimerRequired {
-            sharedStorage.updateForTimer(
-                prompt: fix.prompt,
-                fixNumber: fixNumber,
-                outcome: outcome,
-                timerEndDate: interactionManager.session?.timerEndDate,
-                isPaused: interactionManager.isTimerPaused,
-                isCompleted: interactionManager.isTimerCompleted,
-                durationSeconds: interactionManager.timerDuration,
-                remainingSeconds: interactionManager.remainingSeconds
+        // Use mission-state-aware sync based on current state
+        switch state {
+        case .fixBriefing:
+            sharedStorage.updateForMissionWaiting(
+                bugSlug: currentBugSlug ?? "",
+                typeLabel: fix.interactionType.typeLabel,
+                severity: fix.severity.rawValue,
+                fixNumber: fixNumber
             )
-        } else {
+
+        case .fixActive:
+            if interactionManager.isTimerRequired {
+                // Timed interactions still use timer-aware widget
+                sharedStorage.updateForTimer(
+                    prompt: fix.prompt,
+                    fixNumber: fixNumber,
+                    outcome: outcome,
+                    timerEndDate: interactionManager.session?.timerEndDate,
+                    isPaused: interactionManager.isTimerPaused,
+                    isCompleted: interactionManager.isTimerCompleted,
+                    durationSeconds: interactionManager.timerDuration,
+                    remainingSeconds: interactionManager.remainingSeconds
+                )
+            } else {
+                sharedStorage.updateForMissionActive(
+                    prompt: fix.prompt,
+                    fixNumber: fixNumber,
+                    missionEndDate: missionEndDate,
+                    inlineComment: fix.inlineComment,
+                    educationTeaser: educationTeaser,
+                    bugSlug: currentBugSlug,
+                    typeLabel: fix.interactionType.typeLabel,
+                    severity: fix.severity.rawValue
+                )
+            }
+
+        case .checkIn:
+            sharedStorage.updateForMissionCheckIn(fixNumber: fixNumber)
+
+        default:
             sharedStorage.updateForFix(
                 prompt: fix.prompt,
                 fixNumber: fixNumber,
@@ -502,6 +534,13 @@ final class TodayViewModel: ObservableObject {
             let outcomeData = interactionManager.generateOutcomeData()
             try await dailyFixService.markOutcome(completion.id, outcome: outcome, outcomeData: outcomeData)
 
+            // Save education to completion for debug log
+            completion.educationTeaser = educationTeaser
+            completion.educationDeepDive = educationDeepDive
+            if let repo = fixCompletionRepository {
+                try? await repo.save(completion)
+            }
+
             // Record streak engagement
             if let user = try? await userRepository.get() {
                 try? await streakService.recordEngagement(userId: user.id)
@@ -538,12 +577,15 @@ final class TodayViewModel: ObservableObject {
             // End fix Live Activity if active
             LiveActivityService.shared.endCurrentActivity()
 
-            state = .completed(outcome, tidbitText)
             lastOutcome = outcome
             sharedStorage.updateCompleted(outcome: outcome)
 
             // Track progression
             progressTracker?.recordFixCompletion()
+
+            // Prepare done state data
+            doneStatusLine = doneStatusMessage(for: outcome)
+            weeklySummary = await calculateWeeklySummary()
 
             // Check for pattern to show after fix
             if let pattern = try await patternSurfacingService.shouldShowPatternAfterFix() {
@@ -552,20 +594,16 @@ final class TodayViewModel: ObservableObject {
                 return
             }
 
-            // Prepare done state data for auto-transition
-            doneStatusLine = doneStatusMessage(for: outcome)
-            weeklySummary = await calculateWeeklySummary()
+            // Go straight to done — no intermediate completion/debrief screens
+            state = .doneForToday
         } catch {
             // Handle error silently - state remains unchanged
         }
     }
 
-    /// Called by the view after the completion animation finishes.
-    /// Routes through debrief if available, otherwise straight to done.
+    /// Legacy — kept for backward compatibility but no longer called.
     func transitionToDone() {
-        Task {
-            await transitionToDebrief()
-        }
+        state = .doneForToday
     }
 
     // MARK: - Pattern Handling
@@ -592,25 +630,62 @@ final class TodayViewModel: ObservableObject {
 
     /// Determines whether a fix should use the day-long flow or immediate in-app flow.
     private var immediateInteractionTypes: Set<InteractionType> {
-        [.timed, .quiz]
+        [.timed, .quiz, .scenario]
     }
 
     /// Route a pending fix to the appropriate state based on interaction type and acceptance status.
     private func routeFixState(completion: FixCompletion, fix: Fix) -> TodayViewState {
-        // Timed/quiz are in-app interactions — use existing immediate flow
+        // Detect if user has seen this fix before
+        Task { await checkIfReturningFix(fixId: fix.id) }
+
+        // Immediate types (timed/quiz/scenario) — use in-app interaction flow
         if immediateInteractionTypes.contains(fix.interactionType) {
             return .fixAvailable(completion, fix)
         }
 
         // Day-long fix flow: briefing → active → check-in
         if completion.fixAcceptedAt != nil {
+            // Already accepted — restore education + mission end date
+            Task { await restoreEducationForActiveFix(fix: fix) }
+            missionEndDate = progressTracker?.windDownDateToday()
             return .fixActive(completion, fix)
         } else {
+            // Sync widget to waiting state
+            let hash = abs(fix.id.hashValue)
+            let fixNumber = String(format: "%04d", hash % 10000)
+            sharedStorage.updateForMissionWaiting(
+                bugSlug: currentBugSlug ?? "",
+                typeLabel: fix.interactionType.typeLabel,
+                severity: fix.severity.rawValue,
+                fixNumber: fixNumber
+            )
             return .fixBriefing(completion, fix)
         }
     }
 
-    /// User taps "Accept fix" in the morning briefing.
+    /// Check if the user has completed this fix before
+    private func checkIfReturningFix(fixId: UUID) async {
+        guard let repo = fixCompletionRepository else { return }
+        do {
+            let completions = try await repo.getForFix(fixId)
+            let pastCompletions = completions.filter { $0.outcome != .pending }
+            isReturningFix = !pastCompletions.isEmpty
+        } catch {
+            isReturningFix = false
+        }
+    }
+
+    /// Restore education data when returning to an already-accepted fix
+    private func restoreEducationForActiveFix(fix: Fix) async {
+        guard educationTeaser == nil else { return } // already loaded
+        guard let bug = try? await bugRepository.getById(fix.bugId) else { return }
+        if let tidbit = try? await microEducationService.getRandomTidbit(bugSlug: bug.slug, trigger: .general) {
+            educationTeaser = tidbit.effectiveTeaser
+            educationDeepDive = tidbit.effectiveDeepDive
+        }
+    }
+
+    /// User taps "Accept Mission" in the morning briefing.
     func acceptFix() async {
         guard let completion = currentCompletion, let fix = currentFix else { return }
 
@@ -625,7 +700,18 @@ final class TodayViewModel: ObservableObject {
             // Continue even if save fails — we have the in-memory state
         }
 
-        // Start fix Live Activity
+        // Compute mission end date
+        missionEndDate = fix.interactionType.isImmediate ? nil : progressTracker?.windDownDateToday()
+
+        // Fetch micro-education (stored on ViewModel, displayed inline on active screen)
+        if let bug = try? await bugRepository.getById(fix.bugId) {
+            if let tidbit = try? await microEducationService.getRandomTidbit(bugSlug: bug.slug, trigger: .general) {
+                educationTeaser = tidbit.effectiveTeaser
+                educationDeepDive = tidbit.effectiveDeepDive
+            }
+        }
+
+        // Start fix Live Activity with mission countdown
         let hash = abs(fix.id.hashValue)
         let fixNumber = String(format: "%04d", hash % 10000)
         LiveActivityService.shared.startFixActivity(
@@ -633,32 +719,23 @@ final class TodayViewModel: ObservableObject {
             fixPrompt: fix.prompt
         )
 
-        // Schedule mid-day reminder notification
-        await scheduleMidDayReminder(for: fix)
+        // Schedule wind-down notification (replaces mid-day + evening)
+        await scheduleWindDownNotification(for: fix)
 
-        // Schedule evening check-in notification
-        await scheduleEveningCheckIn(for: fix)
-
-        // Fetch micro-education to prime the user before they go face the day
-        var educationBody: String?
-        if let bug = try? await bugRepository.getById(fix.bugId) {
-            if let tidbit = try? await microEducationService.getRandomTidbit(bugSlug: bug.slug, trigger: .general) {
-                educationBody = tidbit.body
-            }
-        }
-
-        if let body = educationBody {
-            state = .fixEducation(completion, fix, body)
-        } else {
-            state = .fixActive(completion, fix)
-        }
-        syncWidgetState()
-    }
-
-    /// User taps "Continue →" after reading the pre-fix education.
-    func continuePastEducation() {
-        guard let completion = currentCompletion, let fix = currentFix else { return }
+        // Always go straight to active (education is inline now)
         state = .fixActive(completion, fix)
+
+        // Sync widget to active mission state
+        sharedStorage.updateForMissionActive(
+            prompt: fix.prompt,
+            fixNumber: fixNumber,
+            missionEndDate: missionEndDate,
+            inlineComment: fix.inlineComment,
+            educationTeaser: educationTeaser,
+            bugSlug: currentBugSlug,
+            typeLabel: fix.interactionType.typeLabel,
+            severity: fix.severity.rawValue
+        )
     }
 
     /// User taps "Check in" from fixActive state.
@@ -697,27 +774,22 @@ final class TodayViewModel: ObservableObject {
 
     // MARK: - Fix Notifications
 
-    private func scheduleMidDayReminder(for fix: Fix) async {
+    private func scheduleWindDownNotification(for fix: Fix) async {
         let notificationService = NotificationService.shared
         let status = await notificationService.checkPermission()
         guard status == .authorized else { return }
 
-        do {
-            try await notificationService.scheduleFixReminder(
-                fixPrompt: fix.prompt,
-                identifier: "fix_midday_\(fix.id.uuidString)"
-            )
-        } catch { }
-    }
+        // Schedule at wind-down time
+        let windDown = progressTracker?.parseTimeString(progressTracker?.windDownTime ?? "21:00")
+        let hour = windDown?.hour ?? 21
+        let minute = windDown?.minute ?? 0
 
-    private func scheduleEveningCheckIn(for fix: Fix) async {
-        let notificationService = NotificationService.shared
-        let status = await notificationService.checkPermission()
-        guard status == .authorized else { return }
+        let hash = abs(fix.id.hashValue)
+        let fixNumber = String(format: "%04d", hash % 10000)
 
         do {
             try await notificationService.scheduleEveningCheckIn(
-                identifier: "fix_evening_\(fix.id.uuidString)"
+                identifier: "fix_winddown_\(fix.id.uuidString)"
             )
         } catch { }
     }

@@ -57,25 +57,6 @@ final class TodayViewModelTests: XCTestCase {
         }
     }
 
-    func test_TodayViewState_fixEducationExists() {
-        let fix = Fix(bugId: UUID(), type: .daily, severity: .medium, prompt: "Test", validation: "v")
-        let completion = FixCompletion(fixId: fix.id, userId: UUID())
-        let state = TodayViewState.fixEducation(completion, fix, "Your need to be right isn't about truth.")
-        XCTAssertEqual(state.stateKey, "fixEducation")
-    }
-
-    func test_TodayViewState_fixEducationHoldsContent() {
-        let fix = Fix(bugId: UUID(), type: .daily, severity: .medium, prompt: "Test", validation: "v")
-        let completion = FixCompletion(fixId: fix.id, userId: UUID())
-        let tidbit = "The correction impulse fires before the listening impulse gets a chance."
-        let state = TodayViewState.fixEducation(completion, fix, tidbit)
-        if case .fixEducation(_, _, let body) = state {
-            XCTAssertEqual(body, tidbit)
-        } else {
-            XCTFail("Expected fixEducation state")
-        }
-    }
-
     func test_completedState_canHaveNilTidbit() {
         // After moving education pre-fix, completed state should work with nil tidbit
         let state = TodayViewState.completed(.applied, nil)

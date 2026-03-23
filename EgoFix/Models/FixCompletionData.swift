@@ -68,6 +68,51 @@ struct ObservationOutcome: Codable, Equatable {
 struct AbstainOutcome: Codable, Equatable {
     let completed: Bool
     let slipCount: Int
+    let slips: [SlipEvent]
+    let timerUsed: Bool
+    let durationSeconds: Int?
+
+    struct SlipEvent: Codable, Equatable {
+        let timestamp: Date
+        let note: String?
+    }
+
+    /// Backward-compatible convenience init for toggle-only mode
+    init(completed: Bool, slipCount: Int) {
+        self.completed = completed
+        self.slipCount = slipCount
+        self.slips = []
+        self.timerUsed = false
+        self.durationSeconds = nil
+    }
+
+    init(completed: Bool, slipCount: Int, slips: [SlipEvent], timerUsed: Bool, durationSeconds: Int?) {
+        self.completed = completed
+        self.slipCount = slipCount
+        self.slips = slips
+        self.timerUsed = timerUsed
+        self.durationSeconds = durationSeconds
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        completed = try container.decode(Bool.self, forKey: .completed)
+        slipCount = try container.decode(Int.self, forKey: .slipCount)
+        slips = try container.decodeIfPresent([SlipEvent].self, forKey: .slips) ?? []
+        timerUsed = try container.decodeIfPresent(Bool.self, forKey: .timerUsed) ?? false
+        durationSeconds = try container.decodeIfPresent(Int.self, forKey: .durationSeconds)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case completed, slipCount, slips, timerUsed, durationSeconds
+    }
+}
+
+// MARK: - Body Outcome
+
+struct BodyOutcome: Codable, Equatable {
+    let selectedRegions: [String]
+    let selectedSensations: [String]
 }
 
 // MARK: - Substitute Outcome

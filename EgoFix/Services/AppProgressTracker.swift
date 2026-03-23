@@ -16,6 +16,12 @@ final class AppProgressTracker: ObservableObject {
     @AppStorage("apt_daysActive") var daysActive: Int = 0
     @AppStorage("apt_lastActiveDate") var lastActiveDate: String = ""
 
+    // MARK: - Mission Time Settings
+
+    @AppStorage("apt_windDownTime") var windDownTime: String = "21:00"
+    @AppStorage("apt_morningNotificationTime") var morningNotificationTime: String = "08:00"
+    @AppStorage("apt_antiNotificationsEnabled") var antiNotificationsEnabled: Bool = true
+
     // MARK: - One-Time Unlock Prompt Flags
 
     @AppStorage("hasSeenHistoryUnlock") var hasSeenHistoryUnlock: Bool = false
@@ -97,6 +103,41 @@ final class AppProgressTracker: ObservableObject {
     func markBugLibraryUnlockSeen() {
         hasSeenBugLibraryUnlock = true
         objectWillChange.send()
+    }
+
+    // MARK: - Mission Time Helpers
+
+    /// Today's wind-down date, computed from the stored HH:mm string
+    func windDownDateToday() -> Date {
+        let components = parseTimeString(windDownTime)
+        var calendar = Calendar.current
+        calendar.timeZone = .current
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: Date())
+        dateComponents.hour = components.hour
+        dateComponents.minute = components.minute
+        return calendar.date(from: dateComponents) ?? Date()
+    }
+
+    /// Today's morning notification date
+    func morningDateToday() -> Date {
+        let components = parseTimeString(morningNotificationTime)
+        var calendar = Calendar.current
+        calendar.timeZone = .current
+        var dateComponents = calendar.dateComponents([.year, .month, .day], from: Date())
+        dateComponents.hour = components.hour
+        dateComponents.minute = components.minute
+        return calendar.date(from: dateComponents) ?? Date()
+    }
+
+    /// Parse "HH:mm" string into (hour, minute)
+    func parseTimeString(_ timeString: String) -> (hour: Int, minute: Int) {
+        let parts = timeString.split(separator: ":")
+        guard parts.count == 2,
+              let hour = Int(parts[0]),
+              let minute = Int(parts[1]) else {
+            return (hour: 21, minute: 0) // default 9pm
+        }
+        return (hour: hour, minute: minute)
     }
 
     // MARK: - Helpers

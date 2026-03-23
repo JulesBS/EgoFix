@@ -28,6 +28,65 @@ enum InteractionType: String, Codable {
     case predict
     case body
     case audit
+
+    /// Human-readable label for morning briefing (pre-accept)
+    var typeLabel: String {
+        switch self {
+        case .standard: return "A practice"
+        case .counter: return "Track a pattern"
+        case .observation: return "Something to notice"
+        case .abstain: return "A challenge"
+        case .substitute: return "A swap"
+        case .journal: return "A question"
+        case .reversal: return "Do the opposite"
+        case .predict: return "A test"
+        case .body: return "A body scan"
+        case .audit: return "End-of-day review"
+        case .multiStep: return "A sequence"
+        case .timed: return "Sit with it"
+        case .quiz: return "Self-assessment"
+        case .scenario: return "A situation"
+        }
+    }
+
+    /// Estimated mission duration for briefing display
+    var estimatedTime: String {
+        switch self {
+        case .timed: return "5-10 min"
+        case .quiz: return "~30 seconds"
+        case .scenario: return "~1 minute"
+        case .audit: return "Evening"
+        default: return "All day"
+        }
+    }
+
+    /// Whether this type completes immediately in-app (no day-long mission)
+    var isImmediate: Bool {
+        switch self {
+        case .timed, .quiz, .scenario: return true
+        default: return false
+        }
+    }
+
+    /// Type-flavored teaser comment for morning briefing
+    var teaserComment: String {
+        switch self {
+        case .standard: return "// Something to try in the wild."
+        case .counter: return "// Count it. Don't fix it."
+        case .observation: return "// Not to fix. Just to see."
+        case .abstain: return "// Can you not?"
+        case .substitute: return "// When X, try Y instead."
+        case .journal: return "// 2-3 sentences. Be honest."
+        case .reversal: return "// This will feel wrong."
+        case .predict: return "// Predict. Then observe."
+        case .body: return "// Your body already knows."
+        case .audit: return "// Tonight, look back."
+        case .multiStep: return "// Three steps. In order."
+        case .timed: return "// Set a timer. Stay put."
+        case .quiz: return "// No right answer."
+        case .scenario: return "// What would you do?"
+        }
+    }
 }
 
 @Model
@@ -125,6 +184,11 @@ extension Fix {
     var auditConfig: AuditConfig? {
         guard interactionType == .audit, let data = configurationData else { return nil }
         return try? JSONDecoder().decode(AuditConfig.self, from: data)
+    }
+
+    var bodyConfig: BodyConfig? {
+        guard interactionType == .body, let data = configurationData else { return nil }
+        return try? JSONDecoder().decode(BodyConfig.self, from: data)
     }
 
     func setConfiguration<T: Encodable>(_ config: T) {

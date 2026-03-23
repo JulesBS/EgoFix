@@ -22,6 +22,8 @@ final class FixCompletion {
     var createdAt: Date
     var updatedAt: Date
     var deletedAt: Date?
+    var educationTeaser: String?
+    var educationDeepDive: String?
 
     init(
         id: UUID = UUID(),
@@ -35,7 +37,9 @@ final class FixCompletion {
         completedAt: Date? = nil,
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
-        deletedAt: Date? = nil
+        deletedAt: Date? = nil,
+        educationTeaser: String? = nil,
+        educationDeepDive: String? = nil
     ) {
         self.id = id
         self.fixId = fixId
@@ -49,6 +53,8 @@ final class FixCompletion {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.deletedAt = deletedAt
+        self.educationTeaser = educationTeaser
+        self.educationDeepDive = educationDeepDive
     }
 }
 

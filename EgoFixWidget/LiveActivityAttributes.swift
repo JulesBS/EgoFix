@@ -19,6 +19,7 @@ public struct EgoFixWidgetAttributes: ActivityAttributes {
         public var progress: Double
         public var isFixMode: Bool
         public var fixAcceptedAt: Date?
+        public var missionEndDate: Date?
 
         public init(
             timerEndDate: Date,
@@ -26,7 +27,8 @@ public struct EgoFixWidgetAttributes: ActivityAttributes {
             remainingSeconds: Int,
             progress: Double,
             isFixMode: Bool = false,
-            fixAcceptedAt: Date? = nil
+            fixAcceptedAt: Date? = nil,
+            missionEndDate: Date? = nil
         ) {
             self.timerEndDate = timerEndDate
             self.isPaused = isPaused
@@ -34,6 +36,7 @@ public struct EgoFixWidgetAttributes: ActivityAttributes {
             self.progress = progress
             self.isFixMode = isFixMode
             self.fixAcceptedAt = fixAcceptedAt
+            self.missionEndDate = missionEndDate
         }
     }
 

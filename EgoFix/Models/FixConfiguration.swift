@@ -68,6 +68,14 @@ struct ObservationConfig: Codable, Equatable {
 struct AbstainConfig: Codable, Equatable {
     let durationDescription: String
     let endTime: String?
+    let durationSeconds: Int?
+}
+
+// MARK: - Body Configuration
+
+struct BodyConfig: Codable, Equatable {
+    let scanRegions: [String]
+    let sensationDescriptors: [String]
 }
 
 // MARK: - Substitute Configuration

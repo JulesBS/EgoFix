@@ -8,6 +8,13 @@ struct SharedFixState: Codable {
     let fixNumber: String?
     let outcome: String?  // pending/applied/skipped/failed
     let timer: SharedTimerState?
+    let missionState: String?  // waiting/active/checkIn/done
+    let bugSlug: String?
+    let typeLabel: String?
+    let severity: String?
+    let missionEndDate: Date?
+    let educationTeaser: String?
+    let inlineComment: String?
     let updatedAt: Date
 
     init(
@@ -15,13 +22,27 @@ struct SharedFixState: Codable {
         fixPrompt: String? = nil,
         fixNumber: String? = nil,
         outcome: String? = nil,
-        timer: SharedTimerState? = nil
+        timer: SharedTimerState? = nil,
+        missionState: String? = nil,
+        bugSlug: String? = nil,
+        typeLabel: String? = nil,
+        severity: String? = nil,
+        missionEndDate: Date? = nil,
+        educationTeaser: String? = nil,
+        inlineComment: String? = nil
     ) {
         self.hasFixToday = hasFixToday
         self.fixPrompt = fixPrompt
         self.fixNumber = fixNumber
         self.outcome = outcome
         self.timer = timer
+        self.missionState = missionState
+        self.bugSlug = bugSlug
+        self.typeLabel = typeLabel
+        self.severity = severity
+        self.missionEndDate = missionEndDate
+        self.educationTeaser = educationTeaser
+        self.inlineComment = inlineComment
         self.updatedAt = Date()
     }
 
@@ -185,7 +206,71 @@ final class SharedStorageManager {
                 fixPrompt: current.fixPrompt,
                 fixNumber: current.fixNumber,
                 outcome: outcome.rawValue,
-                timer: nil
+                timer: nil,
+                missionState: "done",
+                bugSlug: current.bugSlug,
+                typeLabel: current.typeLabel,
+                severity: current.severity
+            )
+            saveFixState(state)
+        }
+    }
+
+    // MARK: - Mission State Convenience Methods
+
+    /// Update widget for mission waiting state (pre-accept briefing)
+    func updateForMissionWaiting(bugSlug: String, typeLabel: String, severity: String, fixNumber: String) {
+        let state = SharedFixState(
+            hasFixToday: true,
+            fixNumber: fixNumber,
+            outcome: "pending",
+            missionState: "waiting",
+            bugSlug: bugSlug,
+            typeLabel: typeLabel,
+            severity: severity
+        )
+        saveFixState(state)
+    }
+
+    /// Update widget for active mission state
+    func updateForMissionActive(
+        prompt: String,
+        fixNumber: String,
+        missionEndDate: Date?,
+        inlineComment: String?,
+        educationTeaser: String?,
+        bugSlug: String?,
+        typeLabel: String?,
+        severity: String?
+    ) {
+        let state = SharedFixState(
+            hasFixToday: true,
+            fixPrompt: prompt,
+            fixNumber: fixNumber,
+            outcome: "pending",
+            missionState: "active",
+            bugSlug: bugSlug,
+            typeLabel: typeLabel,
+            severity: severity,
+            missionEndDate: missionEndDate,
+            educationTeaser: educationTeaser,
+            inlineComment: inlineComment
+        )
+        saveFixState(state)
+    }
+
+    /// Update widget for check-in state
+    func updateForMissionCheckIn(fixNumber: String) {
+        if let current = loadFixState() {
+            let state = SharedFixState(
+                hasFixToday: true,
+                fixPrompt: current.fixPrompt,
+                fixNumber: fixNumber,
+                outcome: "pending",
+                missionState: "checkIn",
+                bugSlug: current.bugSlug,
+                typeLabel: current.typeLabel,
+                severity: current.severity
             )
             saveFixState(state)
         }

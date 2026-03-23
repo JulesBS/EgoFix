@@ -43,6 +43,33 @@ struct SettingsView: View {
                         .padding(.top, 12)
                         .padding(.bottom, 24)
 
+                    // NOTIFICATIONS
+                    sectionHeader("NOTIFICATIONS")
+
+                    timeSettingRow(
+                        label: "morning notification",
+                        timeString: $progressTracker.morningNotificationTime
+                    )
+
+                    timeSettingRow(
+                        label: "wind-down time",
+                        timeString: $progressTracker.windDownTime
+                    )
+
+                    Toggle(isOn: $progressTracker.antiNotificationsEnabled) {
+                        Text("anti-notifications")
+                            .font(EgoTheme.mono())
+                            .foregroundColor(EgoTheme.textPrimary)
+                    }
+                    .toggleStyle(SwitchToggleStyle(tint: EgoTheme.green))
+                    .padding(.vertical, 8)
+
+                    commentLine("// Wind-down time also ends your daily mission.")
+                        .padding(.top, 4)
+                    commentLine("// Anti-notifications: less contact when you're stable.")
+                        .padding(.top, 2)
+                        .padding(.bottom, 24)
+
                     // DEBUG
                     sectionHeader("DEBUG")
 
@@ -150,6 +177,25 @@ struct SettingsView: View {
         Text(text)
             .font(EgoTheme.label())
             .foregroundColor(EgoTheme.textMuted)
+    }
+
+    private func timeSettingRow(label: String, timeString: Binding<String>) -> some View {
+        HStack {
+            Text(label)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
+
+            Spacer()
+
+            Text(timeString.wrappedValue)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.green)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
+        }
+        .padding(.vertical, 8)
     }
 
     // MARK: - Replay Onboarding

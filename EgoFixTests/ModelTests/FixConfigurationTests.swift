@@ -234,7 +234,7 @@ final class FixConfigurationTests: XCTestCase {
     // MARK: - AbstainConfig Tests
 
     func test_AbstainConfig_encodesAndDecodes() throws {
-        let config = AbstainConfig(durationDescription: "Until noon", endTime: "12:00")
+        let config = AbstainConfig(durationDescription: "Until noon", endTime: "12:00", durationSeconds: 14400)
 
         let data = try JSONEncoder().encode(config)
         let decoded = try JSONDecoder().decode(AbstainConfig.self, from: data)
@@ -242,16 +242,65 @@ final class FixConfigurationTests: XCTestCase {
         XCTAssertEqual(decoded, config)
         XCTAssertEqual(decoded.durationDescription, "Until noon")
         XCTAssertEqual(decoded.endTime, "12:00")
+        XCTAssertEqual(decoded.durationSeconds, 14400)
     }
 
     func test_AbstainConfig_endTimeCanBeNil() throws {
-        let config = AbstainConfig(durationDescription: "All day", endTime: nil)
+        let config = AbstainConfig(durationDescription: "All day", endTime: nil, durationSeconds: nil)
 
         let data = try JSONEncoder().encode(config)
         let decoded = try JSONDecoder().decode(AbstainConfig.self, from: data)
 
         XCTAssertEqual(decoded, config)
         XCTAssertNil(decoded.endTime)
+        XCTAssertNil(decoded.durationSeconds)
+    }
+
+    func test_AbstainConfig_durationSecondsCanBeNil() throws {
+        let config = AbstainConfig(durationDescription: "One conversation", endTime: nil, durationSeconds: nil)
+
+        let data = try JSONEncoder().encode(config)
+        let decoded = try JSONDecoder().decode(AbstainConfig.self, from: data)
+
+        XCTAssertNil(decoded.durationSeconds)
+    }
+
+    func test_AbstainConfig_decodesFromLegacyJSON() throws {
+        let json = """
+        {"durationDescription": "Full workday", "endTime": null}
+        """
+        let data = json.data(using: .utf8)!
+        let decoded = try JSONDecoder().decode(AbstainConfig.self, from: data)
+
+        XCTAssertEqual(decoded.durationDescription, "Full workday")
+        XCTAssertNil(decoded.durationSeconds)
+    }
+
+    // MARK: - BodyConfig Tests
+
+    func test_BodyConfig_encodesAndDecodes() throws {
+        let config = BodyConfig(
+            scanRegions: ["Jaw", "Chest", "Hands"],
+            sensationDescriptors: ["Tension", "Heat", "Tightness"]
+        )
+
+        let data = try JSONEncoder().encode(config)
+        let decoded = try JSONDecoder().decode(BodyConfig.self, from: data)
+
+        XCTAssertEqual(decoded, config)
+        XCTAssertEqual(decoded.scanRegions.count, 3)
+        XCTAssertEqual(decoded.sensationDescriptors.count, 3)
+    }
+
+    func test_BodyConfig_decodesFromJSON() throws {
+        let json = """
+        {"scanRegions": ["Jaw", "Throat"], "sensationDescriptors": ["Tension"]}
+        """
+        let data = json.data(using: .utf8)!
+        let decoded = try JSONDecoder().decode(BodyConfig.self, from: data)
+
+        XCTAssertEqual(decoded.scanRegions, ["Jaw", "Throat"])
+        XCTAssertEqual(decoded.sensationDescriptors, ["Tension"])
     }
 
     // MARK: - SubstituteConfig Tests

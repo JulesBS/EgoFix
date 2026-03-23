@@ -94,7 +94,9 @@ final class SeedDataLoader {
                 id: UUID(uuidString: item.id) ?? UUID(),
                 bugSlug: item.bugSlug,
                 trigger: trigger,
-                body: item.body
+                body: item.body,
+                teaser: item.teaser,
+                deepDive: item.deepDive
             )
             modelContext.insert(education)
         }
@@ -148,6 +150,8 @@ private struct SeedFix: Codable {
             return try? encoder.encode(predict)
         } else if let audit = config.audit {
             return try? encoder.encode(audit)
+        } else if let body = config.body {
+            return try? encoder.encode(body)
         }
 
         return nil
@@ -165,6 +169,7 @@ private struct SeedFixConfiguration: Codable {
     let substitute: SubstituteConfig?
     let predict: PredictConfig?
     let audit: AuditConfig?
+    let body: BodyConfig?
 }
 
 private struct SeedMicroEducation: Codable {
@@ -172,4 +177,6 @@ private struct SeedMicroEducation: Codable {
     let bugSlug: String
     let trigger: String
     let body: String
+    let teaser: String?
+    let deepDive: String?
 }

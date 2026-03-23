@@ -56,6 +56,19 @@ final class FixInteractionManager: ObservableObject {
     // MARK: - Published State (Abstain)
 
     @Published var abstainCompleted: Bool = false
+    @Published private(set) var abstainTimerMode: Bool = false
+    @Published private(set) var abstainDurationSeconds: Int = 0
+    @Published private(set) var abstainRemainingSeconds: Int = 0
+    @Published private(set) var abstainProgress: Double = 0
+    @Published private(set) var abstainTimerRunning: Bool = false
+    @Published private(set) var abstainSlips: [AbstainOutcome.SlipEvent] = []
+    @Published private(set) var abstainConfig: AbstainConfig?
+
+    // MARK: - Published State (Body)
+
+    @Published private(set) var selectedBodyRegions: Set<String> = []
+    @Published private(set) var selectedBodySensations: Set<String> = []
+    @Published private(set) var bodyConfig: BodyConfig?
 
     // MARK: - Published State (Substitute)
 
@@ -169,12 +182,35 @@ final class FixInteractionManager: ObservableObject {
         return true
     }
 
+    // MARK: - Abstain Computed Properties
+
+    var abstainFormattedTime: String {
+        let hours = abstainRemainingSeconds / 3600
+        let minutes = (abstainRemainingSeconds % 3600) / 60
+        let seconds = abstainRemainingSeconds % 60
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        }
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    var abstainProgressBarString: String {
+        let totalBars = 20
+        let filledBars = Int(abstainProgress * Double(totalBars))
+        let filled = String(repeating: "\u{2588}", count: filledBars)
+        let empty = String(repeating: "\u{2591}", count: totalBars - filledBars)
+        return "[\(filled)\(empty)]"
+    }
+
     // MARK: - canMarkApplied Computed Property
 
     var canMarkApplied: Bool {
         switch interactionType {
-        case .standard, .reversal, .body:
+        case .standard, .reversal:
             return true
+
+        case .body:
+            return !selectedBodyRegions.isEmpty && !selectedBodySensations.isEmpty
 
         case .timed:
             return !isTimerRequired || isTimerCompleted
@@ -218,6 +254,7 @@ final class FixInteractionManager: ObservableObject {
     private let notificationService = NotificationService.shared
     private let liveActivityService = LiveActivityService.shared
     private var tickTimer: Timer?
+    private var abstainTickTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
     private var currentFixNumber: String = ""
     private var currentFixPrompt: String = ""
@@ -273,7 +310,7 @@ final class FixInteractionManager: ObservableObject {
             observationReport = ""
 
         case .abstain:
-            abstainCompleted = false
+            setupAbstain(for: fix)
 
         case .substitute:
             substituteCount = 0
@@ -282,8 +319,11 @@ final class FixInteractionManager: ObservableObject {
         case .journal:
             journalText = ""
 
-        case .reversal, .body:
+        case .reversal:
             break
+
+        case .body:
+            setupBody(for: fix)
 
         case .predict:
             predictPhase = .predicting
@@ -332,6 +372,17 @@ final class FixInteractionManager: ObservableObject {
         // Reset new type state
         observationReport = ""
         abstainCompleted = false
+        abstainTimerMode = false
+        abstainDurationSeconds = 0
+        abstainRemainingSeconds = 0
+        abstainProgress = 0
+        abstainTimerRunning = false
+        stopAbstainTick()
+        abstainSlips = []
+        abstainConfig = nil
+        selectedBodyRegions = []
+        selectedBodySensations = []
+        bodyConfig = nil
         substituteCount = 0
         urgeCount = 0
         journalText = ""
@@ -444,6 +495,104 @@ final class FixInteractionManager: ObservableObject {
         counterConfig = config
         counterValue = 0
         counterHistory = []
+    }
+
+    // MARK: - Body Methods
+
+    func toggleBodyRegion(_ region: String) {
+        if selectedBodyRegions.contains(region) {
+            selectedBodyRegions.remove(region)
+        } else {
+            selectedBodyRegions.insert(region)
+        }
+    }
+
+    func toggleBodySensation(_ sensation: String) {
+        if selectedBodySensations.contains(sensation) {
+            selectedBodySensations.remove(sensation)
+        } else {
+            selectedBodySensations.insert(sensation)
+        }
+    }
+
+    // MARK: - Abstain Timer Methods
+
+    func startAbstainTimer() {
+        guard abstainTimerMode, !abstainTimerRunning, !abstainCompleted else { return }
+        abstainTimerRunning = true
+        startAbstainTick()
+    }
+
+    func logAbstainSlip(note: String? = nil) {
+        let slip = AbstainOutcome.SlipEvent(timestamp: Date(), note: note)
+        abstainSlips.append(slip)
+    }
+
+    // MARK: - Private Setup Methods (Body + Abstain)
+
+    private func setupBody(for fix: Fix) {
+        bodyConfig = fix.bodyConfig
+        selectedBodyRegions = []
+        selectedBodySensations = []
+    }
+
+    private func setupAbstain(for fix: Fix) {
+        let config = fix.abstainConfig
+        abstainConfig = config
+        abstainCompleted = false
+        abstainSlips = []
+        abstainTimerRunning = false
+        abstainProgress = 0
+
+        if let duration = config?.durationSeconds, duration > 0 {
+            abstainTimerMode = true
+            abstainDurationSeconds = duration
+            abstainRemainingSeconds = duration
+        } else {
+            abstainTimerMode = false
+            abstainDurationSeconds = 0
+            abstainRemainingSeconds = 0
+        }
+    }
+
+    // MARK: - Private Abstain Timer Helpers
+
+    private func startAbstainTick() {
+        stopAbstainTick()
+        abstainTickTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.abstainTick()
+            }
+        }
+    }
+
+    private func stopAbstainTick() {
+        abstainTickTimer?.invalidate()
+        abstainTickTimer = nil
+    }
+
+    private func abstainTick() {
+        guard abstainTimerRunning, abstainRemainingSeconds > 0 else {
+            if abstainRemainingSeconds <= 0 && abstainTimerMode && abstainTimerRunning {
+                completeAbstainTimer()
+            }
+            return
+        }
+        abstainRemainingSeconds -= 1
+        if abstainDurationSeconds > 0 {
+            abstainProgress = 1.0 - (Double(abstainRemainingSeconds) / Double(abstainDurationSeconds))
+        }
+        if abstainRemainingSeconds <= 0 {
+            completeAbstainTimer()
+        }
+    }
+
+    private func completeAbstainTimer() {
+        stopAbstainTick()
+        abstainTimerRunning = false
+        abstainCompleted = true
+        abstainProgress = 1.0
+        onInteractionComplete?()
     }
 
     // MARK: - Timer Controls
@@ -593,8 +742,14 @@ final class FixInteractionManager: ObservableObject {
     /// Generate the appropriate outcome struct based on interaction type
     func generateCompletionData() -> Any? {
         switch interactionType {
-        case .standard, .reversal, .body:
+        case .standard, .reversal:
             return nil
+
+        case .body:
+            return BodyOutcome(
+                selectedRegions: Array(selectedBodyRegions),
+                selectedSensations: Array(selectedBodySensations)
+            )
 
         case .timed:
             return generateTimedOutcome()
@@ -615,7 +770,13 @@ final class FixInteractionManager: ObservableObject {
             return ObservationOutcome(report: observationReport)
 
         case .abstain:
-            return AbstainOutcome(completed: abstainCompleted, slipCount: abstainCompleted ? 0 : 1)
+            return AbstainOutcome(
+                completed: abstainCompleted,
+                slipCount: abstainSlips.count,
+                slips: abstainSlips,
+                timerUsed: abstainTimerMode,
+                durationSeconds: abstainTimerMode ? abstainDurationSeconds : nil
+            )
 
         case .substitute:
             return SubstituteOutcome(substituteCount: substituteCount, urgeCount: urgeCount)
@@ -635,8 +796,15 @@ final class FixInteractionManager: ObservableObject {
     /// Generate outcome data as encoded Data for storage
     func generateOutcomeData() -> Data? {
         switch interactionType {
-        case .standard, .reversal, .body, .journal:
+        case .standard, .reversal, .journal:
             return nil
+
+        case .body:
+            let outcome = BodyOutcome(
+                selectedRegions: Array(selectedBodyRegions),
+                selectedSensations: Array(selectedBodySensations)
+            )
+            return try? JSONEncoder().encode(outcome)
 
         case .timed:
             let outcome = generateTimedOutcome()
@@ -663,7 +831,13 @@ final class FixInteractionManager: ObservableObject {
             return try? JSONEncoder().encode(outcome)
 
         case .abstain:
-            let outcome = AbstainOutcome(completed: abstainCompleted, slipCount: abstainCompleted ? 0 : 1)
+            let outcome = AbstainOutcome(
+                completed: abstainCompleted,
+                slipCount: abstainSlips.count,
+                slips: abstainSlips,
+                timerUsed: abstainTimerMode,
+                durationSeconds: abstainTimerMode ? abstainDurationSeconds : nil
+            )
             return try? JSONEncoder().encode(outcome)
 
         case .substitute:
@@ -834,5 +1008,6 @@ final class FixInteractionManager: ObservableObject {
 
     deinit {
         tickTimer?.invalidate()
+        abstainTickTimer?.invalidate()
     }
 }

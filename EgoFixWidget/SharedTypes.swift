@@ -14,6 +14,13 @@ struct SharedFixState: Codable {
     let fixNumber: String?
     let outcome: String?  // pending/applied/skipped/failed
     let timer: SharedTimerState?
+    let missionState: String?  // waiting/active/checkIn/done
+    let bugSlug: String?
+    let typeLabel: String?
+    let severity: String?
+    let missionEndDate: Date?
+    let educationTeaser: String?
+    let inlineComment: String?
     let updatedAt: Date
 
     init(
@@ -21,13 +28,27 @@ struct SharedFixState: Codable {
         fixPrompt: String? = nil,
         fixNumber: String? = nil,
         outcome: String? = nil,
-        timer: SharedTimerState? = nil
+        timer: SharedTimerState? = nil,
+        missionState: String? = nil,
+        bugSlug: String? = nil,
+        typeLabel: String? = nil,
+        severity: String? = nil,
+        missionEndDate: Date? = nil,
+        educationTeaser: String? = nil,
+        inlineComment: String? = nil
     ) {
         self.hasFixToday = hasFixToday
         self.fixPrompt = fixPrompt
         self.fixNumber = fixNumber
         self.outcome = outcome
         self.timer = timer
+        self.missionState = missionState
+        self.bugSlug = bugSlug
+        self.typeLabel = typeLabel
+        self.severity = severity
+        self.missionEndDate = missionEndDate
+        self.educationTeaser = educationTeaser
+        self.inlineComment = inlineComment
         self.updatedAt = Date()
     }
 

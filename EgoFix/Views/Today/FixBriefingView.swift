@@ -1,57 +1,124 @@
 import SwiftUI
 
-/// Morning briefing: shows today's fix for the user to accept or skip.
+/// Morning briefing: teaser card showing bug, type, severity, time — but NOT the prompt.
+/// The prompt is revealed on accept, creating a curiosity gap.
 struct FixBriefingView: View {
     let fix: Fix
     let bugTitle: String?
+    let bugSlug: String?
+    let fixNumber: String
+    let version: String
+    let isReturningFix: Bool
     let onAccept: () -> Void
     let onSkip: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Glass card: fix prompt + comment
+            // Glass card: mission teaser
             VStack(alignment: .leading, spacing: 0) {
-                // Node label
-                Text("FIX / #\(String(format: "%04d", abs(fix.id.hashValue) % 10000))")
-                    .font(EgoTheme.label())
-                    .tracking(1)
-                    .foregroundColor(EgoTheme.textMuted)
-                    .padding(.bottom, 16)
+                // Fix number + version
+                HStack {
+                    Text("FIX / #\(fixNumber)")
+                        .font(EgoTheme.label())
+                        .tracking(1)
+                        .foregroundColor(EgoTheme.textMuted)
 
-                // Prompt
-                Text(fix.prompt)
-                    .font(.system(size: 18, weight: .light, design: .monospaced))
-                    .foregroundColor(EgoTheme.textPrimary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.bottom, 16)
+                    Spacer()
+
+                    Text("v\(version)")
+                        .font(EgoTheme.label())
+                        .tracking(1)
+                        .foregroundColor(EgoTheme.textMuted)
+                }
+                .padding(.bottom, 20)
+
+                // Bug name
+                HStack(spacing: 8) {
+                    Text("BUG")
+                        .font(EgoTheme.label())
+                        .tracking(1.5)
+                        .foregroundColor(EgoTheme.textMuted)
+                        .frame(width: 52, alignment: .leading)
+
+                    Text(bugSlug ?? "unknown")
+                        .font(EgoTheme.mono(.callout))
+                        .foregroundColor(EgoTheme.textPrimary)
+                }
+                .padding(.bottom, 8)
+
+                // Type label
+                HStack(spacing: 8) {
+                    Text("TYPE")
+                        .font(EgoTheme.label())
+                        .tracking(1.5)
+                        .foregroundColor(EgoTheme.textMuted)
+                        .frame(width: 52, alignment: .leading)
+
+                    Text(fix.interactionType.typeLabel)
+                        .font(EgoTheme.mono(.callout))
+                        .foregroundColor(EgoTheme.textPrimary)
+                }
+                .padding(.bottom, 8)
+
+                // Severity
+                HStack(spacing: 8) {
+                    Text("LEVEL")
+                        .font(EgoTheme.label())
+                        .tracking(1.5)
+                        .foregroundColor(EgoTheme.textMuted)
+                        .frame(width: 52, alignment: .leading)
+
+                    severityBar
+                }
+                .padding(.bottom, 8)
+
+                // Estimated time
+                HStack(spacing: 8) {
+                    Text("TIME")
+                        .font(EgoTheme.label())
+                        .tracking(1.5)
+                        .foregroundColor(EgoTheme.textMuted)
+                        .frame(width: 52, alignment: .leading)
+
+                    Text(fix.interactionType.estimatedTime)
+                        .font(EgoTheme.mono(.callout))
+                        .foregroundColor(EgoTheme.textPrimary)
+                }
+                .padding(.bottom, 16)
 
                 // Divider
-                if fix.inlineComment != nil {
-                    Rectangle()
-                        .fill(EgoTheme.borderSubtle)
-                        .frame(height: 0.5)
-                        .padding(.bottom, 12)
-                        .accessibilityHidden(true)
-                }
+                Rectangle()
+                    .fill(EgoTheme.borderSubtle)
+                    .frame(height: 0.5)
+                    .padding(.bottom, 12)
+                    .accessibilityHidden(true)
 
-                // Inline comment
-                if let comment = fix.inlineComment {
-                    Text("// \(comment)")
-                        .font(EgoTheme.mono(.caption))
+                // Type-flavored teaser comment
+                Text(fix.interactionType.teaserComment)
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
+                    .italic()
+                    .fixedSize(horizontal: false, vertical: true)
+
+                // Returning fix indicator
+                if isReturningFix {
+                    Text("// You've seen this one before. Different day, same pattern.")
+                        .font(EgoTheme.mono(.caption2))
                         .foregroundColor(EgoTheme.textMuted)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .italic()
+                        .padding(.top, 6)
                 }
             }
             .padding(24)
             .glassCard()
             .accessibilityElement(children: .combine)
-            .accessibilityLabel("Today's fix: \(fix.prompt)\(fix.inlineComment.map { ". \($0)" } ?? "")")
+            .accessibilityLabel("Mission briefing: \(fix.interactionType.typeLabel) for \(bugSlug ?? "unknown"), \(fix.severity.rawValue) difficulty")
 
-            // CTA: Accept
-            FigmaCTAButton(label: "ACCEPT FIX", action: onAccept)
-                .accessibilityHint("Accept today's fix and begin working on it")
+            // CTA: Accept Mission
+            FigmaCTAButton(label: "ACCEPT MISSION", action: onAccept)
+                .accessibilityHint("Accept today's mission and reveal the fix")
 
-            // Secondary: Skip — visible but understated
+            // Secondary: Skip
             Button(action: onSkip) {
                 Text("SKIP")
                     .font(EgoTheme.mono(.callout))
@@ -65,8 +132,47 @@ struct FixBriefingView: View {
                     )
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Skip fix")
-            .accessibilityHint("Skip today's fix without attempting it")
+            .accessibilityLabel("Skip mission")
+            .accessibilityHint("Skip today's mission without attempting it")
+        }
+    }
+
+    // MARK: - Severity Bar
+
+    private var severityFilled: Int {
+        switch fix.severity {
+        case .low: return 1
+        case .medium: return 2
+        case .high: return 3
+        }
+    }
+
+    @ViewBuilder
+    private var severityBar: some View {
+        HStack(spacing: 3) {
+            ForEach(0..<3, id: \.self) { i in
+                Rectangle()
+                    .fill(i < severityFilled ? severityColor : EgoTheme.surface)
+                    .frame(width: 16, height: 8)
+                    .overlay(
+                        Rectangle()
+                            .stroke(i < severityFilled ? severityColor.opacity(0.6) : EgoTheme.border, lineWidth: 1)
+                    )
+            }
+
+            Text(fix.severity.rawValue)
+                .font(EgoTheme.mono(.caption2))
+                .foregroundColor(EgoTheme.textMuted)
+                .padding(.leading, 4)
+        }
+        .accessibilityLabel("Severity: \(fix.severity.rawValue)")
+    }
+
+    private var severityColor: Color {
+        switch fix.severity {
+        case .low: return EgoTheme.green
+        case .medium: return EgoTheme.amber
+        case .high: return .red
         }
     }
 }

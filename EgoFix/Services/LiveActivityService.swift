@@ -107,8 +107,8 @@ final class LiveActivityService {
         )
 
         do {
-            // Fix activities stay until checked in — stale after 18 hours
-            let staleDate = Calendar.current.date(byAdding: .hour, value: 18, to: now)
+            // Fix activities cap at 7 hours — widget takes over after that
+            let staleDate = Calendar.current.date(byAdding: .hour, value: 7, to: now)
             let activity = try Activity.request(
                 attributes: attributes,
                 content: .init(state: contentState, staleDate: staleDate),

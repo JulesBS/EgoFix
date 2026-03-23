@@ -118,7 +118,8 @@ struct FixCardView: View {
 
     private var completionRequirementText: String {
         switch fix.interactionType {
-        case .standard, .reversal, .body, .counter: return ""
+        case .standard, .reversal, .counter: return ""
+        case .body: return "Select body region + sensation"
         case .timed: return "Timer required"
         case .multiStep: return "Complete all steps"
         case .quiz: return "Select an answer"

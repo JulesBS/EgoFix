@@ -171,11 +171,97 @@ final class NotificationService {
         try await notificationCenter.add(request)
     }
 
+    /// Schedule wind-down notification at a specific time
+    func scheduleWindDownNotification(fixNumber: String, hour: Int, minute: Int, identifier: String) async throws {
+        let content = UNMutableNotificationContent()
+        content.title = "EgoFix"
+        content.body = "Time to check in on Fix #\(fixNumber)."
+        content.sound = .default
+        content.categoryIdentifier = "EVENING_CHECKIN"
+
+        var dateComponents = DateComponents()
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+
+        let trigger = UNCalendarNotificationTrigger(
+            dateMatching: dateComponents,
+            repeats: false
+        )
+
+        let request = UNNotificationRequest(
+            identifier: identifier,
+            content: content,
+            trigger: trigger
+        )
+
+        try await notificationCenter.add(request)
+    }
+
+    /// Schedule morning notification for fix availability
+    func scheduleMorningNotification(fixNumber: String, hour: Int, minute: Int) async throws {
+        let content = UNMutableNotificationContent()
+        content.title = "EgoFix"
+        content.body = "Fix #\(fixNumber) is ready."
+        content.sound = .default
+        content.categoryIdentifier = "DAILY_REMINDER"
+
+        var dateComponents = DateComponents()
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+
+        let trigger = UNCalendarNotificationTrigger(
+            dateMatching: dateComponents,
+            repeats: true
+        )
+
+        let request = UNNotificationRequest(
+            identifier: "morning_reminder",
+            content: content,
+            trigger: trigger
+        )
+
+        try await notificationCenter.add(request)
+    }
+
+    /// Schedule weekly anti-notification for stable streaks
+    func scheduleAntiNotification() async throws {
+        let content = UNMutableNotificationContent()
+        content.title = "EgoFix"
+        content.body = "Still running smoothly?"
+        content.sound = .default
+        content.categoryIdentifier = "ANTI_NOTIFICATION"
+
+        // Weekly, same time as wind-down
+        var dateComponents = DateComponents()
+        dateComponents.weekday = 5 // Thursday
+        dateComponents.hour = 20
+        dateComponents.minute = 0
+
+        let trigger = UNCalendarNotificationTrigger(
+            dateMatching: dateComponents,
+            repeats: true
+        )
+
+        let request = UNNotificationRequest(
+            identifier: "anti_notification",
+            content: content,
+            trigger: trigger
+        )
+
+        try await notificationCenter.add(request)
+    }
+
+    /// Cancel anti-notification
+    func cancelAntiNotification() {
+        notificationCenter.removePendingNotificationRequests(withIdentifiers: ["anti_notification"])
+    }
+
     /// Cancel fix-related notifications
     func cancelFixNotifications(fixId: String) {
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [
             "fix_midday_\(fixId)",
-            "fix_evening_\(fixId)"
+            "fix_evening_\(fixId)",
+            "fix_winddown_\(fixId)"
         ])
     }
 

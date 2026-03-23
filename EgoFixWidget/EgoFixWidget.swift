@@ -2,8 +2,6 @@
 //  EgoFixWidget.swift
 //  EgoFixWidget
 //
-//  Created by Jules Bertron-Simpson on 28/01/2026.
-//
 
 import WidgetKit
 import SwiftUI
@@ -14,13 +12,7 @@ struct EgoFixProvider: TimelineProvider {
     private let storage = WidgetStorageManager.shared
 
     func placeholder(in context: Context) -> EgoFixEntry {
-        EgoFixEntry(
-            date: Date(),
-            fixPrompt: "Loading your daily fix...",
-            fixNumber: "0000",
-            outcome: nil,
-            timerState: nil
-        )
+        EgoFixEntry(date: Date(), state: .placeholder)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (EgoFixEntry) -> Void) {
@@ -31,12 +23,15 @@ struct EgoFixProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<EgoFixEntry>) -> Void) {
         let entry = createEntry(from: storage.loadFixState())
 
-        // Refresh every 15 minutes or when timer would complete
+        // Refresh every 15 minutes, or at mission end for state transition
         var nextUpdate = Date().addingTimeInterval(15 * 60)
 
         if let timerState = entry.timerState, !timerState.isPaused && !timerState.isCompleted {
-            // Update more frequently during active timer
             nextUpdate = min(nextUpdate, timerState.endDate)
+        }
+
+        if let missionEnd = entry.missionEndDate, entry.missionState == "active" {
+            nextUpdate = min(nextUpdate, missionEnd)
         }
 
         let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
@@ -45,13 +40,7 @@ struct EgoFixProvider: TimelineProvider {
 
     private func createEntry(from state: SharedFixState?) -> EgoFixEntry {
         guard let state = state, state.hasFixToday else {
-            return EgoFixEntry(
-                date: Date(),
-                fixPrompt: nil,
-                fixNumber: nil,
-                outcome: nil,
-                timerState: nil
-            )
+            return EgoFixEntry(date: Date(), state: .noFix)
         }
 
         return EgoFixEntry(
@@ -59,7 +48,14 @@ struct EgoFixProvider: TimelineProvider {
             fixPrompt: state.fixPrompt,
             fixNumber: state.fixNumber,
             outcome: state.outcome,
-            timerState: state.timer
+            timerState: state.timer,
+            missionState: state.missionState,
+            bugSlug: state.bugSlug,
+            typeLabel: state.typeLabel,
+            severity: state.severity,
+            missionEndDate: state.missionEndDate,
+            inlineComment: state.inlineComment,
+            educationTeaser: state.educationTeaser
         )
     }
 }
@@ -68,22 +64,83 @@ struct EgoFixProvider: TimelineProvider {
 
 struct EgoFixEntry: TimelineEntry {
     let date: Date
-    let fixPrompt: String?
-    let fixNumber: String?
-    let outcome: String?
-    let timerState: SharedTimerState?
+    var fixPrompt: String?
+    var fixNumber: String?
+    var outcome: String?
+    var timerState: SharedTimerState?
+    var missionState: String?
+    var bugSlug: String?
+    var typeLabel: String?
+    var severity: String?
+    var missionEndDate: Date?
+    var inlineComment: String?
+    var educationTeaser: String?
 
-    var hasActiveFix: Bool {
-        fixPrompt != nil && outcome == "pending"
+    enum DisplayState {
+        case placeholder
+        case noFix
+        case waiting       // pre-accept: bug + type + severity
+        case active        // accepted: prompt + countdown
+        case checkIn       // wind-down: time to check in
+        case done          // outcome marked
+        case timer         // timed interaction (legacy)
     }
 
-    var isCompleted: Bool {
-        outcome != nil && outcome != "pending"
+    var displayState: DisplayState {
+        if missionState == "waiting" { return .waiting }
+        if missionState == "checkIn" { return .checkIn }
+        if missionState == "done" || (outcome != nil && outcome != "pending") { return .done }
+        if missionState == "active" {
+            // Check if mission time has passed
+            if let endDate = missionEndDate, Date() > endDate {
+                return .checkIn
+            }
+            return .active
+        }
+        if timerState != nil { return .timer }
+        if fixPrompt != nil { return .active }
+        return .noFix
     }
 
-    var hasActiveTimer: Bool {
-        guard let timer = timerState else { return false }
-        return !timer.isCompleted && !timer.isPaused
+    // Convenience for placeholder init
+    init(date: Date, state: DisplayState) {
+        self.date = date
+        switch state {
+        case .placeholder:
+            self.fixPrompt = "Loading..."
+            self.fixNumber = "0000"
+        default:
+            break
+        }
+    }
+
+    // Full init
+    init(
+        date: Date,
+        fixPrompt: String? = nil,
+        fixNumber: String? = nil,
+        outcome: String? = nil,
+        timerState: SharedTimerState? = nil,
+        missionState: String? = nil,
+        bugSlug: String? = nil,
+        typeLabel: String? = nil,
+        severity: String? = nil,
+        missionEndDate: Date? = nil,
+        inlineComment: String? = nil,
+        educationTeaser: String? = nil
+    ) {
+        self.date = date
+        self.fixPrompt = fixPrompt
+        self.fixNumber = fixNumber
+        self.outcome = outcome
+        self.timerState = timerState
+        self.missionState = missionState
+        self.bugSlug = bugSlug
+        self.typeLabel = typeLabel
+        self.severity = severity
+        self.missionEndDate = missionEndDate
+        self.inlineComment = inlineComment
+        self.educationTeaser = educationTeaser
     }
 }
 
@@ -98,7 +155,7 @@ struct EgoFixWidget: Widget {
                 .containerBackground(.black, for: .widget)
         }
         .configurationDisplayName("EgoFix")
-        .description("Track your daily fix and timer progress.")
+        .description("Your daily mission at a glance.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular, .accessoryCircular])
     }
 }
@@ -125,13 +182,13 @@ struct EgoFixWidgetView: View {
     }
 }
 
-// MARK: - Small Widget
+// MARK: - Small Widget (4 mission states)
 
 struct SmallWidgetView: View {
     let entry: EgoFixEntry
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             // Header
             HStack {
                 Text("EGOFIX")
@@ -147,83 +204,89 @@ struct SmallWidgetView: View {
 
             Spacer()
 
-            if entry.isCompleted {
-                completedView
-            } else if entry.hasActiveFix {
-                activeFixView
-            } else {
-                noFixView
+            switch entry.displayState {
+            case .waiting:
+                VStack(alignment: .leading, spacing: 4) {
+                    if let type = entry.typeLabel {
+                        Text(type)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.white)
+                    }
+                    if let slug = entry.bugSlug {
+                        Text(slug)
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(.gray)
+                    }
+                    Text("// Mission waiting.")
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.gray)
+                        .italic()
+                }
+
+            case .active:
+                VStack(alignment: .leading, spacing: 4) {
+                    if let endDate = entry.missionEndDate {
+                        Text(endDate, style: .relative)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.green)
+                            .monospacedDigit()
+                    }
+                    Text("ACTIVE")
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.green)
+                }
+
+            case .checkIn:
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("CHECK IN")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.yellow)
+                    Text("// How'd it go?")
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.gray)
+                        .italic()
+                }
+
+            case .done:
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(outcomeSymbol)
+                        .font(.title2)
+                        .foregroundColor(outcomeColor)
+                    Text(outcomeLabel)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(outcomeColor)
+                }
+
+            case .timer:
+                if let timer = entry.timerState, !timer.isCompleted {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(timer.endDate, style: .timer)
+                            .font(.system(.title2, design: .monospaced))
+                            .fontWeight(.bold)
+                            .foregroundColor(timer.isPaused ? .yellow : .green)
+                            .monospacedDigit()
+                        Text(timer.isPaused ? "PAUSED" : "TIMER")
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(timer.isPaused ? .yellow : .green)
+                    }
+                }
+
+            case .noFix, .placeholder:
+                Text("// No fix today")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.gray)
+                    .italic()
             }
         }
         .padding()
     }
 
-    private var completedView: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Image(systemName: outcomeIcon)
-                .font(.title2)
-                .foregroundColor(outcomeColor)
-
-            Text(outcomeLabel)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(outcomeColor)
-        }
-    }
-
-    private var activeFixView: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if let timer = entry.timerState, !timer.isCompleted {
-                timerView(timer)
-            } else {
-                Text("FIX PENDING")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.yellow)
-            }
-        }
-    }
-
-    private var noFixView: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("No fix today")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray)
-        }
-    }
-
-    @ViewBuilder
-    private func timerView(_ timer: SharedTimerState) -> some View {
-        if timer.isPaused {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("PAUSED")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(.yellow)
-
-                Text(formatTime(timer.remainingSeconds))
-                    .font(.system(.title2, design: .monospaced))
-                    .fontWeight(.bold)
-                    .foregroundColor(.yellow)
-            }
-        } else {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("TIMER")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(.green)
-
-                Text(timer.endDate, style: .timer)
-                    .font(.system(.title2, design: .monospaced))
-                    .fontWeight(.bold)
-                    .foregroundColor(.green)
-                    .monospacedDigit()
-            }
-        }
-    }
-
-    private var outcomeIcon: String {
+    private var outcomeSymbol: String {
         switch entry.outcome {
-        case "applied": return "checkmark.circle.fill"
-        case "skipped": return "arrow.right.circle.fill"
-        case "failed": return "xmark.circle.fill"
-        default: return "circle"
+        case "applied": return "+"
+        case "skipped": return "~"
+        case "failed": return "x"
+        default: return "·"
         }
     }
 
@@ -238,34 +301,27 @@ struct SmallWidgetView: View {
 
     private var outcomeLabel: String {
         switch entry.outcome {
-        case "applied": return "APPLIED"
-        case "skipped": return "SKIPPED"
-        case "failed": return "FAILED"
-        default: return "PENDING"
+        case "applied": return "// System stable."
+        case "skipped": return "// No judgment."
+        case "failed": return "// Bug won. Data logged."
+        default: return "// Logged."
         }
-    }
-
-    private func formatTime(_ seconds: Int) -> String {
-        let mins = seconds / 60
-        let secs = seconds % 60
-        return String(format: "%02d:%02d", mins, secs)
     }
 }
 
-// MARK: - Medium Widget
+// MARK: - Medium Widget (4 mission states)
 
 struct MediumWidgetView: View {
     let entry: EgoFixEntry
 
     var body: some View {
-        HStack(spacing: 16) {
-            // Left side: Fix info
-            VStack(alignment: .leading, spacing: 8) {
+        HStack(spacing: 12) {
+            // Left side
+            VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text("EGOFIX")
                         .font(.system(.caption2, design: .monospaced))
                         .foregroundColor(.green)
-
                     if let number = entry.fixNumber {
                         Text("#\(number)")
                             .font(.system(.caption2, design: .monospaced))
@@ -273,12 +329,67 @@ struct MediumWidgetView: View {
                     }
                 }
 
-                if let prompt = entry.fixPrompt {
-                    Text(prompt)
+                switch entry.displayState {
+                case .waiting:
+                    if let slug = entry.bugSlug {
+                        Text(slug)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.white)
+                    }
+                    if let type = entry.typeLabel {
+                        Text(type)
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(.gray)
+                    }
+                    Text("// Mission waiting.")
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.gray)
+                        .italic()
+
+                case .active:
+                    if let prompt = entry.fixPrompt {
+                        Text(prompt)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.white)
+                            .lineLimit(3)
+                    }
+                    if let comment = entry.inlineComment {
+                        Text("// \(comment)")
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                            .italic()
+                    }
+
+                case .checkIn:
+                    if let prompt = entry.fixPrompt {
+                        Text(prompt)
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundColor(.gray)
+                            .lineLimit(2)
+                    }
+                    Text("Time to check in.")
                         .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.white)
-                        .lineLimit(3)
-                } else {
+                        .foregroundColor(.yellow)
+
+                case .done:
+                    Text(outcomeLabel)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(outcomeColor)
+                    Text(statusLine)
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.gray)
+                        .italic()
+
+                case .timer:
+                    if let prompt = entry.fixPrompt {
+                        Text(prompt)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.white)
+                            .lineLimit(3)
+                    }
+
+                case .noFix, .placeholder:
                     Text("No fix assigned today")
                         .font(.system(.caption, design: .monospaced))
                         .foregroundColor(.gray)
@@ -289,20 +400,30 @@ struct MediumWidgetView: View {
 
             Spacer()
 
-            // Right side: Status
-            VStack(alignment: .trailing, spacing: 8) {
-                if entry.isCompleted {
-                    statusBadge
-                } else if let timer = entry.timerState, !timer.isCompleted {
-                    timerDisplay(timer)
-                } else if entry.hasActiveFix {
-                    Text("PENDING")
+            // Right side: countdown or status
+            VStack(alignment: .trailing, spacing: 4) {
+                if entry.displayState == .active, let endDate = entry.missionEndDate {
+                    Text(endDate, style: .relative)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(.green)
+                        .monospacedDigit()
+                    Text("remaining")
                         .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(.yellow)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.yellow.opacity(0.2))
-                        .cornerRadius(4)
+                        .foregroundColor(.gray)
+                } else if entry.displayState == .timer, let timer = entry.timerState, !timer.isCompleted {
+                    Text(timer.endDate, style: .timer)
+                        .font(.system(.title3, design: .monospaced))
+                        .fontWeight(.bold)
+                        .foregroundColor(timer.isPaused ? .yellow : .green)
+                        .monospacedDigit()
+                } else if entry.displayState == .done {
+                    Text(outcomeSymbol)
+                        .font(.title)
+                        .foregroundColor(outcomeColor)
+                } else if entry.displayState == .waiting {
+                    Text(severityDots)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundColor(severityColor)
                 }
 
                 Spacer()
@@ -311,52 +432,12 @@ struct MediumWidgetView: View {
         .padding()
     }
 
-    private var statusBadge: some View {
-        HStack(spacing: 4) {
-            Image(systemName: outcomeIcon)
-                .font(.caption2)
-            Text(outcomeLabel)
-                .font(.system(.caption2, design: .monospaced))
-        }
-        .foregroundColor(outcomeColor)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(outcomeColor.opacity(0.2))
-        .cornerRadius(4)
-    }
-
-    @ViewBuilder
-    private func timerDisplay(_ timer: SharedTimerState) -> some View {
-        VStack(alignment: .trailing, spacing: 4) {
-            if timer.isPaused {
-                Text("PAUSED")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(.yellow)
-
-                Text(formatTime(timer.remainingSeconds))
-                    .font(.system(.title3, design: .monospaced))
-                    .fontWeight(.bold)
-                    .foregroundColor(.yellow)
-            } else {
-                Text("TIMER")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(.green)
-
-                Text(timer.endDate, style: .timer)
-                    .font(.system(.title3, design: .monospaced))
-                    .fontWeight(.bold)
-                    .foregroundColor(.green)
-                    .monospacedDigit()
-            }
-        }
-    }
-
-    private var outcomeIcon: String {
+    private var outcomeSymbol: String {
         switch entry.outcome {
-        case "applied": return "checkmark.circle.fill"
-        case "skipped": return "arrow.right.circle.fill"
-        case "failed": return "xmark.circle.fill"
-        default: return "circle"
+        case "applied": return "+"
+        case "skipped": return "~"
+        case "failed": return "x"
+        default: return "·"
         }
     }
 
@@ -371,17 +452,38 @@ struct MediumWidgetView: View {
 
     private var outcomeLabel: String {
         switch entry.outcome {
-        case "applied": return "APPLIED"
-        case "skipped": return "SKIPPED"
-        case "failed": return "FAILED"
-        default: return "PENDING"
+        case "applied": return "+ applied"
+        case "skipped": return "~ didn't try"
+        case "failed": return "x tried, couldn't"
+        default: return "· pending"
         }
     }
 
-    private func formatTime(_ seconds: Int) -> String {
-        let mins = seconds / 60
-        let secs = seconds % 60
-        return String(format: "%02d:%02d", mins, secs)
+    private var statusLine: String {
+        switch entry.outcome {
+        case "applied": return "// System stable."
+        case "skipped": return "// No judgment."
+        case "failed": return "// Bug won. Data logged."
+        default: return "// Logged."
+        }
+    }
+
+    private var severityDots: String {
+        switch entry.severity {
+        case "low": return "█░░"
+        case "medium": return "██░"
+        case "high": return "███"
+        default: return "░░░"
+        }
+    }
+
+    private var severityColor: Color {
+        switch entry.severity {
+        case "low": return .green
+        case "medium": return .yellow
+        case "high": return .red
+        default: return .gray
+        }
     }
 }
 
@@ -399,32 +501,47 @@ struct RectangularLockScreenView: View {
 
                 Spacer()
 
-                if let timer = entry.timerState, !timer.isCompleted && !timer.isPaused {
+                if entry.displayState == .active, let endDate = entry.missionEndDate {
+                    Text(endDate, style: .relative)
+                        .font(.system(.caption2, design: .monospaced))
+                        .monospacedDigit()
+                } else if entry.displayState == .timer,
+                          let timer = entry.timerState, !timer.isCompleted && !timer.isPaused {
                     Text(timer.endDate, style: .timer)
                         .font(.system(.caption, design: .monospaced))
                         .monospacedDigit()
                 }
             }
 
-            if entry.isCompleted {
-                Text(outcomeLabel)
-                    .font(.system(.caption, design: .monospaced))
-            } else if let prompt = entry.fixPrompt {
-                Text(prompt)
+            switch entry.displayState {
+            case .waiting:
+                Text(entry.typeLabel ?? "Mission waiting")
                     .font(.system(.caption2, design: .monospaced))
-                    .lineLimit(2)
-            } else {
+                    .lineLimit(1)
+            case .active:
+                if let prompt = entry.fixPrompt {
+                    Text(prompt)
+                        .font(.system(.caption2, design: .monospaced))
+                        .lineLimit(2)
+                }
+            case .checkIn:
+                Text("Time to check in")
+                    .font(.system(.caption2, design: .monospaced))
+            case .done:
+                Text(doneLabel)
+                    .font(.system(.caption, design: .monospaced))
+            default:
                 Text("No fix today")
                     .font(.system(.caption2, design: .monospaced))
             }
         }
     }
 
-    private var outcomeLabel: String {
+    private var doneLabel: String {
         switch entry.outcome {
-        case "applied": return "✓ Applied"
-        case "skipped": return "→ Skipped"
-        case "failed": return "✗ Failed"
+        case "applied": return "+ Applied"
+        case "skipped": return "~ Skipped"
+        case "failed": return "x Failed"
         default: return "Pending"
         }
     }
@@ -437,23 +554,45 @@ struct CircularLockScreenView: View {
 
     var body: some View {
         ZStack {
-            if let timer = entry.timerState, !timer.isCompleted {
-                // Show timer progress
-                Gauge(value: timer.progress) {
-                    Text("FIX")
-                        .font(.system(.caption2, design: .monospaced))
-                }
-                .gaugeStyle(.accessoryCircular)
-            } else if entry.isCompleted {
-                // Show outcome
-                Image(systemName: outcomeIcon)
-                    .font(.title2)
-            } else if entry.hasActiveFix {
-                // Show pending indicator
+            switch entry.displayState {
+            case .waiting:
                 Image(systemName: "terminal")
                     .font(.title2)
-            } else {
-                // No fix
+
+            case .active:
+                if let endDate = entry.missionEndDate {
+                    // Mission countdown gauge
+                    let total = max(1, endDate.timeIntervalSince(entry.date.addingTimeInterval(-12 * 3600)))
+                    let remaining = max(0, endDate.timeIntervalSince(Date()))
+                    let progress = 1.0 - (remaining / total)
+                    Gauge(value: min(1, progress)) {
+                        Text("FIX")
+                            .font(.system(.caption2, design: .monospaced))
+                    }
+                    .gaugeStyle(.accessoryCircular)
+                } else {
+                    Image(systemName: "terminal.fill")
+                        .font(.title2)
+                }
+
+            case .checkIn:
+                Image(systemName: "exclamationmark.circle")
+                    .font(.title2)
+
+            case .done:
+                Image(systemName: outcomeIcon)
+                    .font(.title2)
+
+            case .timer:
+                if let timer = entry.timerState, !timer.isCompleted {
+                    Gauge(value: timer.progress) {
+                        Text("FIX")
+                            .font(.system(.caption2, design: .monospaced))
+                    }
+                    .gaugeStyle(.accessoryCircular)
+                }
+
+            case .noFix, .placeholder:
                 Image(systemName: "moon.zzz")
                     .font(.title2)
             }
@@ -472,27 +611,32 @@ struct CircularLockScreenView: View {
 
 // MARK: - Preview
 
-#Preview(as: .systemSmall) {
+#Preview(as: .systemMedium) {
     EgoFixWidget()
 } timeline: {
     EgoFixEntry(
         date: Date(),
-        fixPrompt: "Let someone finish their point before responding.",
-        fixNumber: "1234",
-        outcome: "pending",
-        timerState: SharedTimerState(
-            endDate: Date().addingTimeInterval(300),
-            isPaused: false,
-            isCompleted: false,
-            durationSeconds: 600,
-            remainingSeconds: 300
-        )
+        fixNumber: "0042",
+        missionState: "waiting",
+        bugSlug: "need-to-be-right",
+        typeLabel: "Something to notice",
+        severity: "medium"
     )
     EgoFixEntry(
         date: Date(),
-        fixPrompt: "Notice when you compare yourself to others.",
-        fixNumber: "5678",
+        fixPrompt: "Let someone finish a point you disagree with. Count to 5 before responding.",
+        fixNumber: "0042",
+        outcome: "pending",
+        missionState: "active",
+        bugSlug: "need-to-be-right",
+        missionEndDate: Date().addingTimeInterval(6 * 3600),
+        inlineComment: "The pause is the practice."
+    )
+    EgoFixEntry(
+        date: Date(),
+        fixPrompt: "Let someone finish a point you disagree with.",
+        fixNumber: "0042",
         outcome: "applied",
-        timerState: nil
+        missionState: "done"
     )
 }

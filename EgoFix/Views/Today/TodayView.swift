@@ -6,6 +6,7 @@ struct TodayView: View {
     @State private var shareContent: ShareContent?
     @State private var showCrash = false
     @State private var navigationPath = NavigationPath()
+    @State private var showPostOutcomeDeepDive = false
     let makeCrashViewModel: (() -> CrashViewModel)?
     let makeHistoryViewModel: (() -> HistoryViewModel)?
     let makePatternsViewModel: (() -> PatternsViewModel)?
@@ -154,8 +155,7 @@ struct TodayView: View {
         case .loading: return "LOADING"
         case .diagnostic, .diagnosticComplete: return "WEEKLY_DIAGNOSTIC"
         case .noFix: return "NO_FIX"
-        case .fixBriefing: return "TODAY'S_FIX"
-        case .fixEducation: return "FIX_ACCEPTED"
+        case .fixBriefing: return "MISSION_BRIEFING"
         case .fixActive: return "FIX_ACTIVE"
         case .checkIn: return "FIX_REPORT"
         case .fixAvailable: return "FIX_AVAILABLE"
@@ -174,7 +174,7 @@ struct TodayView: View {
 
     private var showCrashButton: Bool {
         switch viewModel.state {
-        case .fixBriefing, .fixActive, .checkIn: return true
+        case .fixBriefing, .checkIn: return true
         default: return false
         }
     }
@@ -210,8 +210,7 @@ struct TodayView: View {
 
     private var statusBadgeText: String {
         switch viewModel.state {
-        case .fixBriefing: return "PENDING"
-        case .fixEducation: return "ACCEPTED"
+        case .fixBriefing: return "BRIEFING"
         case .fixActive: return "ACTIVE"
         case .checkIn: return "REPORTING"
         case .completed(let outcome, _):
@@ -229,7 +228,7 @@ struct TodayView: View {
     private var statusBadgeColor: Color {
         switch viewModel.state {
         case .fixBriefing, .checkIn: return EgoTheme.amber
-        case .fixEducation, .fixActive: return EgoTheme.green
+        case .fixActive: return EgoTheme.green
         case .completed(let outcome, _):
             switch outcome {
             case .applied: return EgoTheme.green
@@ -325,27 +324,26 @@ struct TodayView: View {
             FixBriefingView(
                 fix: fix,
                 bugTitle: viewModel.currentBugTitle,
+                bugSlug: viewModel.currentBugSlug,
+                fixNumber: String(format: "%04d", abs(fix.id.hashValue) % 10000),
+                version: viewModel.currentVersion,
+                isReturningFix: viewModel.isReturningFix,
                 onAccept: { Task { await viewModel.acceptFix() } },
                 onSkip: { Task { await viewModel.markOutcome(.skipped) } }
             )
             .transition(.move(edge: .bottom).combined(with: .opacity))
 
-        case .fixEducation(_, let fix, let education):
-            FixEducationView(
-                fix: fix,
-                bugTitle: viewModel.currentBugTitle,
-                educationBody: education,
-                onContinue: { viewModel.continuePastEducation() }
-            )
-            .transition(.opacity)
-
         case .fixActive(_, let fix):
             FixActiveView(
                 fix: fix,
                 bugTitle: viewModel.currentBugTitle,
-                acceptedAt: viewModel.fixAcceptedAt,
-                onCheckIn: { viewModel.beginCheckIn() },
-                onCrash: { showCrash = true }
+                missionEndDate: viewModel.missionEndDate,
+                educationTeaser: viewModel.educationTeaser,
+                educationDeepDive: viewModel.educationDeepDive,
+                interactionManager: viewModel.interactionManager,
+                onApplied: { Task { await viewModel.markOutcome(.applied) } },
+                onSkipped: { Task { await viewModel.markOutcome(.skipped) } },
+                onFailed: { Task { await viewModel.markOutcome(.failed) } }
             )
             .transition(.opacity)
 
@@ -371,30 +369,17 @@ struct TodayView: View {
             )
             .transition(.move(edge: .bottom).combined(with: .opacity))
 
-        case .completed(let outcome, let tidbit):
-            InlineCompletionView(
-                outcome: outcome,
-                educationTidbit: tidbit,
-                onAnimationComplete: {
-                    viewModel.transitionToDone()
-                }
-            )
-            .transition(.opacity)
+        case .completed:
+            // Legacy state — redirect to doneForToday
+            doneForTodayContent
+                .transition(.opacity)
+                .onAppear { viewModel.transitionToDone() }
 
-        case .debrief(let content):
-            DebriefView(
-                content: content,
-                onDismiss: { viewModel.dismissDebrief() },
-                onShare: {
-                    if let fix = viewModel.currentFix {
-                        var text = fix.prompt
-                        if let comment = fix.inlineComment { text += "\n\n// \(comment)" }
-                        text += "\n\n\u{2014} EgoFix"
-                        shareContent = ShareContent(text: text, fixId: fix.id)
-                    }
-                }
-            )
-            .transition(.opacity)
+        case .debrief:
+            // Legacy state — redirect to doneForToday
+            doneForTodayContent
+                .transition(.opacity)
+                .onAppear { viewModel.dismissDebrief() }
 
         case .doneForToday:
             doneForTodayContent
@@ -413,13 +398,107 @@ struct TodayView: View {
     // MARK: - Done-for-Today
 
     private var doneForTodayContent: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text(viewModel.doneStatusLine)
-                .font(EgoTheme.mono(.caption))
-                .foregroundColor(EgoTheme.textMuted)
+        VStack(alignment: .leading, spacing: 16) {
+            // Outcome header with education teaser
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(outcomeLabel(viewModel.lastOutcome))
+                        .font(EgoTheme.mono(.callout))
+                        .foregroundColor(outcomeColor(viewModel.lastOutcome))
 
+                    Spacer()
+
+                    Text("v\(viewModel.currentVersion)")
+                        .font(EgoTheme.mono(.caption2))
+                        .foregroundColor(EgoTheme.textMuted)
+                }
+
+                // Education teaser — the insight from today's fix
+                if let teaser = viewModel.educationTeaser {
+                    Text(teaser)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .lineSpacing(3)
+                        .padding(.top, 4)
+                }
+
+                // Expandable deep dive
+                if let deepDive = viewModel.educationDeepDive, !deepDive.isEmpty {
+                    Button(action: {
+                        withAnimation(.easeOut(duration: 0.25)) {
+                            showPostOutcomeDeepDive.toggle()
+                        }
+                    }) {
+                        Text(showPostOutcomeDeepDive ? "[ collapse ]" : "[ read more ]")
+                            .font(EgoTheme.mono(.caption2))
+                            .foregroundColor(EgoTheme.green.opacity(0.7))
+                    }
+                    .buttonStyle(.plain)
+
+                    if showPostOutcomeDeepDive {
+                        Text(deepDive)
+                            .font(EgoTheme.mono(.caption2))
+                            .foregroundColor(EgoTheme.textMuted.opacity(0.8))
+                            .fixedSize(horizontal: false, vertical: true)
+                            .lineSpacing(4)
+                            .padding(.top, 4)
+                            .transition(.opacity)
+                    }
+                }
+            }
+            .padding(16)
+            .glassCard()
+
+            // TODAY'S DATA card
+            VStack(alignment: .leading, spacing: 0) {
+                Text("TODAY'S DATA")
+                    .font(EgoTheme.label())
+                    .tracking(1.5)
+                    .foregroundColor(EgoTheme.textMuted)
+                    .padding(.bottom, 12)
+
+                if let fix = viewModel.currentFix {
+                    dataRow("Bug", value: viewModel.currentBugSlug ?? "—")
+                    dataRow("Type", value: fix.interactionType.typeLabel)
+                    dataRow("Streak", value: "\(viewModel.currentStreak) day\(viewModel.currentStreak == 1 ? "" : "s")")
+                }
+
+                // Pattern insight comment
+                if let summary = viewModel.weeklySummary {
+                    Rectangle()
+                        .fill(EgoTheme.borderSubtle)
+                        .frame(height: 0.5)
+                        .padding(.vertical, 10)
+                        .accessibilityHidden(true)
+
+                    Text(summary.comment)
+                        .font(EgoTheme.mono(.caption2))
+                        .foregroundColor(EgoTheme.textMuted)
+                        .italic()
+                }
+            }
+            .padding(16)
+            .glassCard()
+
+            // TOMORROW card
+            VStack(alignment: .leading, spacing: 0) {
+                Text("TOMORROW")
+                    .font(EgoTheme.label())
+                    .tracking(1.5)
+                    .foregroundColor(EgoTheme.textMuted)
+                    .padding(.bottom, 8)
+
+                Text("// Next fix assigned at \(viewModel.progressTracker?.morningNotificationTime ?? "08:00").")
+                    .font(EgoTheme.mono(.caption2))
+                    .foregroundColor(EgoTheme.textMuted)
+                    .italic()
+            }
+            .padding(16)
+            .glassCard()
+
+            // Weekly summary tiles (compact)
             if let summary = viewModel.weeklySummary {
-                // Bento summary tiles
                 HStack(spacing: 1) {
                     bentoTile(count: summary.applied, label: "APPLIED", color: EgoTheme.green)
                     bentoTile(count: summary.skipped, label: "SKIPPED", color: EgoTheme.amber)
@@ -428,19 +507,70 @@ struct TodayView: View {
                 .background(EgoTheme.borderSubtle)
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("Weekly summary: \(summary.applied) applied, \(summary.skipped) skipped, \(summary.failed) failed")
-
-                Text(summary.comment)
-                    .font(EgoTheme.label())
-                    .foregroundColor(EgoTheme.textMuted)
             }
+
+            // Debug log — always available from day 1
+            NavigationLink(destination: DebugLogView().terminalBackButton()) {
+                HStack {
+                    Text("DEBUG LOG")
+                        .font(EgoTheme.mono(.caption))
+                        .tracking(1.4)
+                        .foregroundColor(EgoTheme.green)
+                    Spacer()
+                    Text(">")
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.green)
+                }
+                .padding(.vertical, 10)
+                .padding(.horizontal, 16)
+                .background(EgoTheme.surface)
+                .overlay(Rectangle().stroke(EgoTheme.green.opacity(0.3), lineWidth: 1))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Open debug log")
+            .accessibilityHint("View collected education entries from past fixes")
 
             // Progressive footer links
             if progressTracker.isHistoryUnlocked || progressTracker.isPatternsUnlocked || progressTracker.isBugLibraryUnlocked {
                 FooterLinks(tracker: progressTracker) { destination in
                     navigationPath.append(destination)
                 }
-                .padding(.top, 8)
+                .padding(.top, 4)
             }
+
+        }
+    }
+
+    // MARK: - Done State Helpers
+
+    private func dataRow(_ label: String, value: String, color: Color = EgoTheme.textPrimary) -> some View {
+        HStack {
+            Text(label)
+                .font(EgoTheme.mono(.caption2))
+                .foregroundColor(EgoTheme.textMuted)
+                .frame(width: 70, alignment: .leading)
+            Text(value)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(color)
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func outcomeLabel(_ outcome: FixOutcome?) -> String {
+        switch outcome {
+        case .applied: return "+ applied"
+        case .skipped: return "~ didn't try"
+        case .failed: return "x tried, couldn't"
+        default: return "· pending"
+        }
+    }
+
+    private func outcomeColor(_ outcome: FixOutcome?) -> Color {
+        switch outcome {
+        case .applied: return EgoTheme.green
+        case .skipped: return EgoTheme.amber
+        case .failed: return .red
+        default: return EgoTheme.textMuted
         }
     }
 

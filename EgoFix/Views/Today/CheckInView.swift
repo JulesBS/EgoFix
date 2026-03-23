@@ -88,6 +88,8 @@ struct CheckInView: View {
 
     // MARK: - Standard / Reversal / Body
 
+    @State private var showDidntStep2 = false
+
     private var standardCheckIn: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("How'd it go?")
@@ -95,56 +97,96 @@ struct CheckInView: View {
                 .foregroundColor(EgoTheme.textPrimary)
                 .padding(.bottom, 4)
 
-            Button(action: onApplied) {
-                HStack {
-                    Spacer()
-                    Text("APPLIED")
-                        .font(EgoTheme.mono(.callout))
-                        .tracking(2)
-                        .foregroundColor(EgoTheme.green)
-                    Spacer()
+            if !showDidntStep2 {
+                // Step 1: Applied / Didn't
+                Button(action: onApplied) {
+                    HStack {
+                        Spacer()
+                        Text("APPLIED")
+                            .font(EgoTheme.mono(.callout))
+                            .tracking(2)
+                            .foregroundColor(EgoTheme.green)
+                        Spacer()
+                    }
+                    .padding(.vertical, 14)
+                    .background(EgoTheme.surface)
+                    .overlay(Rectangle().stroke(EgoTheme.green.opacity(0.4), lineWidth: 1))
                 }
-                .padding(.vertical, 14)
-                .background(EgoTheme.surface)
-                .overlay(Rectangle().stroke(EgoTheme.green.opacity(0.4), lineWidth: 1))
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Fix applied")
-            .accessibilityHint("Mark this fix as successfully applied")
+                .buttonStyle(.plain)
+                .accessibilityLabel("Fix applied")
 
-            Button(action: onFailed) {
-                HStack {
-                    Spacer()
-                    Text("TRIED, COULDN'T")
-                        .font(EgoTheme.mono(.callout))
-                        .tracking(1.4)
-                        .foregroundColor(.red.opacity(0.8))
-                    Spacer()
+                Button(action: {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        showDidntStep2 = true
+                    }
+                }) {
+                    HStack {
+                        Spacer()
+                        Text("DIDN'T")
+                            .font(EgoTheme.mono(.callout))
+                            .tracking(1.4)
+                            .foregroundColor(EgoTheme.textMuted)
+                        Spacer()
+                    }
+                    .padding(.vertical, 14)
+                    .background(EgoTheme.surface)
+                    .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
                 }
-                .padding(.vertical, 14)
-                .background(EgoTheme.surface)
-                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Fix failed")
-            .accessibilityHint("Mark this fix as tried but couldn't apply")
+                .buttonStyle(.plain)
+                .accessibilityLabel("Didn't apply fix")
+            } else {
+                // Step 2: Didn't try / Tried, couldn't
+                Text("// Both are data. Only one means the bug was active.")
+                    .font(EgoTheme.mono(.caption2))
+                    .foregroundColor(EgoTheme.textMuted)
+                    .italic()
+                    .padding(.bottom, 4)
 
-            Button(action: onSkipped) {
-                HStack {
-                    Spacer()
-                    Text("DIDN'T ATTEMPT")
-                        .font(EgoTheme.mono(.callout))
-                        .tracking(1.4)
+                Button(action: onSkipped) {
+                    HStack {
+                        Spacer()
+                        Text("DIDN'T TRY")
+                            .font(EgoTheme.mono(.callout))
+                            .tracking(1.4)
+                            .foregroundColor(EgoTheme.textMuted)
+                        Spacer()
+                    }
+                    .padding(.vertical, 14)
+                    .background(EgoTheme.surface)
+                    .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Didn't try")
+
+                Button(action: onFailed) {
+                    HStack {
+                        Spacer()
+                        Text("TRIED, COULDN'T")
+                            .font(EgoTheme.mono(.callout))
+                            .tracking(1.4)
+                            .foregroundColor(.red.opacity(0.8))
+                        Spacer()
+                    }
+                    .padding(.vertical, 14)
+                    .background(EgoTheme.surface)
+                    .overlay(Rectangle().stroke(.red.opacity(0.3), lineWidth: 1))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Tried but couldn't")
+
+                Button(action: {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        showDidntStep2 = false
+                    }
+                }) {
+                    Text("[ back ]")
+                        .font(EgoTheme.mono(.caption2))
                         .foregroundColor(EgoTheme.textMuted)
-                    Spacer()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
                 }
-                .padding(.vertical, 14)
-                .background(EgoTheme.surface)
-                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Fix skipped")
-            .accessibilityHint("Mark this fix as not attempted")
         }
     }
 
