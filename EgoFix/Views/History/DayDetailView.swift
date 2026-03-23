@@ -6,40 +6,41 @@ struct DayDetailView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 24) {
                 // Header
                 HStack {
                     Text(formattedDate)
-                        .font(.system(.headline, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono(.headline))
+                        .foregroundColor(EgoTheme.textPrimary)
 
                     Spacer()
 
                     Button(action: onDismiss) {
-                        Text("[ Close ]")
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(Color(white: 0.5))
+                        Image(systemName: "xmark")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(EgoTheme.textMuted)
                     }
                 }
 
                 Divider()
-                    .background(Color(white: 0.2))
+                    .background(EgoTheme.borderSubtle)
 
                 // Activity breakdown
                 VStack(alignment: .leading, spacing: 16) {
                     Text("ACTIVITY")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.4))
+                        .font(EgoTheme.label())
+                        .tracking(1.5)
+                        .foregroundColor(EgoTheme.textMuted)
 
-                    activityRow(label: "Applied", count: day.fixesApplied, color: .green)
-                    activityRow(label: "Skipped", count: day.fixesSkipped, color: .yellow)
+                    activityRow(label: "Applied", count: day.fixesApplied, color: EgoTheme.green)
+                    activityRow(label: "Skipped", count: day.fixesSkipped, color: EgoTheme.amber)
                     activityRow(label: "Failed", count: day.fixesFailed, color: .red)
 
                     if day.crashes > 0 {
                         Divider()
-                            .background(Color(white: 0.2))
+                            .background(EgoTheme.borderSubtle)
                         activityRow(label: "Crashes", count: day.crashes, color: .red)
                     }
                 }
@@ -48,8 +49,8 @@ struct DayDetailView: View {
 
                 // Summary
                 Text("// Total: \(day.totalActivity) events")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
             }
             .padding(24)
         }
@@ -65,15 +66,15 @@ struct DayDetailView: View {
     private func activityRow(label: String, count: Int, color: Color) -> some View {
         HStack {
             Text(label)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(Color(white: 0.6))
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
 
             Spacer()
 
             Text("\(count)")
-                .font(.system(.body, design: .monospaced))
+                .font(EgoTheme.mono())
                 .fontWeight(.medium)
-                .foregroundColor(count > 0 ? color : Color(white: 0.3))
+                .foregroundColor(count > 0 ? color : EgoTheme.textMuted)
         }
     }
 }

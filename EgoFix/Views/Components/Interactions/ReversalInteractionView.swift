@@ -8,36 +8,36 @@ struct ReversalInteractionView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("REVERSAL")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.purple)
                 Spacer()
                 Text("Do the opposite")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             Text(fix.prompt)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineSpacing(4)
 
             Text(fix.validation)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.6))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textPrimary)
 
             if let comment = fix.inlineComment {
                 Text("// \(comment)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .italic()
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(white: 0.15), lineWidth: 1)
+                .stroke(EgoTheme.border, lineWidth: 1)
         )
     }
 }

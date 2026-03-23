@@ -13,21 +13,21 @@ struct CounterInteractionView: View {
             // Header
             HStack {
                 Text("COUNTER")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green)
 
                 Spacer()
 
                 Text("Today")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             // Counter prompt
             if let prompt = config?.counterPrompt {
                 Text(prompt)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.white)
+                    .font(EgoTheme.mono())
+                    .foregroundColor(EgoTheme.textPrimary)
                     .lineSpacing(4)
             }
 
@@ -79,8 +79,8 @@ struct CounterInteractionView: View {
                         }
                     }) {
                         Text("[ - ]")
-                            .font(.system(.subheadline, design: .monospaced))
-                            .foregroundColor(Color(white: 0.5))
+                            .font(EgoTheme.mono(.callout))
+                            .foregroundColor(EgoTheme.textMuted)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 6)
                     }
@@ -92,18 +92,18 @@ struct CounterInteractionView: View {
 
             // Event count comment
             Text("// \(eventCountLabel)")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.35))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
 
             // Target indicator (if set)
             if let targetLabel = targetLabel {
                 Text("// Target: \(targetLabel)")
-                    .font(.system(.caption, design: .monospaced))
+                    .font(EgoTheme.mono(.caption))
                     .foregroundColor(targetColor)
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -130,7 +130,7 @@ struct CounterInteractionView: View {
 
         // Check if below min target
         if let min = config.minTarget, interactionManager.counterValue < min {
-            return Color(white: 0.5)
+            return EgoTheme.textMuted
         }
 
         // Check if above max target (warning)
@@ -156,14 +156,14 @@ struct CounterInteractionView: View {
     }
 
     private var targetColor: Color {
-        interactionManager.counterMeetsTarget ? Color(white: 0.35) : .yellow
+        interactionManager.counterMeetsTarget ? EgoTheme.textMuted : .yellow
     }
 
     private var borderColor: Color {
         if interactionManager.counterValue > 0 {
             return .green.opacity(0.3)
         }
-        return Color(white: 0.15)
+        return EgoTheme.surface
     }
 }
 

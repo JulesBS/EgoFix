@@ -17,27 +17,27 @@ struct QuizInteractionView: View {
             // Header
             HStack {
                 Text("ASSESSMENT")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green)
 
                 Spacer()
 
                 if interactionManager.quizAnswered {
                     Text("Submitted")
-                        .font(.system(.caption2, design: .monospaced))
+                        .font(EgoTheme.label())
                         .foregroundColor(.green)
                 } else {
                     Text("Select one")
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .font(EgoTheme.label())
+                        .foregroundColor(EgoTheme.textMuted)
                 }
             }
 
             // Question
             if let question = config?.question {
                 Text(question)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.white)
+                    .font(EgoTheme.mono())
+                    .foregroundColor(EgoTheme.textPrimary)
                     .lineSpacing(4)
             }
 
@@ -55,8 +55,8 @@ struct QuizInteractionView: View {
             if interactionManager.quizAnswered {
                 if let insight = interactionManager.selectedQuizInsight {
                     Text("// \(insight)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.35))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .italic()
                         .padding(.top, 4)
                         .transition(.opacity)
@@ -65,15 +65,15 @@ struct QuizInteractionView: View {
                 // General explanation
                 if let explanation = config?.explanationAfter {
                     Text("// \(explanation)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.35))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .padding(.top, 2)
                         .transition(.opacity)
                 }
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -97,13 +97,13 @@ struct QuizInteractionView: View {
             HStack(alignment: .top, spacing: 8) {
                 // Selection indicator
                 Text(isSelected ? ">" : " ")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(isSelected ? .green : Color(white: 0.3))
+                    .font(EgoTheme.mono())
+                    .foregroundColor(isSelected ? .green : EgoTheme.textMuted)
                     .frame(width: 12)
 
                 // Option text
                 Text(option.text)
-                    .font(.system(.body, design: .monospaced))
+                    .font(EgoTheme.mono())
                     .foregroundColor(optionTextColor(isSelected: isSelected, isDisabled: isDisabled))
                     .multilineTextAlignment(.leading)
 
@@ -122,11 +122,11 @@ struct QuizInteractionView: View {
 
     private func optionTextColor(isSelected: Bool, isDisabled: Bool) -> Color {
         if isDisabled {
-            return Color(white: 0.3)
+            return EgoTheme.textMuted
         } else if isSelected {
             return .white
         }
-        return Color(white: 0.6)
+        return EgoTheme.textPrimary
     }
 
     private var borderColor: Color {
@@ -135,7 +135,7 @@ struct QuizInteractionView: View {
         } else if interactionManager.selectedOptionId != nil {
             return .green.opacity(0.3)
         }
-        return Color(white: 0.15)
+        return EgoTheme.surface
     }
 }
 

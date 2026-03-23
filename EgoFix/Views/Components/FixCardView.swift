@@ -16,8 +16,8 @@ struct FixCardView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .top) {
                     Text("FIX #\(fixNumber)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
 
                     Spacer()
 
@@ -30,8 +30,8 @@ struct FixCardView: View {
                 // Bug nickname + severity as comment
                 if let bugTitle = bugTitle {
                     Text("// \(bugTitle) \u{00B7} \(severityLabel)")
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(.gray.opacity(0.6))
+                        .font(EgoTheme.label())
+                        .foregroundColor(EgoTheme.textMuted)
                 }
             }
             .padding(.bottom, 24)
@@ -42,8 +42,8 @@ struct FixCardView: View {
                     // Prompt (only for standard type, others show in interaction view)
                     if fix.interactionType == .standard {
                         Text(fix.prompt)
-                            .font(.system(.title3, design: .monospaced))
-                            .foregroundColor(.white)
+                            .font(EgoTheme.mono(.title3))
+                            .foregroundColor(EgoTheme.textPrimary)
                             .lineSpacing(6)
                             .padding(.bottom, 16)
                     }
@@ -57,8 +57,8 @@ struct FixCardView: View {
                     // Inline comment — always visible
                     if let comment = fix.inlineComment {
                         Text("// \(comment)")
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(Color(white: 0.35))
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textMuted)
                             .italic()
                             .lineSpacing(4)
                             .padding(.bottom, 16)
@@ -71,8 +71,8 @@ struct FixCardView: View {
             // Completion requirement
             if !interactionManager.canMarkApplied && !completionRequirementText.isEmpty {
                 Text("// \(completionRequirementText)")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
                     .padding(.bottom, 16)
             }
 
@@ -80,7 +80,7 @@ struct FixCardView: View {
             HStack(spacing: 16) {
                 ActionButton(
                     label: "Apply",
-                    color: interactionManager.canMarkApplied ? .green : Color(white: 0.3),
+                    color: interactionManager.canMarkApplied ? .green : EgoTheme.textMuted,
                     isDisabled: !interactionManager.canMarkApplied,
                     action: onApplied
                 )
@@ -142,8 +142,8 @@ struct ActionButton: View {
             action()
         }) {
             Text("[ \(label) ]")
-                .font(.system(.subheadline, design: .monospaced))
-                .foregroundColor(isPressed && !isDisabled ? .black : (isDisabled ? Color(white: 0.3) : color))
+                .font(EgoTheme.mono(.callout))
+                .foregroundColor(isPressed && !isDisabled ? .black : (isDisabled ? EgoTheme.textMuted : color))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .background(isPressed && !isDisabled ? color : Color.clear)

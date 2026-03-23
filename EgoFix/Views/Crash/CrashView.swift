@@ -11,7 +11,7 @@ struct CrashView: View {
     var body: some View {
         ZStack {
             // Red-tinted black background
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
             Color.red.opacity(0.03).ignoresSafeArea()
 
             switch viewModel.state {
@@ -69,15 +69,15 @@ struct CrashBugSelectView: View {
         VStack(alignment: .leading, spacing: 24) {
             HStack {
                 Text("CRASH")
-                    .font(.system(.headline, design: .monospaced))
+                    .font(EgoTheme.mono(.headline))
                     .foregroundColor(.red)
 
                 Spacer()
 
                 Button(action: onCancel) {
-                    Text("[ x ]")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray)
+                    Image(systemName: "xmark")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(EgoTheme.textMuted)
                 }
             }
 
@@ -86,8 +86,8 @@ struct CrashBugSelectView: View {
                 HStack {
                     Spacer()
                     Text("> loading...")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                     Spacer()
                 }
                 Spacer()
@@ -98,15 +98,15 @@ struct CrashBugSelectView: View {
                             Button(action: { onSelectBug(bug) }) {
                                 HStack {
                                     Text(bug.nickname)
-                                        .foregroundColor(.white)
+                                        .foregroundColor(EgoTheme.textPrimary)
                                     Spacer()
                                     Text(">")
-                                        .foregroundColor(.gray.opacity(0.4))
+                                        .foregroundColor(EgoTheme.textMuted)
                                 }
-                                .font(.system(.body, design: .monospaced))
+                                .font(EgoTheme.mono())
                                 .padding(.vertical, 12)
                                 .padding(.horizontal, 8)
-                                .background(Color(white: 0.08))
+                                .background(EgoTheme.surface)
                                 .cornerRadius(2)
                             }
                             .opacity(index < visibleBugCount ? 1 : 0)
@@ -116,12 +116,12 @@ struct CrashBugSelectView: View {
                 }
 
                 TextField("// optional note", text: $note)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.gray)
+                    .font(EgoTheme.mono())
+                    .foregroundColor(EgoTheme.textMuted)
                     .textFieldStyle(.plain)
                     .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(4)
+                    .background(EgoTheme.surface)
+                    .cornerRadius(2)
 
                 Spacer()
             }
@@ -166,7 +166,7 @@ struct CrashLoggedView: View {
                 Spacer()
 
                 Text("LOGGED.")
-                    .font(.system(.title2, design: .monospaced))
+                    .font(EgoTheme.mono(.title2))
                     .foregroundColor(.red)
 
                 // Soul appears instantly at loud intensity
@@ -177,8 +177,8 @@ struct CrashLoggedView: View {
 
                 if showContent {
                     Text(message)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.35))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
                 }
@@ -187,33 +187,31 @@ struct CrashLoggedView: View {
 
                 // Quick fix display
                 if showContent, let fix = quickFix {
-                    VStack(spacing: 8) {
-                        Text("QUICK FIX")
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.yellow)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("QUICK_FIX")
+                            .font(EgoTheme.label())
+                            .tracking(1.5)
+                            .foregroundColor(EgoTheme.amber)
 
                         Text(fix.prompt)
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 16)
+                            .font(EgoTheme.mono())
+                            .foregroundColor(EgoTheme.textPrimary)
 
                         if let comment = fix.inlineComment {
                             Text("// \(comment)")
-                                .font(.system(.caption, design: .monospaced))
-                                .foregroundColor(Color(white: 0.35))
+                                .font(EgoTheme.mono(.caption))
+                                .foregroundColor(EgoTheme.textMuted)
                         }
                     }
-                    .padding(.bottom, 16)
+                    .padding(20)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .glassCard()
+                    .padding(.horizontal, 8)
                 }
 
                 if showContent {
-                    Button(action: onDone) {
-                        Text("[ Done ]")
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.gray)
-                            .padding()
-                    }
+                    FigmaSecondaryButton(label: "DONE", action: onDone)
+                        .padding(.horizontal, 8)
                 }
             }
             .padding()

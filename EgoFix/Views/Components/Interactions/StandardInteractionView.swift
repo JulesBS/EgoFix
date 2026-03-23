@@ -11,20 +11,20 @@ struct StandardInteractionView: View {
             // Header
             HStack {
                 Text("STANDARD")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green)
 
                 Spacer()
 
                 Text("Ready")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             // Prompt display
             Text(fix.prompt)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineSpacing(4)
 
             // Validation toggle
@@ -36,12 +36,12 @@ struct StandardInteractionView: View {
                 }) {
                     HStack(spacing: 6) {
                         Text(showValidation ? "v" : ">")
-                            .font(.system(.caption2, design: .monospaced))
+                            .font(EgoTheme.label())
                             .foregroundColor(.green)
                             .frame(width: 12)
 
                         Text("VALIDATION")
-                            .font(.system(.caption2, design: .monospaced))
+                            .font(EgoTheme.label())
                             .foregroundColor(.green)
                     }
                 }
@@ -49,8 +49,8 @@ struct StandardInteractionView: View {
 
                 if showValidation {
                     Text(fix.validation)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .lineSpacing(4)
                         .padding(.leading, 18)
                         .padding(.top, 4)
@@ -61,17 +61,17 @@ struct StandardInteractionView: View {
             // Inline comment
             if let comment = fix.inlineComment {
                 Text("// \(comment)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .italic()
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(white: 0.15), lineWidth: 1)
+                .stroke(EgoTheme.border, lineWidth: 1)
         )
     }
 }

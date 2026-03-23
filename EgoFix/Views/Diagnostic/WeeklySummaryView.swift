@@ -8,14 +8,14 @@ struct WeeklySummaryView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             VStack(spacing: 32) {
                 Spacer()
 
                 Text("WEEKLY SUMMARY")
-                    .font(.system(.headline, design: .monospaced))
-                    .foregroundColor(.white)
+                    .font(EgoTheme.mono(.headline))
+                    .foregroundColor(EgoTheme.textPrimary)
                     .opacity(appeared ? 1 : 0)
 
                 // Stats grid
@@ -29,8 +29,8 @@ struct WeeklySummaryView: View {
 
                 // Comment
                 Text(summary.comment)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.6))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                     .opacity(appeared ? 1 : 0)
@@ -38,9 +38,9 @@ struct WeeklySummaryView: View {
                 Spacer()
 
                 Button(action: onDismiss) {
-                    Text("[ Continue ]")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.gray)
+                    Text("CONTINUE")
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textMuted)
                         .padding()
                 }
                 .opacity(appeared ? 1 : 0)
@@ -57,16 +57,16 @@ struct WeeklySummaryView: View {
     private func statBlock(label: String, value: Int, color: Color) -> some View {
         VStack(spacing: 8) {
             Text("\(value)")
-                .font(.system(.largeTitle, design: .monospaced))
+                .font(EgoTheme.mono(.largeTitle))
                 .foregroundColor(color)
 
             Text(label)
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.label())
+                .foregroundColor(EgoTheme.textMuted)
         }
         .frame(width: 80)
         .padding(.vertical, 16)
         .background(color.opacity(0.1))
-        .cornerRadius(4)
+        .cornerRadius(2)
     }
 }

@@ -8,49 +8,49 @@ struct SubstituteInteractionView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("SUBSTITUTE")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.orange)
                 Spacer()
                 Text("Replace the pattern")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             Text(fix.prompt)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineSpacing(4)
 
             if let config = fix.substituteConfig {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("WHEN: \(config.triggerBehavior)")
-                        .font(.system(.caption, design: .monospaced))
+                        .font(EgoTheme.mono(.caption))
                         .foregroundColor(.red)
                     Text("DO: \(config.replacementBehavior)")
-                        .font(.system(.caption, design: .monospaced))
+                        .font(EgoTheme.mono(.caption))
                         .foregroundColor(.green)
                 }
                 .padding(8)
-                .background(Color(white: 0.08))
+                .background(EgoTheme.surface)
                 .cornerRadius(2)
 
                 HStack(spacing: 16) {
                     VStack {
                         Text("\(interactionManager.substituteCount)")
-                            .font(.system(.title2, design: .monospaced))
+                            .font(EgoTheme.mono(.title2))
                             .foregroundColor(.green)
                         Text("substituted")
-                            .font(.system(.caption2, design: .monospaced))
-                            .foregroundColor(Color(white: 0.5))
+                            .font(EgoTheme.label())
+                            .foregroundColor(EgoTheme.textMuted)
                     }
 
                     VStack {
                         Text("\(interactionManager.urgeCount)")
-                            .font(.system(.title2, design: .monospaced))
+                            .font(EgoTheme.mono(.title2))
                             .foregroundColor(.orange)
                         Text("urges")
-                            .font(.system(.caption2, design: .monospaced))
-                            .foregroundColor(Color(white: 0.5))
+                            .font(EgoTheme.label())
+                            .foregroundColor(EgoTheme.textMuted)
                     }
                 }
 
@@ -58,7 +58,7 @@ struct SubstituteInteractionView: View {
                     Button("+urge") {
                         interactionManager.urgeCount += 1
                     }
-                    .font(.system(.caption, design: .monospaced))
+                    .font(EgoTheme.mono(.caption))
                     .foregroundColor(.orange)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -67,7 +67,7 @@ struct SubstituteInteractionView: View {
                     Button("+substituted") {
                         interactionManager.substituteCount += 1
                     }
-                    .font(.system(.caption, design: .monospaced))
+                    .font(EgoTheme.mono(.caption))
                     .foregroundColor(.green)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -77,17 +77,17 @@ struct SubstituteInteractionView: View {
 
             if let comment = fix.inlineComment {
                 Text("// \(comment)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .italic()
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(white: 0.15), lineWidth: 1)
+                .stroke(EgoTheme.border, lineWidth: 1)
         )
     }
 }

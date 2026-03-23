@@ -6,33 +6,33 @@ struct DocsView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("DOCS")
-                        .font(.system(.headline, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono(.headline))
+                        .foregroundColor(EgoTheme.textPrimary)
 
                     Text("// Pull-based education. Read when ready.")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray.opacity(0.6))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
 
                     Divider()
-                        .background(Color.gray.opacity(0.3))
+                        .background(EgoTheme.borderSubtle)
 
                     // Bug Library link
                     Button(action: { showBugLibrary = true }) {
                         HStack {
                             Text("BUG LIBRARY")
-                                .font(.system(.body, design: .monospaced))
+                                .font(EgoTheme.mono())
                                 .foregroundColor(.red)
 
                             Spacer()
 
                             Text(">")
-                                .font(.system(.body, design: .monospaced))
-                                .foregroundColor(.gray.opacity(0.4))
+                                .font(EgoTheme.mono())
+                                .foregroundColor(EgoTheme.textMuted)
                         }
                         .padding()
                         .background(Color.red.opacity(0.1))
@@ -40,11 +40,11 @@ struct DocsView: View {
                     }
 
                     Text("// View all 7 ego patterns and their lifecycle status")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray.opacity(0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
 
                     Divider()
-                        .background(Color.gray.opacity(0.3))
+                        .background(EgoTheme.borderSubtle)
 
                     DocSectionView(
                         title: "What is a Bug?",
@@ -87,12 +87,12 @@ struct DocSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.green)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.green)
 
             Text(content)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
         }
     }
 }

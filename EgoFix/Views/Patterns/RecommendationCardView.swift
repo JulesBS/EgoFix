@@ -8,32 +8,32 @@ struct RecommendationCardView: View {
             // Title with arrow indicator
             HStack(spacing: 8) {
                 Text("▶")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(.green)
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.green)
 
                 Text(recommendation.title.uppercased())
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(EgoTheme.mono(.callout))
                     .fontWeight(.medium)
-                    .foregroundColor(.white)
+                    .foregroundColor(EgoTheme.textPrimary)
             }
 
             // Description
             Text(recommendation.description)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.6))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineSpacing(4)
                 .padding(.leading, 18)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(white: 0.06))
-        .cornerRadius(4)
+        .background(EgoTheme.surface.opacity(0.3))
+        .cornerRadius(2)
     }
 }
 
 #Preview {
     ZStack {
-        Color.black.ignoresSafeArea()
+        EgoTheme.bg.ignoresSafeArea()
 
         VStack(spacing: 16) {
             RecommendationCardView(

@@ -10,7 +10,7 @@ struct WeeklyDiagnosticView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             if viewModel.isComplete {
                 DiagnosticCompleteView(onDismiss: { dismiss() })
@@ -43,9 +43,9 @@ struct WeeklyDiagnosticView: View {
                     Spacer()
 
                     Button(action: { Task { await viewModel.skip() }; dismiss() }) {
-                        Text("[ Skip ]")
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.gray.opacity(0.6))
+                        Text("SKIP")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textMuted)
                     }
                 }
                 .padding()
@@ -64,8 +64,8 @@ struct IntensityQuestionView: View {
     var body: some View {
         VStack(spacing: 24) {
             Text("This week, \"\(bug.title)\" felt...")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
                 .multilineTextAlignment(.center)
 
             VStack(spacing: 12) {
@@ -84,13 +84,13 @@ struct IntensityButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text("[ \(label) ]")
-                .font(.system(.body, design: .monospaced))
+            Text(label.uppercased())
+                .font(EgoTheme.mono())
                 .foregroundColor(color)
                 .padding()
                 .frame(maxWidth: .infinity)
                 .background(color.opacity(0.1))
-                .cornerRadius(4)
+                .cornerRadius(2)
         }
     }
 }
@@ -103,8 +103,8 @@ struct ContextQuestionView: View {
     var body: some View {
         VStack(spacing: 24) {
             Text("Where was it loudest?")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
 
             VStack(spacing: 8) {
                 ContextButton(label: "Work", action: { onSelect(.work) })
@@ -124,9 +124,9 @@ struct ContextButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text("[ \(label) ]")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.gray)
+            Text(label.uppercased())
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
                 .padding(.vertical, 8)
         }
     }
@@ -140,20 +140,20 @@ struct DiagnosticCompleteView: View {
             Spacer()
 
             Text("DIAGNOSTIC COMPLETE")
-                .font(.system(.headline, design: .monospaced))
-                .foregroundColor(.green)
+                .font(EgoTheme.mono(.headline))
+                .foregroundColor(EgoTheme.green)
 
             Text("Data logged. Patterns emerge over time.")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
                 .multilineTextAlignment(.center)
 
             Spacer()
 
             Button(action: onDismiss) {
-                Text("[ Continue ]")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.gray)
+                Text("CONTINUE")
+                    .font(EgoTheme.mono())
+                    .foregroundColor(EgoTheme.textMuted)
                     .padding()
             }
         }

@@ -9,13 +9,13 @@ struct TimedInteractionView: View {
             // Header
             HStack {
                 Text("TIMER")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green)
 
                 Spacer()
 
                 Text(interactionManager.formattedTime)
-                    .font(.system(.title2, design: .monospaced))
+                    .font(EgoTheme.mono(.title2))
                     .fontWeight(.bold)
                     .foregroundColor(timerColor)
                     .monospacedDigit()
@@ -23,7 +23,7 @@ struct TimedInteractionView: View {
 
             // Progress bar (ASCII style)
             Text(interactionManager.progressBarString)
-                .font(.system(.caption, design: .monospaced))
+                .font(EgoTheme.mono(.caption))
                 .foregroundColor(progressColor)
 
             // Control buttons
@@ -36,12 +36,12 @@ struct TimedInteractionView: View {
             // Inline comment for duration
             if let config = fix.timedConfig {
                 Text("// \(formatDuration(config.durationSeconds)) session")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -57,7 +57,7 @@ struct TimedInteractionView: View {
         case .idle:
             Button(action: { Task { await interactionManager.startTimer() } }) {
                 Text("[ Start ]")
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(EgoTheme.mono(.callout))
                     .foregroundColor(.green)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
@@ -69,7 +69,7 @@ struct TimedInteractionView: View {
         case .running:
             Button(action: { Task { await interactionManager.pauseTimer() } }) {
                 Text("[ Pause ]")
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(EgoTheme.mono(.callout))
                     .foregroundColor(.yellow)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
@@ -82,7 +82,7 @@ struct TimedInteractionView: View {
             HStack(spacing: 12) {
                 Button(action: { Task { await interactionManager.resumeTimer() } }) {
                     Text("[ Resume ]")
-                        .font(.system(.subheadline, design: .monospaced))
+                        .font(EgoTheme.mono(.callout))
                         .foregroundColor(.green)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -93,8 +93,8 @@ struct TimedInteractionView: View {
 
                 Button(action: { Task { await interactionManager.resetTimer() } }) {
                     Text("[ Reset ]")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                 }
@@ -106,7 +106,7 @@ struct TimedInteractionView: View {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.green)
                 Text("COMPLETE")
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(EgoTheme.mono(.callout))
                     .foregroundColor(.green)
             }
             .padding(.vertical, 8)
@@ -118,7 +118,7 @@ struct TimedInteractionView: View {
     private var timerColor: Color {
         switch interactionManager.timerStatus {
         case .idle:
-            return Color(white: 0.6)
+            return EgoTheme.textPrimary
         case .running:
             if interactionManager.remainingSeconds <= 10 {
                 return .red
@@ -134,7 +134,7 @@ struct TimedInteractionView: View {
     private var progressColor: Color {
         switch interactionManager.timerStatus {
         case .idle:
-            return Color(white: 0.3)
+            return EgoTheme.textMuted
         case .running:
             return .green.opacity(0.7)
         case .paused:
@@ -147,7 +147,7 @@ struct TimedInteractionView: View {
     private var borderColor: Color {
         switch interactionManager.timerStatus {
         case .idle:
-            return Color(white: 0.15)
+            return EgoTheme.surface
         case .running:
             return .green.opacity(0.3)
         case .paused:

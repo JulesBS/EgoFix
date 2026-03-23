@@ -8,29 +8,29 @@ struct AuditInteractionView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("AUDIT")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(.gray)
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
                 Spacer()
                 Text("End-of-day review")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             Text(fix.prompt)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineSpacing(4)
 
             if let config = fix.auditConfig {
                 Text(config.auditPrompt)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.6))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textPrimary)
 
                 ForEach(config.categories) { category in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(category.label.uppercased())
-                            .font(.system(.caption2, design: .monospaced))
-                            .foregroundColor(Color(white: 0.5))
+                            .font(EgoTheme.label())
+                            .foregroundColor(EgoTheme.textMuted)
 
                         let binding = Binding<String>(
                             get: { interactionManager.auditItems[category.id] ?? "" },
@@ -38,15 +38,15 @@ struct AuditInteractionView: View {
                         )
 
                         TextField("Note...", text: binding, axis: .vertical)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.white)
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textPrimary)
                             .lineLimit(1...3)
                             .padding(6)
-                            .background(Color(white: 0.08))
+                            .background(EgoTheme.surface)
                             .cornerRadius(2)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 2)
-                                    .stroke(Color(white: 0.2), lineWidth: 1)
+                                    .stroke(EgoTheme.border, lineWidth: 1)
                             )
                     }
                 }
@@ -54,17 +54,17 @@ struct AuditInteractionView: View {
 
             if let comment = fix.inlineComment {
                 Text("// \(comment)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .italic()
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(white: 0.15), lineWidth: 1)
+                .stroke(EgoTheme.border, lineWidth: 1)
         )
     }
 }

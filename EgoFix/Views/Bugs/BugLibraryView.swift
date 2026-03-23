@@ -11,18 +11,18 @@ struct BugLibraryView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.black.ignoresSafeArea()
+                EgoTheme.bg.ignoresSafeArea()
 
                 if viewModel.isLoading {
                     Text("> loading...")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
                             headerSection
                             statusSummary
-                            Divider().background(Color(white: 0.2))
+                            Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
                             bugList
                         }
                         .padding()
@@ -33,9 +33,11 @@ struct BugLibraryView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("BUG LIBRARY")
-                        .font(.system(.headline, design: .monospaced))
-                        .foregroundColor(.white)
+                    Text("BUG_LIBRARY")
+                        .font(EgoTheme.label())
+                        .tracking(2)
+                        .foregroundColor(EgoTheme.green)
+                        .greenGlow()
                 }
             }
             .sheet(item: $selectedBug) { bug in
@@ -56,8 +58,8 @@ struct BugLibraryView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("// \(viewModel.activeBugCount) active, \(viewModel.bugs.count) identified")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.6))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
         }
     }
 
@@ -73,11 +75,11 @@ struct BugLibraryView: View {
     private func statusBadge(count: Int, label: String, color: Color) -> some View {
         VStack(spacing: 4) {
             Text("\(count)")
-                .font(.system(.title2, design: .monospaced))
+                .font(EgoTheme.mono(.title2))
                 .foregroundColor(color)
             Text(label)
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.label())
+                .foregroundColor(EgoTheme.textMuted)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -111,24 +113,24 @@ struct BugLibraryRowView: View {
                 HStack(spacing: 6) {
                     statusIndicator
                     Text(bug.title)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textPrimary)
                 }
 
                 Text(bug.description)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray)
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .lineLimit(2)
 
                 HStack(spacing: 8) {
                     Text(bug.statusLabel)
-                        .font(.system(.caption2, design: .monospaced))
+                        .font(EgoTheme.label())
                         .foregroundColor(statusColor)
 
                     if let duration = bug.durationLabel {
                         Text(duration)
-                            .font(.system(.caption2, design: .monospaced))
-                            .foregroundColor(.gray.opacity(0.6))
+                            .font(EgoTheme.label())
+                            .foregroundColor(EgoTheme.textMuted)
                     }
                 }
             }
@@ -137,11 +139,11 @@ struct BugLibraryRowView: View {
 
             // Chevron
             Text(">")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.4))
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
         }
         .padding()
-        .background(Color(white: 0.08))
+        .background(EgoTheme.surface)
         .cornerRadius(2)
     }
 
@@ -154,10 +156,10 @@ struct BugLibraryRowView: View {
 
     private var statusColor: Color {
         switch bug.status {
-        case .identified: return .gray
+        case .identified: return EgoTheme.textMuted
         case .active: return .red
-        case .stable: return .yellow
-        case .resolved: return .green
+        case .stable: return EgoTheme.amber
+        case .resolved: return EgoTheme.green
         }
     }
 }

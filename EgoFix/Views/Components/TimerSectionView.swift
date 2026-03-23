@@ -8,13 +8,13 @@ struct TimerSectionView: View {
             // Header
             HStack {
                 Text("TIMER")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green)
 
                 Spacer()
 
                 Text(timerManager.formattedTime)
-                    .font(.system(.title2, design: .monospaced))
+                    .font(EgoTheme.mono(.title2))
                     .fontWeight(.bold)
                     .foregroundColor(timerColor)
                     .monospacedDigit()
@@ -22,7 +22,7 @@ struct TimerSectionView: View {
 
             // Progress bar (ASCII style)
             Text(timerManager.progressBarString)
-                .font(.system(.caption, design: .monospaced))
+                .font(EgoTheme.mono(.caption))
                 .foregroundColor(progressColor)
 
             // Control button
@@ -33,7 +33,7 @@ struct TimerSectionView: View {
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -47,7 +47,7 @@ struct TimerSectionView: View {
         case .idle:
             Button(action: { Task { await timerManager.startTimer() } }) {
                 Text("[ Start ]")
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(EgoTheme.mono(.callout))
                     .foregroundColor(.green)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
@@ -58,7 +58,7 @@ struct TimerSectionView: View {
         case .running:
             Button(action: { Task { await timerManager.pauseTimer() } }) {
                 Text("[ Pause ]")
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(EgoTheme.mono(.callout))
                     .foregroundColor(.yellow)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
@@ -70,7 +70,7 @@ struct TimerSectionView: View {
             HStack(spacing: 12) {
                 Button(action: { Task { await timerManager.resumeTimer() } }) {
                     Text("[ Resume ]")
-                        .font(.system(.subheadline, design: .monospaced))
+                        .font(EgoTheme.mono(.callout))
                         .foregroundColor(.green)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -80,8 +80,8 @@ struct TimerSectionView: View {
 
                 Button(action: { Task { await timerManager.resetTimer() } }) {
                     Text("[ Reset ]")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                 }
@@ -92,7 +92,7 @@ struct TimerSectionView: View {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.green)
                 Text("COMPLETE")
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(EgoTheme.mono(.callout))
                     .foregroundColor(.green)
             }
             .padding(.vertical, 8)
@@ -102,7 +102,7 @@ struct TimerSectionView: View {
     private var timerColor: Color {
         switch timerManager.status {
         case .idle:
-            return Color(white: 0.6)
+            return EgoTheme.textPrimary
         case .running:
             // Pulse effect when low time
             if timerManager.remainingSeconds <= 10 {
@@ -119,7 +119,7 @@ struct TimerSectionView: View {
     private var progressColor: Color {
         switch timerManager.status {
         case .idle:
-            return Color(white: 0.3)
+            return EgoTheme.textMuted
         case .running:
             return .green.opacity(0.7)
         case .paused:
@@ -132,7 +132,7 @@ struct TimerSectionView: View {
     private var borderColor: Color {
         switch timerManager.status {
         case .idle:
-            return Color(white: 0.15)
+            return EgoTheme.surface
         case .running:
             return .green.opacity(0.3)
         case .paused:
@@ -153,7 +153,7 @@ struct CompactTimerView: View {
             statusIndicator
 
             Text(timerManager.formattedTime)
-                .font(.system(.caption, design: .monospaced))
+                .font(EgoTheme.mono(.caption))
                 .fontWeight(.medium)
                 .foregroundColor(statusColor)
                 .monospacedDigit()
@@ -170,7 +170,7 @@ struct CompactTimerView: View {
         switch timerManager.status {
         case .idle:
             Circle()
-                .fill(Color(white: 0.4))
+                .fill(EgoTheme.textMuted)
                 .frame(width: 6, height: 6)
         case .running:
             Circle()
@@ -189,7 +189,7 @@ struct CompactTimerView: View {
 
     private var statusColor: Color {
         switch timerManager.status {
-        case .idle: return Color(white: 0.5)
+        case .idle: return EgoTheme.textMuted
         case .running: return .green
         case .paused: return .yellow
         case .completed: return .green
@@ -207,7 +207,7 @@ struct CompactInteractionTimerView: View {
             statusIndicator
 
             Text(interactionManager.formattedTime)
-                .font(.system(.caption, design: .monospaced))
+                .font(EgoTheme.mono(.caption))
                 .fontWeight(.medium)
                 .foregroundColor(statusColor)
                 .monospacedDigit()
@@ -223,7 +223,7 @@ struct CompactInteractionTimerView: View {
         switch interactionManager.timerStatus {
         case .idle:
             Circle()
-                .fill(Color(white: 0.4))
+                .fill(EgoTheme.textMuted)
                 .frame(width: 6, height: 6)
         case .running:
             Circle()
@@ -242,7 +242,7 @@ struct CompactInteractionTimerView: View {
 
     private var statusColor: Color {
         switch interactionManager.timerStatus {
-        case .idle: return Color(white: 0.5)
+        case .idle: return EgoTheme.textMuted
         case .running: return .green
         case .paused: return .yellow
         case .completed: return .green

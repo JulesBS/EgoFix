@@ -21,7 +21,7 @@ struct MultiStepInteractionView: View {
             // Header with step indicator
             HStack {
                 Text("STEP \(interactionManager.currentStepIndex + 1)/\(interactionManager.totalSteps)")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green)
 
                 Spacer()
@@ -36,23 +36,23 @@ struct MultiStepInteractionView: View {
             } else if let step = currentStep {
                 // Current step prompt
                 Text(step.prompt)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.white)
+                    .font(EgoTheme.mono())
+                    .foregroundColor(EgoTheme.textPrimary)
                     .lineSpacing(4)
 
                 // Optional inline comment
                 if let comment = step.inlineComment {
                     Text("// \(comment)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.35))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .italic()
                 }
 
                 // Optional validation
                 if let validation = step.validation {
                     Text(validation)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .padding(.top, 4)
                 }
 
@@ -66,7 +66,7 @@ struct MultiStepInteractionView: View {
                         }
                     }) {
                         Text("[ Done ]")
-                            .font(.system(.subheadline, design: .monospaced))
+                            .font(EgoTheme.mono(.callout))
                             .foregroundColor(.green)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
@@ -81,7 +81,7 @@ struct MultiStepInteractionView: View {
                         }
                     }) {
                         Text("[ Skip ]")
-                            .font(.system(.subheadline, design: .monospaced))
+                            .font(EgoTheme.mono(.callout))
                             .foregroundColor(.yellow)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
@@ -96,7 +96,7 @@ struct MultiStepInteractionView: View {
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -113,18 +113,18 @@ struct MultiStepInteractionView: View {
                     // Completed or skipped
                     let completion = interactionManager.completedSteps[index]
                     Text(completion.skipped ? "\u{25CB}" : "\u{25CF}")  // Empty or filled circle
-                        .font(.system(.caption, design: .monospaced))
+                        .font(EgoTheme.mono(.caption))
                         .foregroundColor(completion.skipped ? .yellow : .green)
                 } else if index == interactionManager.currentStepIndex {
                     // Current step
                     Text("\u{25CF}")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textPrimary)
                 } else {
                     // Pending
                     Text("\u{25CB}")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.3))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                 }
             }
         }
@@ -138,14 +138,14 @@ struct MultiStepInteractionView: View {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(.green)
                 Text("ALL STEPS COMPLETE")
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(EgoTheme.mono(.callout))
                     .foregroundColor(.green)
             }
 
             // Summary
             Text("// \(interactionManager.completedStepsCount) done, \(interactionManager.skippedStepsCount) skipped")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.35))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
         }
     }
 
@@ -157,7 +157,7 @@ struct MultiStepInteractionView: View {
         } else if interactionManager.skippedStepsCount > 0 {
             return .yellow.opacity(0.3)
         }
-        return Color(white: 0.15)
+        return EgoTheme.surface
     }
 }
 

@@ -12,18 +12,18 @@ struct BugDetailView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     headerSection
-                    Divider().background(Color(white: 0.2))
+                    Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
                     statusSection
-                    Divider().background(Color(white: 0.2))
+                    Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
                     descriptionSection
-                    Divider().background(Color(white: 0.2))
+                    Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
                     timelineSection
-                    Divider().background(Color(white: 0.2))
+                    Rectangle().fill(EgoTheme.borderSubtle).frame(height: 0.5)
                     actionsSection
                 }
                 .padding()
@@ -38,25 +38,25 @@ struct BugDetailView: View {
             HStack {
                 statusIndicator
                 Text(bug.statusLabel)
-                    .font(.system(.caption, design: .monospaced))
+                    .font(EgoTheme.mono(.caption))
                     .foregroundColor(statusColor)
                 Spacer()
                 Button(action: { dismiss() }) {
-                    Text("[ x ]")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray)
+                    Image(systemName: "xmark")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(EgoTheme.textMuted)
                 }
             }
 
             HStack(alignment: .top, spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(bug.title)
-                        .font(.system(.title2, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono(.title2))
+                        .foregroundColor(EgoTheme.textPrimary)
 
                     Text("// \(bug.slug)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray.opacity(0.6))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                 }
 
                 Spacer()
@@ -69,16 +69,16 @@ struct BugDetailView: View {
     private var statusSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("STATUS")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
 
             Text(bug.statusComment)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.8))
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
 
             if let duration = bug.durationLabel {
                 Text(duration)
-                    .font(.system(.caption, design: .monospaced))
+                    .font(EgoTheme.mono(.caption))
                     .foregroundColor(statusColor.opacity(0.8))
             }
         }
@@ -87,20 +87,20 @@ struct BugDetailView: View {
     private var descriptionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("PATTERN")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
 
             Text(bug.description)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white.opacity(0.9))
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
         }
     }
 
     private var timelineSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("LIFECYCLE")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
 
             VStack(alignment: .leading, spacing: 8) {
                 if let activatedAt = bug.activatedAt {
@@ -117,8 +117,8 @@ struct BugDetailView: View {
 
                 if bug.activatedAt == nil && bug.stableAt == nil && bug.resolvedAt == nil {
                     Text("// No lifecycle events yet")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray.opacity(0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                 }
             }
         }
@@ -131,22 +131,22 @@ struct BugDetailView: View {
                 .frame(width: 6, height: 6)
 
             Text(label)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.white.opacity(0.8))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textPrimary)
 
             Spacer()
 
             Text(formatDate(date))
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
         }
     }
 
     private var actionsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("ACTIONS")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
 
             VStack(spacing: 8) {
                 switch bug.status {
@@ -209,12 +209,12 @@ struct BugDetailView: View {
         }) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(label)
-                    .font(.system(.body, design: .monospaced))
+                    .font(EgoTheme.mono())
                     .foregroundColor(isPerformingAction ? .gray : color)
 
                 Text(comment)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.6))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -232,10 +232,10 @@ struct BugDetailView: View {
 
     private var statusColor: Color {
         switch bug.status {
-        case .identified: return .gray
+        case .identified: return EgoTheme.textMuted
         case .active: return .red
-        case .stable: return .yellow
-        case .resolved: return .green
+        case .stable: return EgoTheme.amber
+        case .resolved: return EgoTheme.green
         }
     }
 

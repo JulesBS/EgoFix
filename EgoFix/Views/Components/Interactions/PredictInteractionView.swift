@@ -8,42 +8,42 @@ struct PredictInteractionView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("PREDICT")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green)
                 Spacer()
                 Text(interactionManager.predictPhase == .predicting ? "Phase 1: Predict" : "Phase 2: Observe")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             Text(fix.prompt)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineSpacing(4)
 
             if let config = fix.predictConfig {
                 if interactionManager.predictPhase == .predicting {
                     Text(config.predictionPrompt)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.6))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textPrimary)
 
                     TextField("Your prediction...", text: $interactionManager.predictionText, axis: .vertical)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textPrimary)
                         .lineLimit(2...4)
                         .padding(8)
-                        .background(Color(white: 0.08))
+                        .background(EgoTheme.surface)
                         .cornerRadius(2)
                         .overlay(
                             RoundedRectangle(cornerRadius: 2)
-                                .stroke(Color(white: 0.2), lineWidth: 1)
+                                .stroke(EgoTheme.border, lineWidth: 1)
                         )
 
                     if !interactionManager.predictionText.isEmpty {
                         Button("Lock prediction & observe") {
                             interactionManager.predictPhase = .observing
                         }
-                        .font(.system(.caption, design: .monospaced))
+                        .font(EgoTheme.mono(.caption))
                         .foregroundColor(.green)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -52,47 +52,47 @@ struct PredictInteractionView: View {
                 } else {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("PREDICTED:")
-                            .font(.system(.caption2, design: .monospaced))
-                            .foregroundColor(Color(white: 0.4))
+                            .font(EgoTheme.label())
+                            .foregroundColor(EgoTheme.textMuted)
                         Text(interactionManager.predictionText)
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(Color(white: 0.6))
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textPrimary)
                     }
                     .padding(8)
-                    .background(Color(white: 0.08))
+                    .background(EgoTheme.surface)
                     .cornerRadius(2)
 
                     Text(config.observationPrompt)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.6))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textPrimary)
 
                     TextField("What actually happened...", text: $interactionManager.observationText, axis: .vertical)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textPrimary)
                         .lineLimit(2...4)
                         .padding(8)
-                        .background(Color(white: 0.08))
+                        .background(EgoTheme.surface)
                         .cornerRadius(2)
                         .overlay(
                             RoundedRectangle(cornerRadius: 2)
-                                .stroke(Color(white: 0.2), lineWidth: 1)
+                                .stroke(EgoTheme.border, lineWidth: 1)
                         )
                 }
             }
 
             if let comment = fix.inlineComment {
                 Text("// \(comment)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .italic()
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(white: 0.15), lineWidth: 1)
+                .stroke(EgoTheme.border, lineWidth: 1)
         )
     }
 }

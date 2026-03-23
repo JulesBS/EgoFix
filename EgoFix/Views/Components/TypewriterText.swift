@@ -18,6 +18,8 @@ struct TypewriterText: View {
             Text(String(text.prefix(displayedCount)))
                 .font(font)
                 .foregroundColor(color)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
 
             if showCursor {
                 Text("_")
@@ -25,6 +27,8 @@ struct TypewriterText: View {
                     .foregroundColor(color)
                     .opacity(cursorVisible ? 1 : 0)
             }
+
+            Spacer(minLength: 0)
         }
         .onAppear {
             startTyping()

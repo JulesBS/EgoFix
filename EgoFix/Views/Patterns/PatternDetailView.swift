@@ -21,7 +21,7 @@ struct PatternDetailView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
@@ -29,16 +29,16 @@ struct PatternDetailView: View {
                     HStack {
                         Spacer()
                         Button(action: onDismiss) {
-                            Text("[ Close ]")
-                                .font(.system(.caption, design: .monospaced))
-                                .foregroundColor(Color(white: 0.5))
+                            Image(systemName: "xmark")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(EgoTheme.textMuted)
                         }
                     }
 
                     // Severity badge and date
                     HStack {
                         Text(severityLabel)
-                            .font(.system(.caption, design: .monospaced))
+                            .font(EgoTheme.mono(.caption))
                             .foregroundColor(severityColor)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
@@ -48,30 +48,30 @@ struct PatternDetailView: View {
                         Spacer()
 
                         Text(formatDate(pattern.detectedAt))
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(Color(white: 0.4))
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textMuted)
                     }
 
                     // Title
                     Text(pattern.title)
-                        .font(.system(.title3, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono(.title3))
+                        .foregroundColor(EgoTheme.textPrimary)
 
                     // Body
                     Text(pattern.body)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(Color(white: 0.7))
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textPrimary)
                         .lineSpacing(4)
 
                     // Data points info
                     Text("// Based on \(pattern.dataPoints) data points")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.35))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
 
                     // Trend chart (if data available)
                     if !trendDataPoints.isEmpty {
                         Divider()
-                            .background(Color(white: 0.2))
+                            .background(EgoTheme.borderSubtle)
                             .padding(.vertical, 8)
 
                         TrendChartView(
@@ -82,13 +82,13 @@ struct PatternDetailView: View {
                     }
 
                     Divider()
-                        .background(Color(white: 0.2))
+                        .background(EgoTheme.borderSubtle)
                         .padding(.vertical, 8)
 
                     // Recommendations section
                     Text("RECOMMENDATIONS")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.4))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
 
                     ForEach(recommendations) { recommendation in
                         RecommendationCardView(recommendation: recommendation)
@@ -112,8 +112,8 @@ struct PatternDetailView: View {
     private var severityColor: Color {
         switch pattern.severity {
         case .alert: return .red
-        case .insight: return .yellow
-        case .observation: return Color(white: 0.5)
+        case .insight: return EgoTheme.amber
+        case .observation: return EgoTheme.textMuted
         }
     }
 

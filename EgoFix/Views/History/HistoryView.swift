@@ -9,24 +9,23 @@ struct HistoryView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Tab selector
                 tabSelector
-                    .padding(.horizontal)
+                    .padding(.horizontal, 24)
                     .padding(.top, 8)
 
-                Divider()
-                    .background(Color(white: 0.2))
+                Rectangle()
+                    .fill(EgoTheme.borderSubtle)
+                    .frame(height: 0.5)
                     .padding(.top, 12)
 
-                // Content based on selected tab
                 if viewModel.isLoading {
                     Spacer()
                     Text("> loading...")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                     Spacer()
                 } else {
                     switch viewModel.selectedView {
@@ -45,77 +44,78 @@ struct HistoryView: View {
         }
     }
 
-    // Tab selector - horizontal buttons
     private var tabSelector: some View {
         HStack(spacing: 8) {
             ForEach(HistoryViewType.allCases, id: \.self) { viewType in
+                let isSelected = viewModel.selectedView == viewType
                 Button(action: { viewModel.selectedView = viewType }) {
-                    Text("[ \(viewType.rawValue) ]")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(viewModel.selectedView == viewType ? .green : Color(white: 0.5))
+                    Text(viewType.rawValue.uppercased())
+                        .font(EgoTheme.label())
+                        .tracking(1.5)
+                        .foregroundColor(isSelected ? EgoTheme.green : EgoTheme.textMuted)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(viewModel.selectedView == viewType ? Color.green.opacity(0.1) : Color.clear)
-                        .cornerRadius(2)
+                        .background(isSelected ? EgoTheme.green.opacity(0.1) : Color.clear)
+                        .overlay(
+                            Rectangle()
+                                .stroke(isSelected ? EgoTheme.green.opacity(0.3) : Color.clear, lineWidth: 1)
+                        )
                 }
             }
             Spacer()
         }
     }
 
-    // Stats view content
     private var statsContent: some View {
         ScrollView {
             VStack(spacing: 24) {
                 StreakCardView(streakData: viewModel.streakData)
                 StatsDashboardView(stats: viewModel.userStats)
             }
-            .padding()
+            .padding(24)
         }
     }
 
-    // Calendar content
     private var calendarContent: some View {
         ActivityCalendarView(months: viewModel.calendarMonths)
     }
 
-    // Changelog content - existing version history
     private var changelogContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                // Current version header
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text("CHANGELOG")
-                            .font(.system(.headline, design: .monospaced))
-                            .foregroundColor(.white)
+                            .font(EgoTheme.label())
+                            .tracking(2)
+                            .foregroundColor(EgoTheme.textPrimary)
                         Spacer()
                         Text("v\(viewModel.currentVersion)")
-                            .font(.system(.title, design: .monospaced))
-                            .foregroundColor(.green)
+                            .font(.system(size: 28, weight: .light, design: .monospaced))
+                            .foregroundColor(EgoTheme.green)
+                            .greenGlow()
                     }
                     Text("// v1.0 \u{2192} v\(viewModel.currentVersion)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.gray.opacity(0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                 }
-                .padding(.horizontal)
 
-                Divider()
-                    .background(Color.gray.opacity(0.3))
+                Rectangle()
+                    .fill(EgoTheme.borderSubtle)
+                    .frame(height: 0.5)
 
-                // Version history
                 ForEach(viewModel.versionGroups) { group in
                     VersionGroupView(group: group)
                 }
 
                 if viewModel.versionGroups.isEmpty {
                     Text("// Nothing here yet. That changes tomorrow.")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.gray.opacity(0.6))
-                        .padding()
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textMuted)
+                        .padding(.vertical, 24)
                 }
             }
-            .padding(.vertical)
+            .padding(24)
         }
     }
 }
@@ -126,8 +126,8 @@ struct VersionGroupView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("v\(group.version)")
-                .font(.system(.headline, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono(.headline))
+                .foregroundColor(EgoTheme.textPrimary)
 
             ForEach(group.entries, id: \.id) { entry in
                 HStack(alignment: .top, spacing: 8) {
@@ -136,17 +136,16 @@ struct VersionGroupView: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(entry.entryDescription)
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.gray)
+                            .font(EgoTheme.mono())
+                            .foregroundColor(EgoTheme.textMuted)
 
                         Text(formatDate(entry.createdAt))
-                            .font(.system(.caption, design: .monospaced))
-                            .foregroundColor(.gray.opacity(0.5))
+                            .font(EgoTheme.label())
+                            .foregroundColor(EgoTheme.textMuted)
                     }
                 }
             }
         }
-        .padding(.horizontal)
     }
 
     private func changeTypeSymbol(_ type: VersionChangeType) -> String {
@@ -160,10 +159,10 @@ struct VersionGroupView: View {
 
     private func changeTypeColor(_ type: VersionChangeType) -> Color {
         switch type {
-        case .majorUpdate: return .green
+        case .majorUpdate: return EgoTheme.green
         case .minorUpdate: return .blue
         case .crash: return .red
-        case .reboot: return .yellow
+        case .reboot: return EgoTheme.amber
         }
     }
 

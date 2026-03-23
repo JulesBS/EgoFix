@@ -12,16 +12,16 @@ struct TrendChartView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Title
             Text(title.uppercased())
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.4))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
 
             HStack(alignment: .top, spacing: 8) {
                 // Y-axis labels
                 VStack(alignment: .trailing, spacing: 0) {
                     ForEach(yAxisLabels, id: \.self) { label in
                         Text(label)
-                            .font(.system(.caption2, design: .monospaced))
-                            .foregroundColor(Color(white: 0.35))
+                            .font(EgoTheme.label())
+                            .foregroundColor(EgoTheme.textMuted)
                             .frame(height: chartHeight / 3)
                     }
                 }
@@ -34,7 +34,7 @@ struct TrendChartView: View {
                         VStack(spacing: 0) {
                             ForEach(0..<3, id: \.self) { _ in
                                 Rectangle()
-                                    .fill(Color(white: 0.15))
+                                    .fill(EgoTheme.borderSubtle)
                                     .frame(height: 1)
                                 Spacer()
                             }
@@ -55,8 +55,8 @@ struct TrendChartView: View {
                     .frame(width: 58)
                 ForEach(Array(dataPoints.enumerated()), id: \.offset) { index, _ in
                     Text("W\(index + 1)")
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(Color(white: 0.3))
+                        .font(EgoTheme.label())
+                        .foregroundColor(EgoTheme.textMuted)
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -64,17 +64,17 @@ struct TrendChartView: View {
             // Trend direction
             HStack {
                 Text("// Trending:")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                 Text(trendDirection.label)
-                    .font(.system(.caption, design: .monospaced))
+                    .font(EgoTheme.mono(.caption))
                     .fontWeight(.medium)
                     .foregroundColor(trendDirectionColor)
             }
         }
         .padding()
-        .background(Color(white: 0.04))
-        .cornerRadius(4)
+        .background(EgoTheme.surface.opacity(0.3))
+        .cornerRadius(2)
     }
 
     @ViewBuilder
@@ -121,7 +121,7 @@ struct TrendChartView: View {
 
 #Preview {
     ZStack {
-        Color.black.ignoresSafeArea()
+        EgoTheme.bg.ignoresSafeArea()
 
         TrendChartView(
             title: "need-to-be-right",

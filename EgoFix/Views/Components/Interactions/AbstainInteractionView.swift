@@ -8,50 +8,50 @@ struct AbstainInteractionView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("ABSTAIN")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.red)
                 Spacer()
                 Text("Don't do the thing")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             Text(fix.prompt)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineSpacing(4)
 
             if let config = fix.abstainConfig {
                 HStack(spacing: 8) {
                     Image(systemName: "clock")
-                        .font(.system(.caption, design: .monospaced))
+                        .font(EgoTheme.mono(.caption))
                         .foregroundColor(.red)
                     Text(config.durationDescription)
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.6))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textPrimary)
                 }
 
                 Toggle(isOn: $interactionManager.abstainCompleted) {
                     Text("Period completed without slipping")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textPrimary)
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .red))
             }
 
             if let comment = fix.inlineComment {
                 Text("// \(comment)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .italic()
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(white: 0.15), lineWidth: 1)
+                .stroke(EgoTheme.border, lineWidth: 1)
         )
     }
 }

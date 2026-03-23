@@ -13,8 +13,8 @@ struct MonthGridView: View {
             LazyVGrid(columns: columns, spacing: 4) {
                 ForEach(weekdayLabels, id: \.self) { label in
                     Text(label)
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(Color(white: 0.4))
+                        .font(EgoTheme.label())
+                        .foregroundColor(EgoTheme.textMuted)
                         .frame(height: 20)
                 }
             }
@@ -87,7 +87,7 @@ struct DayCellView: View {
 
     private var backgroundColor: Color {
         guard let day = day else {
-            return Color(white: 0.1)
+            return EgoTheme.surface
         }
         return colorForOutcome(day.outcomeColor, intensity: day.intensity)
     }
@@ -106,12 +106,12 @@ struct DayCellView: View {
         case .applied: baseColor = .green
         case .skipped: baseColor = .yellow
         case .crash: baseColor = .red
-        case .opened: baseColor = Color(white: 0.3)
-        case .empty: return Color(white: 0.1)
+        case .opened: baseColor = EgoTheme.textMuted
+        case .empty: return EgoTheme.surface
         }
 
         switch intensity {
-        case .none: return Color(white: 0.1)
+        case .none: return EgoTheme.surface
         case .low: return baseColor.opacity(0.3)
         case .medium: return baseColor.opacity(0.6)
         case .high: return baseColor

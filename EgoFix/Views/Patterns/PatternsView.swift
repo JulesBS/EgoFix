@@ -9,12 +9,12 @@ struct PatternsView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            EgoTheme.bg.ignoresSafeArea()
 
             if viewModel.isLoading {
                 Text("> loading...")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray)
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
@@ -53,21 +53,21 @@ struct PatternsView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("DETECTED PATTERNS")
-                .font(.system(.headline, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono(.headline))
+                .foregroundColor(EgoTheme.textPrimary)
 
             if viewModel.allPatterns.isEmpty {
                 Text("// Patterns emerge from data. Keep logging.")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.5))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
             } else if viewModel.patterns.isEmpty && !viewModel.allPatterns.isEmpty {
                 Text("// All caught up. The app is still watching.")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.5))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
             } else {
                 Text("// The app noticed \(viewModel.allPatterns.count) \(viewModel.allPatterns.count == 1 ? "thing" : "things").")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.5))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
             }
         }
         .padding(.horizontal)
@@ -76,8 +76,8 @@ struct PatternsView: View {
     private var bugSummarySection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("BY BUG")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.6))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
                 .padding(.horizontal)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -104,9 +104,9 @@ struct PatternsView: View {
                 Text(title)
                     .lineLimit(1)
                 Text("(\(count))")
-                    .foregroundColor(.gray)
+                    .foregroundColor(EgoTheme.textMuted)
             }
-            .font(.system(.caption, design: .monospaced))
+            .font(EgoTheme.mono(.caption))
             .foregroundColor(isSelected ? .green : .white)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
@@ -121,7 +121,7 @@ struct PatternsView: View {
                 ForEach(PatternSeverityFilter.allCases, id: \.self) { filter in
                     Button(action: { viewModel.setSeverityFilter(filter) }) {
                         Text(filter.rawValue)
-                            .font(.system(.caption, design: .monospaced))
+                            .font(EgoTheme.mono(.caption))
                             .foregroundColor(viewModel.severityFilter == filter ? .green : .white)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
@@ -137,8 +137,8 @@ struct PatternsView: View {
     private var emptyState: some View {
         VStack(spacing: 8) {
             Text("// Patterns emerge from data. Keep logging.")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.6))
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
@@ -167,7 +167,7 @@ struct PatternCardView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(severityLabel)
-                    .font(.system(.caption, design: .monospaced))
+                    .font(EgoTheme.mono(.caption))
                     .foregroundColor(severityColor)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -179,30 +179,30 @@ struct PatternCardView: View {
                 Spacer()
 
                 Text(relativeTime(pattern.detectedAt))
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray.opacity(0.5))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             Text(pattern.title)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
 
             Text(pattern.body)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
                 .lineLimit(2)
 
             HStack {
                 Spacer()
 
                 Text("-> \(recommendationCount) recommendations")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green.opacity(0.7))
             }
         }
         .padding()
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(4)
+        .background(EgoTheme.surface.opacity(0.3))
+        .cornerRadius(2)
         .padding(.horizontal)
     }
 
@@ -210,23 +210,23 @@ struct PatternCardView: View {
     private var statusBadge: some View {
         if pattern.dismissedAt != nil {
             Text("DISMISSED")
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundColor(.gray.opacity(0.5))
+                .font(EgoTheme.label())
+                .foregroundColor(EgoTheme.textMuted)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(Color.gray.opacity(0.1))
+                .background(EgoTheme.surface)
                 .cornerRadius(2)
         } else if pattern.viewedAt != nil {
             Text("NOTED")
-                .font(.system(.caption2, design: .monospaced))
+                .font(EgoTheme.label())
                 .foregroundColor(.green.opacity(0.6))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(Color.green.opacity(0.1))
+                .background(EgoTheme.green.opacity(0.1))
                 .cornerRadius(2)
         } else {
             Text("UNREAD")
-                .font(.system(.caption2, design: .monospaced))
+                .font(EgoTheme.label())
                 .foregroundColor(.yellow.opacity(0.7))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
@@ -246,8 +246,8 @@ struct PatternCardView: View {
     private var severityColor: Color {
         switch pattern.severity {
         case .alert: return .red
-        case .insight: return .yellow
-        case .observation: return .gray
+        case .insight: return EgoTheme.amber
+        case .observation: return EgoTheme.textMuted
         }
     }
 

@@ -28,15 +28,15 @@ struct CompletionView: View {
                     .shadow(color: titleColor.opacity(0.5), radius: 8, x: 0, y: 0)
 
                 Text(title)
-                    .font(.system(.title2, design: .monospaced))
+                    .font(EgoTheme.mono(.title2))
                     .foregroundColor(titleColor)
                     .padding(.top, 16)
                     .opacity(appeared ? 1 : 0)
 
                 // Typing animation for message
                 Text(typedMessage + (showMessage && typedMessage.count < message.count ? "_" : ""))
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(.gray)
+                    .font(EgoTheme.mono())
+                    .foregroundColor(EgoTheme.textMuted)
                     .multilineTextAlignment(.center)
                     .padding(.top, 12)
                     .opacity(showMessage ? 1 : 0)
@@ -45,7 +45,7 @@ struct CompletionView: View {
                 if let tidbit = educationTidbit {
                     Text(tidbit)
                         .font(.system(.callout, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .foregroundColor(EgoTheme.textMuted)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
                         .padding(.top, 24)
@@ -57,8 +57,8 @@ struct CompletionView: View {
 
                 // Subtle hint
                 Text("// Tomorrow brings another fix")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.3))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .padding(.bottom, 48)
                     .opacity(showEducation ? 1 : 0)
             }

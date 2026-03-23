@@ -17,19 +17,19 @@ struct ScenarioInteractionView: View {
             // Header
             HStack {
                 Text("SCENARIO")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.green)
 
                 Spacer()
 
                 if interactionManager.scenarioAnswered {
                     Text("Completed")
-                        .font(.system(.caption2, design: .monospaced))
+                        .font(EgoTheme.label())
                         .foregroundColor(.green)
                 } else {
                     Text("Choose response")
-                        .font(.system(.caption2, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .font(EgoTheme.label())
+                        .foregroundColor(EgoTheme.textMuted)
                 }
             }
 
@@ -37,12 +37,12 @@ struct ScenarioInteractionView: View {
             if let situation = config?.situation {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Situation:")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
 
                     Text(situation)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textPrimary)
                         .lineSpacing(4)
                 }
             }
@@ -51,8 +51,8 @@ struct ScenarioInteractionView: View {
             if let options = config?.options {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("How would you respond?")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.5))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .padding(.top, 4)
 
                     ForEach(options) { option in
@@ -66,8 +66,8 @@ struct ScenarioInteractionView: View {
             if interactionManager.scenarioAnswered {
                 if let reflection = selectedOption?.reflection {
                     Text("// \(reflection)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.35))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .italic()
                         .padding(.top, 4)
                         .transition(.opacity)
@@ -76,15 +76,15 @@ struct ScenarioInteractionView: View {
                 // General debrief
                 if let debrief = config?.debrief {
                     Text("// \(debrief)")
-                        .font(.system(.caption, design: .monospaced))
-                        .foregroundColor(Color(white: 0.35))
+                        .font(EgoTheme.mono(.caption))
+                        .foregroundColor(EgoTheme.textMuted)
                         .padding(.top, 2)
                         .transition(.opacity)
                 }
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -108,13 +108,13 @@ struct ScenarioInteractionView: View {
             HStack(alignment: .top, spacing: 8) {
                 // Selection indicator
                 Text(isSelected ? ">" : " ")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(isSelected ? .green : Color(white: 0.3))
+                    .font(EgoTheme.mono())
+                    .foregroundColor(isSelected ? .green : EgoTheme.textMuted)
                     .frame(width: 12)
 
                 // Option text
                 Text(option.text)
-                    .font(.system(.body, design: .monospaced))
+                    .font(EgoTheme.mono())
                     .foregroundColor(optionTextColor(isSelected: isSelected, isDisabled: isDisabled))
                     .multilineTextAlignment(.leading)
 
@@ -133,11 +133,11 @@ struct ScenarioInteractionView: View {
 
     private func optionTextColor(isSelected: Bool, isDisabled: Bool) -> Color {
         if isDisabled {
-            return Color(white: 0.3)
+            return EgoTheme.textMuted
         } else if isSelected {
             return .white
         }
-        return Color(white: 0.6)
+        return EgoTheme.textPrimary
     }
 
     private var borderColor: Color {
@@ -146,7 +146,7 @@ struct ScenarioInteractionView: View {
         } else if interactionManager.selectedScenarioOptionId != nil {
             return .green.opacity(0.3)
         }
-        return Color(white: 0.15)
+        return EgoTheme.surface
     }
 }
 

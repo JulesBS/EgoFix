@@ -7,8 +7,9 @@ struct StatsDashboardView: View {
         VStack(alignment: .leading, spacing: 16) {
             // Header
             Text("STATS")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.label())
+                .tracking(1.5)
+                .foregroundColor(EgoTheme.textMuted)
 
             // Stats grid
             VStack(spacing: 8) {
@@ -61,20 +62,20 @@ struct StatsDashboardView: View {
             // Peak time (if available)
             if let peakTime = stats.peakTimeFormatted {
                 Text("Peak: \(peakTime)")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.mono())
+                    .foregroundColor(EgoTheme.textMuted)
             }
         }
-        .padding()
-        .background(Color.black)
+        .padding(20)
+        .glassCard()
     }
 
     // MARK: - Private Views
 
     private var divider: some View {
         Text("|")
-            .font(.system(.body, design: .monospaced))
-            .foregroundColor(Color(white: 0.5))
+            .font(EgoTheme.mono())
+            .foregroundColor(EgoTheme.textMuted)
             .frame(width: 24)
     }
 
@@ -85,8 +86,8 @@ struct StatsDashboardView: View {
     private func statCell(label: String, value: String, valueColor: Color) -> some View {
         HStack(spacing: 4) {
             Text(label)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(Color(white: 0.5))
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
 
             Spacer()
 

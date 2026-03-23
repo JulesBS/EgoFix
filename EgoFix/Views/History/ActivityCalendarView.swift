@@ -41,11 +41,11 @@ struct ActivityCalendarView: View {
         VStack(spacing: 8) {
             Spacer()
             Text("// No activity data yet")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(Color(white: 0.35))
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
             Text("// Complete fixes to see your calendar")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(Color(white: 0.25))
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textMuted)
             Spacer()
         }
     }
@@ -54,23 +54,23 @@ struct ActivityCalendarView: View {
         HStack {
             Button(action: previousMonth) {
                 Text("[ < ]")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(currentMonthIndex > 0 ? .green : Color(white: 0.3))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(currentMonthIndex > 0 ? .green : EgoTheme.textMuted)
             }
             .disabled(currentMonthIndex == 0)
 
             Spacer()
 
             Text(months[currentMonthIndex].shortLabel.uppercased())
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textPrimary)
 
             Spacer()
 
             Button(action: nextMonth) {
                 Text("[ > ]")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(currentMonthIndex < months.count - 1 ? .green : Color(white: 0.3))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(currentMonthIndex < months.count - 1 ? .green : EgoTheme.textMuted)
             }
             .disabled(currentMonthIndex >= months.count - 1)
         }
@@ -84,14 +84,14 @@ struct ActivityCalendarView: View {
                 outcomeLegendItem(color: .green, label: "applied")
                 outcomeLegendItem(color: .yellow, label: "skipped")
                 outcomeLegendItem(color: .red, label: "crash")
-                outcomeLegendItem(color: Color(white: 0.3), label: "opened")
+                outcomeLegendItem(color: EgoTheme.textMuted, label: "opened")
                 Spacer()
             }
 
             // Intensity explanation
             Text("// darker = more depth")
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundColor(Color(white: 0.3))
+                .font(EgoTheme.label())
+                .foregroundColor(EgoTheme.textMuted)
         }
     }
 
@@ -102,8 +102,8 @@ struct ActivityCalendarView: View {
                 .frame(width: 12, height: 12)
                 .cornerRadius(2)
             Text(label)
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundColor(Color(white: 0.4))
+                .font(EgoTheme.label())
+                .foregroundColor(EgoTheme.textMuted)
         }
     }
 

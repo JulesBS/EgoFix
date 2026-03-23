@@ -11,43 +11,43 @@ struct StreakCardView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
             Text("STREAK")
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.label())
+                .tracking(1.5)
+                .foregroundColor(EgoTheme.textMuted)
 
             // Progress bars
             VStack(alignment: .leading, spacing: 8) {
                 // Current streak bar
                 HStack(spacing: 8) {
                     Text(currentStreakBar)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.green)
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.green)
 
                     Text("\(displayedStreak) days current")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textPrimary)
                         .scaleEffect(streakScale)
                 }
 
                 // Longest streak bar
                 HStack(spacing: 8) {
                     Text(longestStreakBar)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(Color.green.opacity(0.5))
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.green.opacity(0.5))
 
                     Text("\(streakData.longestStreak) days longest")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(EgoTheme.mono())
+                        .foregroundColor(EgoTheme.textPrimary)
                 }
             }
 
             // Comment
             Text(commentText)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(Color(white: 0.35))
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textMuted)
         }
-        .padding(16)
-        .background(Color.black)
-        .cornerRadius(2)
+        .padding(20)
+        .glassCard()
         .onAppear {
             animateStreakCount()
         }
@@ -143,5 +143,5 @@ struct StreakCardView: View {
         ))
     }
     .padding()
-    .background(Color.black)
+    .background(EgoTheme.bg)
 }

@@ -9,25 +9,25 @@ struct JournalInteractionView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("JOURNAL")
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(EgoTheme.label())
                     .foregroundColor(.blue)
                 Spacer()
                 Text("2-3 sentences")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundColor(Color(white: 0.5))
+                    .font(EgoTheme.label())
+                    .foregroundColor(EgoTheme.textMuted)
             }
 
             Text(fix.prompt)
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono())
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineSpacing(4)
 
             TextField("Write here...", text: $interactionManager.journalText, axis: .vertical)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundColor(.white)
+                .font(EgoTheme.mono(.caption))
+                .foregroundColor(EgoTheme.textPrimary)
                 .lineLimit(3...8)
                 .padding(8)
-                .background(Color(white: 0.08))
+                .background(EgoTheme.surface)
                 .cornerRadius(2)
                 .overlay(
                     RoundedRectangle(cornerRadius: 2)
@@ -38,17 +38,17 @@ struct JournalInteractionView: View {
 
             if let comment = fix.inlineComment {
                 Text("// \(comment)")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(Color(white: 0.35))
+                    .font(EgoTheme.mono(.caption))
+                    .foregroundColor(EgoTheme.textMuted)
                     .italic()
             }
         }
         .padding(16)
-        .background(Color(white: 0.06))
+        .background(EgoTheme.surface.opacity(0.3))
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)
-                .stroke(Color(white: 0.15), lineWidth: 1)
+                .stroke(EgoTheme.border, lineWidth: 1)
         )
     }
 }

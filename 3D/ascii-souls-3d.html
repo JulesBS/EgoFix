@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EgoFix — Soul Prototype</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 100px;
+      font-family: 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
+    }
+    .hd { color: #111; font-size: 9px; letter-spacing: 3px; margin-bottom: 48px; text-align: center; }
+    .souls { display: flex; flex-direction: column; gap: 56px; align-items: center; width: 100%; }
+    .soul  { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .lbl   { font-size: 8px; letter-spacing: 4px; color: #1c1c1c; }
+    .slug  { font-size: 7px; letter-spacing: 2px; color: #111; }
+    canvas { display: block; cursor: pointer; }
+    #loading {
+      position: fixed; inset: 0; background: #000;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; letter-spacing: 4px; color: #333;
+      z-index: 100;
+      transition: opacity 0.6s;
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading">LOADING MESH...</div>
+<div class="hd">EGOFIX / SOUL PROTOTYPE v7</div>
+<div class="souls">
+  <div class="soul"><div class="lbl">THE CORRECTOR</div><div class="slug">// need-to-be-right</div><canvas id="c0" width="340" height="340"></canvas></div>
+  <div class="soul"><div class="lbl">THE PLEASER</div><div class="slug">// need-to-be-liked</div><canvas id="c1" width="340" height="340"></canvas></div>
+  <div class="soul"><div class="lbl">THE PERFORMER</div><div class="slug">// need-to-impress</div><canvas id="c2" width="340" height="340"></canvas></div>
+  <div class="soul"><div class="lbl">THE GRINDER</div><div class="slug">// need-to-be-busy</div><canvas id="c3" width="340" height="340"></canvas></div>
+  <div class="soul"><div class="lbl">THE STRIVER</div><div class="slug">// fear-of-being-ordinary</div><canvas id="c4" width="340" height="340"></canvas></div>
+  <div class="soul"><div class="lbl">THE SCOREKEEPER</div><div class="slug">// comparison-loop</div><canvas id="c5" width="340" height="340"></canvas></div>
+  <div class="soul"><div class="lbl">THE DEFLECTOR</div><div class="slug">// shield-pattern</div><canvas id="c6" width="340" height="340"></canvas></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+'use strict';
+
+// ── Confirmed light + ASCII settings ─────────────────────────────────────────
+// backLight pos(-4.05, 5.95, -1.60), intensity 1.0
+// specular white / shininess 26, ambient 0.05
+// cellW=5 cellH=9, gamma 0.27, brightness x1.5, threshold 0.005, rot 3.0
+
+const CW    = 5;
+const CH    = 9;
+const CHARS = " `.',-~:;!=+*%&#@MW";
+
+// Model geometry constants (from OBJ analysis)
+// Full height Y: 0 → 20.68, head top ~20.68, shoulders ~16.1
+// We scale the model down to unit scale: divide by 20.68
+const MODEL_SCALE  = 1 / 20.68;  // makes figure ~1 unit tall
+const HEAD_Y       = 20.68 * MODEL_SCALE;   // ≈ 1.0
+const SHOULDER_Y   = 16.1  * MODEL_SCALE;   // ≈ 0.778
+
+function lum2char(lum) {
+  return CHARS[Math.floor(Math.min(0.9999, lum) * CHARS.length)];
+}
+
+// ── Shared mesh geometry (loaded once, cloned per soul) ───────────────────────
+let sharedGeometry = null;
+
+// ── BASE SOUL ─────────────────────────────────────────────────────────────────
+class Soul {
+  constructor(id) {
+    this.cvs  = document.getElementById(id);
+    this.ctx  = this.cvs.getContext('2d');
+    this.W    = this.cvs.width;
+    this.H    = this.cvs.height;
+    this.cols = Math.floor(this.W / CW);
+    this.rows = Math.floor(this.H / CH);
+    this.pix  = new Uint8Array(this.W * this.H * 4);
+    this.t    = 0;
+    this.tapT = -99;
+
+    this.r3 = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: false,
+      preserveDrawingBuffer: true
+    });
+    this.r3.setSize(this.W, this.H);
+    this.r3.setPixelRatio(1);
+    this.r3.setClearColor(0x000000, 1);
+    this.r3.shadowMap.enabled = true;
+    this.r3.shadowMap.type    = THREE.PCFSoftShadowMap;
+
+    this.scene  = new THREE.Scene();
+
+    // Camera: tight head+shoulders crop
+    // Looking at throat area (~0.85 of head height), close focal length
+    this.camera = new THREE.PerspectiveCamera(22, 1, 0.001, 50);
+    this.camera.position.set(0, 0.88, 1.1);
+    this.camera.lookAt(0, 0.84, 0);
+
+    this.ctx.textBaseline = 'top';
+    this.cvs.addEventListener('click',      ()  => { this.tapT = this.t; });
+    this.cvs.addEventListener('touchstart', (e) => { e.preventDefault(); this.tapT = this.t; });
+
+    this._lights();
+  }
+
+  get tap() { return Math.max(0, 1 - (this.t - this.tapT) / 3.0); }
+
+  _lights() {
+    const back = new THREE.DirectionalLight(0xffffff, 1.0);
+    back.position.set(-4.05, 5.95, -1.60);
+    back.castShadow = true;
+    back.shadow.mapSize.width  = 2048;
+    back.shadow.mapSize.height = 2048;
+    back.shadow.camera.near    = 0.1;
+    back.shadow.camera.far     = 30;
+    back.shadow.bias           = -0.001;
+    this.scene.add(back);
+    this.backLight = back;
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.05));
+  }
+
+  // Build figure from shared geometry
+  buildFromGLB() {
+    const mat = new THREE.MeshPhongMaterial({
+      color:     0xc8c8c8,
+      specular:  0xffffff,
+      shininess: 26,
+    });
+    const mesh = new THREE.Mesh(sharedGeometry.clone(), mat);
+    mesh.castShadow    = true;
+    mesh.receiveShadow = true;
+
+    // Scale to ~1 unit height
+    mesh.scale.setScalar(MODEL_SCALE);
+
+    // Center at base of neck (~shoulder level) for rotation pivot
+    // Model origin is at feet (Y=0), we want to rotate around body center
+    const fig = new THREE.Group();
+    fig.add(mesh);
+
+    this.fig  = fig;
+    this.mesh = mesh;
+    this.mat  = mat;
+    this.scene.add(fig);
+
+    this._build();
+  }
+
+  _draw() {
+    this.r3.render(this.scene, this.camera);
+    const { W, H, cols, rows } = this;
+    const gl = this.r3.getContext();
+    gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, this.pix);
+
+    const ctx = this.ctx;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+    ctx.font = `${CH}px "SF Mono","Cascadia Code","Courier New",monospace`;
+
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const sx  = Math.floor((col + 0.5) * CW);
+        const sy  = Math.floor((row + 0.5) * CH);
+        const gy  = H - 1 - sy;
+        const idx = (gy * W + sx) * 4;
+
+        const r  = this.pix[idx];
+        const gv = this.pix[idx+1];
+        const b  = this.pix[idx+2];
+        const a  = this.pix[idx+3] / 255;
+        const lum = a * (0.299*r + 0.587*gv + 0.114*b) / 255;
+
+        if (lum < 0.005) continue;
+        const ch = lum2char(lum);
+        if (ch === ' ') continue;
+
+        const grey = Math.round(Math.min(255, Math.pow(lum, 0.27) * 255 * 1.5));
+        ctx.fillStyle = `rgb(${grey},${grey},${grey})`;
+        ctx.fillText(ch, col * CW, row * CH);
+      }
+    }
+  }
+
+  _build()     {}
+  _tick(t, dt) {}
+
+  update(dt) {
+    if (!this.fig) return;
+    this.t += dt;
+    this.fig.rotation.y = this.t * 3.0;
+    this._tick(this.t, dt);
+    this._draw();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 1. THE CORRECTOR — need-to-be-right
+// Head juts forward with conviction. Bobs slightly on the correction beat.
+// Tap = urgent forward surge.
+// ═══════════════════════════════════════════════════════════════════════════════
+class Corrector extends Soul {
+  _build() {}
+  _tick(t, dt) {
+    const tap = this.tap;
+    // Slight lean forward — conviction
+    this.fig.rotation.x = -(0.06 + tap * 0.14);
+    // Head bob on correction beat
+    const beat = Math.abs(Math.sin(t * 1.8));
+    this.mesh.position.y = Math.sin(t * 1.8) * 0.004;
+    // Slight tilt — emphasising the point
+    this.fig.rotation.z = Math.sin(t * 0.7) * 0.03;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 2. THE PLEASER — need-to-be-liked
+// Slow lean side to side. Gentle nod. Slight shrink/swell approval wave.
+// Tap = eager lean toward camera.
+// ═══════════════════════════════════════════════════════════════════════════════
+class Pleaser extends Soul {
+  _build() {}
+  _tick(t, dt) {
+    const tap = this.tap;
+    const wave = Math.sin(t * 0.5);
+    // Scale swell on approval wave
+    const sc = MODEL_SCALE * (1 + wave * 0.04 + tap * 0.06);
+    this.mesh.scale.setScalar(sc);
+    // Lean side to side seeking approval
+    this.fig.rotation.z  = wave * 0.09;
+    this.fig.rotation.x  = -(0.04 + tap * 0.12);
+    // Subtle head nod
+    this.mesh.rotation.x = Math.sin(t * 0.8) * 0.03;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 3. THE PERFORMER — need-to-impress
+// Chest out, chin up. Grows slowly like holding for applause.
+// Tap = maximum swell, held pose.
+// ═══════════════════════════════════════════════════════════════════════════════
+class Performer extends Soul {
+  _build() {}
+  _tick(t, dt) {
+    const tap = this.tap;
+    const aud = (Math.sin(t * 0.28) + 1) * 0.5;
+    const str = Math.max(aud, tap);
+    // Swell — figure grows with pride
+    const sc = MODEL_SCALE * (1 + str * 0.10);
+    this.mesh.scale.setScalar(sc);
+    // Head tilts back — chin up
+    this.fig.rotation.x = -(str * 0.12);
+    // Subtle held breath — chest out
+    this.fig.rotation.z = Math.sin(t * 0.4) * 0.02;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 4. THE GRINDER — need-to-be-busy
+// Constant quick micro-movements. Rapid nodding. Urgency in every frame.
+// Tap = peak frenzy, shaking.
+// ═══════════════════════════════════════════════════════════════════════════════
+class Grinder extends Soul {
+  _build() { this.shake = 0; }
+  _tick(t, dt) {
+    const tap    = this.tap;
+    const frenzy = 1 + tap * 2.5;
+    // Head darting
+    this.fig.rotation.z = Math.sin(t * 4.0 * frenzy) * 0.04;
+    this.fig.rotation.x = Math.sin(t * 3.2 * frenzy) * 0.03 - 0.04;
+    // Urgency bob
+    this.mesh.position.y = Math.abs(Math.sin(t * 5.0 * frenzy)) * 0.006;
+    // On tap: full shake
+    if (tap > 0.1) {
+      this.fig.position.x = (Math.random() - 0.5) * 0.012 * tap;
+      this.fig.position.z = (Math.random() - 0.5) * 0.008 * tap;
+    } else {
+      this.fig.position.x *= 0.85;
+      this.fig.position.z *= 0.85;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 5. THE STRIVER — fear-of-being-ordinary
+// Slow upward stretch — reaching for something unreachable.
+// Elongates, chin rises, then slowly deflates.
+// Tap = full extension hold.
+// ═══════════════════════════════════════════════════════════════════════════════
+class Striver extends Soul {
+  _build() {}
+  _tick(t, dt) {
+    const tap   = this.tap;
+    const reach = (Math.sin(t * 0.55) + 1) * 0.5;
+    const str   = Math.max(reach, tap);
+    // Elongate upward
+    this.mesh.scale.set(
+      MODEL_SCALE * (1 - str * 0.04),
+      MODEL_SCALE * (1 + str * 0.14),
+      MODEL_SCALE * (1 - str * 0.04)
+    );
+    // Rise slightly — tiptoe energy
+    this.fig.position.y = str * 0.06;
+    // Chin up — looking at what they can't reach
+    this.fig.rotation.x = -(str * 0.22);
+    this.fig.rotation.z = Math.sin(t * 0.3) * 0.015;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 6. THE SCOREKEEPER — comparison-loop
+// Head turns systematically — measuring, comparing, measuring again.
+// Ghost double visible in background.
+// ═══════════════════════════════════════════════════════════════════════════════
+class Scorekeeper extends Soul {
+  _build() {
+    // Ghost double — same mesh, transparent, offset
+    const ghostMat = new THREE.MeshPhongMaterial({
+      color:      0xc8c8c8,
+      specular:   0xffffff,
+      shininess:  26,
+      transparent: true,
+      opacity:     0.28,
+      depthWrite:  false,
+    });
+    const ghost = new THREE.Mesh(sharedGeometry.clone(), ghostMat);
+    ghost.scale.setScalar(MODEL_SCALE * 0.86);
+    ghost.position.set(0.55, 0, 0);
+    ghost.castShadow = true;
+    this.scene.add(ghost);
+    this.ghost = ghost;
+  }
+
+  update(dt) {
+    if (!this.fig) return;
+    this.t += dt;
+    this.fig.rotation.y   = this.t * 3.0;
+    this.ghost.rotation.y = this.t * 3.0 + 0.5;
+    this._tick(this.t, dt);
+    this._draw();
+  }
+
+  _tick(t, dt) {
+    const tap = this.tap;
+    // Head scans — systematic comparison turns
+    this.fig.rotation.z = Math.sin(t * 0.7) * 0.08;
+    this.fig.rotation.x = -(0.04 + tap * 0.06);
+    // Ghost opacity pulses with comparison intensity
+    const cmp = (Math.sin(t * 0.5) + 1) * 0.5;
+    this.ghost.material.opacity = 0.18 + cmp * 0.22 + tap * 0.18;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 7. THE DEFLECTOR — shield-pattern
+// Hunched, weight pulled back, chin down. Flinches on tap.
+// Most compact silhouette — protecting the chest.
+// ═══════════════════════════════════════════════════════════════════════════════
+class Deflector extends Soul {
+  _build() {}
+  _tick(t, dt) {
+    const tap = this.tap;
+    // Hunched forward and pulled back
+    this.fig.rotation.x  =  0.14 + tap * 0.20;
+    // Head drops — protecting
+    this.fig.rotation.z  = -0.05 + Math.sin(t * 0.4) * 0.04;
+    // Compress — slight scale in to suggest contraction
+    const hunch = 1 - tap * 0.06;
+    this.mesh.scale.setScalar(MODEL_SCALE * hunch);
+    // Flinch on tap
+    if (tap > 0.1) {
+      this.fig.position.z = -tap * 0.06;
+    } else {
+      this.fig.position.z *= 0.9;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOADER + BOOT
+// ═══════════════════════════════════════════════════════════════════════════════
+const SOUL_CLASSES = [
+  Corrector, Pleaser, Performer, Grinder, Striver, Scorekeeper, Deflector
+];
+
+const loader = new THREE.GLTFLoader();
+const glbPath = 'FinalBaseMesh.glb';
+
+loader.load(
+  glbPath,
+  (gltf) => {
+    const glbGroup = gltf.scene;
+    // Extract geometry from loaded group
+    glbGroup.traverse(child => {
+      if (child.isMesh && !sharedGeometry) {
+        sharedGeometry = child.geometry;
+        // Ensure normals exist
+        if (!sharedGeometry.attributes.normal) {
+          sharedGeometry.computeVertexNormals();
+        }
+      }
+    });
+
+    if (!sharedGeometry) {
+      console.error('No geometry found in GLB');
+      return;
+    }
+
+    // Boot all souls
+    const souls = SOUL_CLASSES.map((Cls, i) => {
+      const s = new Cls(`c${i}`);
+      s.buildFromGLB();
+      return s;
+    });
+
+    // Hide loading screen
+    const loadEl = document.getElementById('loading');
+    loadEl.style.opacity = '0';
+    setTimeout(() => loadEl.style.display = 'none', 700);
+
+    // Render loop
+    let prev = performance.now();
+    (function loop(now) {
+      requestAnimationFrame(loop);
+      const dt = Math.min((now - prev) / 1000, 0.05);
+      prev = now;
+      souls.forEach(s => s.update(dt));
+    })(prev);
+  },
+  (xhr) => {
+    const pct = Math.round(xhr.loaded / xhr.total * 100);
+    const el  = document.getElementById('loading');
+    if (el) el.textContent = `LOADING MESH... ${pct}%`;
+  },
+  (err) => {
+    console.error('GLB load error:', err);
+    document.getElementById('loading').textContent = 'LOAD ERROR — check console';
+  }
+);
+</script>
+</body>
+</html>
