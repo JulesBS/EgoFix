@@ -77,12 +77,16 @@ class OnboardingSoulScene {
         figureGroup.addChildNode(meshLeft)
         figureGroup.addChildNode(meshRight)
 
+        #if DEBUG
         NSLog("[OnboardingSoulScene] Left children: %d, Right children: %d",
               meshLeft.childNodes.count, meshRight.childNodes.count)
+        #endif
         // Log bounding box of the entire figure
         let (minBound, maxBound) = figureGroup.boundingBox
+        #if DEBUG
         NSLog("[OnboardingSoulScene] Figure bounds: min(%f,%f,%f) max(%f,%f,%f)",
               minBound.x, minBound.y, minBound.z, maxBound.x, maxBound.y, maxBound.z)
+        #endif
 
         // --- 7 Orbiting Cubes ---
         var cubes: [CubeData] = []
@@ -137,7 +141,9 @@ class OnboardingSoulScene {
     private static func loadModelHalf(named name: String, scale: Float) throws -> SCNNode {
         guard let url = Bundle.main.url(forResource: name, withExtension: "obj") else {
             let msg = "Missing \(name).obj in bundle"
+            #if DEBUG
             print("[OnboardingSoulScene] ERROR: \(msg)")
+            #endif
             throw NSError(domain: "OnboardingSoulScene", code: 1,
                          userInfo: [NSLocalizedDescriptionKey: msg])
         }

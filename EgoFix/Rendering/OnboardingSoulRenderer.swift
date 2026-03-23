@@ -48,7 +48,9 @@ class OnboardingSoulRenderer: NSObject, MTKViewDelegate {
         do {
             soulScene = try OnboardingSoulScene()
         } catch {
+            #if DEBUG
             NSLog("[OnboardingSoulRenderer] Scene init failed: %@", "\(error)")
+            #endif
             return nil
         }
 

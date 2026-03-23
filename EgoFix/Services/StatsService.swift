@@ -221,7 +221,7 @@ final class StatsService: StatsServiceProtocol {
                         fixesApplied: activity.applied,
                         fixesSkipped: activity.skipped,
                         fixesFailed: activity.failed,
-                        crashes: 0  // TODO: Add crash data if needed
+                        crashes: 0
                     ))
                 } else {
                     days.append(.empty(for: dayStart))

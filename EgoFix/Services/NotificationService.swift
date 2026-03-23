@@ -16,7 +16,9 @@ final class NotificationService {
             let granted = try await notificationCenter.requestAuthorization(options: [.alert, .sound, .badge])
             return granted
         } catch {
+            #if DEBUG
             print("Failed to request notification permission: \(error)")
+            #endif
             return false
         }
     }

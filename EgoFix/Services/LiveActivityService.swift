@@ -30,7 +30,9 @@ final class LiveActivityService {
         endDate: Date
     ) -> Bool {
         guard isAvailable else {
+            #if DEBUG
             print("LiveActivityService: Live Activities not available")
+            #endif
             return false
         }
 
@@ -58,10 +60,14 @@ final class LiveActivityService {
                 pushType: nil
             )
             currentActivity = activity
+            #if DEBUG
             print("LiveActivityService: Started activity \(activity.id)")
+            #endif
             return true
         } catch {
+            #if DEBUG
             print("LiveActivityService: Failed to start activity: \(error)")
+            #endif
             return false
         }
     }
@@ -75,7 +81,9 @@ final class LiveActivityService {
         fixPrompt: String
     ) -> Bool {
         guard isAvailable else {
+            #if DEBUG
             print("LiveActivityService: Live Activities not available")
+            #endif
             return false
         }
 
@@ -107,10 +115,14 @@ final class LiveActivityService {
                 pushType: nil
             )
             currentActivity = activity
+            #if DEBUG
             print("LiveActivityService: Started fix activity \(activity.id)")
+            #endif
             return true
         } catch {
+            #if DEBUG
             print("LiveActivityService: Failed to start fix activity: \(error)")
+            #endif
             return false
         }
     }
@@ -187,7 +199,9 @@ final class LiveActivityService {
                 ActivityContent(state: finalState, staleDate: nil),
                 dismissalPolicy: .immediate
             )
+            #if DEBUG
             print("LiveActivityService: Ended activity \(activity.id)")
+            #endif
         }
 
         currentActivity = nil
@@ -209,7 +223,9 @@ final class LiveActivityService {
                 ActivityContent(state: finalState, staleDate: Date().addingTimeInterval(seconds)),
                 dismissalPolicy: .after(Date().addingTimeInterval(seconds))
             )
+            #if DEBUG
             print("LiveActivityService: Ending activity \(activity.id) after \(seconds)s")
+            #endif
         }
 
         currentActivity = nil

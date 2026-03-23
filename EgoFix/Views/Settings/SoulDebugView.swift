@@ -164,7 +164,9 @@ private struct SoulDebugMetalView: UIViewRepresentable {
             metalView.delegate = renderer
             onRendererReady(renderer)
         } else {
+            #if DEBUG
             NSLog("[SoulDebugMetalView] ERROR: Renderer init returned nil")
+            #endif
             onRendererFailed()
         }
 

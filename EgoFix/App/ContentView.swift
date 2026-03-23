@@ -52,7 +52,9 @@ struct ContentView: View {
         do {
             try await loader.loadSeedDataIfNeeded()
         } catch {
+            #if DEBUG
             print("Failed to load seed data: \(error)")
+            #endif
         }
     }
 

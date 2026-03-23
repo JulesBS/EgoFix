@@ -102,7 +102,9 @@ final class FixTimerManager: ObservableObject {
                     startLiveActivity()
                 }
             } catch {
+                #if DEBUG
                 print("Failed to setup timer session: \(error)")
+                #endif
             }
         } else {
             isTimerRequired = false
@@ -139,7 +141,9 @@ final class FixTimerManager: ObservableObject {
             await scheduleCompletionNotification()
             startLiveActivity()
         } catch {
+            #if DEBUG
             print("Failed to start timer: \(error)")
+            #endif
         }
     }
 
@@ -154,7 +158,9 @@ final class FixTimerManager: ObservableObject {
             cancelNotification()
             await pauseLiveActivity()
         } catch {
+            #if DEBUG
             print("Failed to pause timer: \(error)")
+            #endif
         }
     }
 
@@ -173,7 +179,9 @@ final class FixTimerManager: ObservableObject {
             cancelNotification()
             liveActivityService.endCurrentActivity()
         } catch {
+            #if DEBUG
             print("Failed to reset timer: \(error)")
+            #endif
         }
     }
 
@@ -224,7 +232,9 @@ final class FixTimerManager: ObservableObject {
             // Notify completion
             onTimerComplete?()
         } catch {
+            #if DEBUG
             print("Failed to complete timer: \(error)")
+            #endif
         }
     }
 
@@ -240,7 +250,9 @@ final class FixTimerManager: ObservableObject {
                 identifier: identifier
             )
         } catch {
+            #if DEBUG
             print("Failed to schedule notification: \(error)")
+            #endif
         }
     }
 

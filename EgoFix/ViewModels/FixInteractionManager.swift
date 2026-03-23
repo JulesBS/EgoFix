@@ -386,13 +386,17 @@ final class FixInteractionManager: ObservableObject {
                 startLiveActivity()
             }
         } catch {
+            #if DEBUG
             print("Failed to setup timer session: \(error)")
+            #endif
         }
     }
 
     private func setupMultiStep(for fix: Fix) {
         guard let config = fix.multiStepConfig else {
+            #if DEBUG
             print("Multi-step fix missing configuration")
+            #endif
             return
         }
 
@@ -403,7 +407,9 @@ final class FixInteractionManager: ObservableObject {
 
     private func setupQuiz(for fix: Fix) {
         guard let config = fix.quizConfig else {
+            #if DEBUG
             print("Quiz fix missing configuration")
+            #endif
             return
         }
 
@@ -415,7 +421,9 @@ final class FixInteractionManager: ObservableObject {
 
     private func setupScenario(for fix: Fix) {
         guard let config = fix.scenarioConfig else {
+            #if DEBUG
             print("Scenario fix missing configuration")
+            #endif
             return
         }
 
@@ -427,7 +435,9 @@ final class FixInteractionManager: ObservableObject {
 
     private func setupCounter(for fix: Fix) {
         guard let config = fix.counterConfig else {
+            #if DEBUG
             print("Counter fix missing configuration")
+            #endif
             return
         }
 
@@ -449,7 +459,9 @@ final class FixInteractionManager: ObservableObject {
             await scheduleCompletionNotification()
             startLiveActivity()
         } catch {
+            #if DEBUG
             print("Failed to start timer: \(error)")
+            #endif
         }
     }
 
@@ -464,7 +476,9 @@ final class FixInteractionManager: ObservableObject {
             cancelNotification()
             await pauseLiveActivity()
         } catch {
+            #if DEBUG
             print("Failed to pause timer: \(error)")
+            #endif
         }
     }
 
@@ -483,7 +497,9 @@ final class FixInteractionManager: ObservableObject {
             cancelNotification()
             liveActivityService.endCurrentActivity()
         } catch {
+            #if DEBUG
             print("Failed to reset timer: \(error)")
+            #endif
         }
     }
 
@@ -756,7 +772,9 @@ final class FixInteractionManager: ObservableObject {
             onTimerComplete?()
             onInteractionComplete?()
         } catch {
+            #if DEBUG
             print("Failed to complete timer: \(error)")
+            #endif
         }
     }
 
@@ -772,7 +790,9 @@ final class FixInteractionManager: ObservableObject {
                 identifier: identifier
             )
         } catch {
+            #if DEBUG
             print("Failed to schedule notification: \(error)")
+            #endif
         }
     }
 

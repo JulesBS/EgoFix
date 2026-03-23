@@ -36,9 +36,13 @@ struct OnboardingSoulView: UIViewRepresentable {
             context.coordinator.renderer = renderer
             metalView.delegate = renderer
             onRendererReady?(renderer)
+            #if DEBUG
             NSLog("[OnboardingSoulView] Renderer created OK, cubes: %d", renderer.soulScene.cubeNodes.count)
+            #endif
         } else {
+            #if DEBUG
             NSLog("[OnboardingSoulView] ERROR: Renderer init returned nil")
+            #endif
             onRendererFailed?()
         }
 

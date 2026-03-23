@@ -282,7 +282,9 @@ final class OnboardingViewModel: ObservableObject {
 
             isComplete = true
         } catch {
+            #if DEBUG
             NSLog("[OnboardingViewModel] Commit failed: %@", "\(error)")
+            #endif
             commitError = "Failed to assign fix. Tap to retry."
         }
 

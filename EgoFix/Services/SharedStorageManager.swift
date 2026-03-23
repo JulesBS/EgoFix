@@ -72,7 +72,9 @@ final class SharedStorageManager {
     /// Save current fix state for widget access
     func saveFixState(_ state: SharedFixState) {
         guard let defaults = sharedDefaults else {
+            #if DEBUG
             print("SharedStorageManager: Could not access App Group UserDefaults")
+            #endif
             return
         }
 
@@ -84,7 +86,9 @@ final class SharedStorageManager {
             // Trigger widget refresh
             WidgetCenter.shared.reloadAllTimelines()
         } catch {
+            #if DEBUG
             print("SharedStorageManager: Failed to encode fix state: \(error)")
+            #endif
         }
     }
 
@@ -98,7 +102,9 @@ final class SharedStorageManager {
         do {
             return try JSONDecoder().decode(SharedFixState.self, from: data)
         } catch {
+            #if DEBUG
             print("SharedStorageManager: Failed to decode fix state: \(error)")
+            #endif
             return nil
         }
     }
