@@ -116,7 +116,10 @@ struct TodayView: View {
         .task {
             await viewModel.loadHeaderData()
             await viewModel.checkWeeklyDiagnostic()
-            await viewModel.loadTodaysFix()
+            // Only load fix if diagnostic didn't take over
+            if case .diagnostic = viewModel.state { } else {
+                await viewModel.loadTodaysFix()
+            }
         }
         .sheet(item: $shareContent) { content in
             ShareSheet(items: [content.text])
@@ -174,7 +177,7 @@ struct TodayView: View {
 
     private var showCrashButton: Bool {
         switch viewModel.state {
-        case .fixBriefing, .checkIn: return true
+        case .fixBriefing: return true
         default: return false
         }
     }

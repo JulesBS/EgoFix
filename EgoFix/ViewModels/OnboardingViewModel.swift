@@ -23,6 +23,7 @@ final class OnboardingViewModel: ObservableObject {
     @Published var selectedBugId: UUID?
     @Published var isComplete = false
     @Published var isLoading = false
+    @Published var loadError: String?
     @Published var commitError: String?
 
     /// Maps scenario index → selected option ID
@@ -130,7 +131,18 @@ final class OnboardingViewModel: ObservableObject {
                 return indexA < indexB
             }
         } catch {
-            allBugs = []
+            // Retry once before giving up
+            do {
+                let retried = try await bugRepository.getAll()
+                allBugs = retried.sorted { a, b in
+                    let indexA = Self.slugOrder.firstIndex(of: a.slug) ?? Int.max
+                    let indexB = Self.slugOrder.firstIndex(of: b.slug) ?? Int.max
+                    return indexA < indexB
+                }
+            } catch {
+                allBugs = []
+                loadError = "Failed to load bug data. Please restart the app."
+            }
         }
         scenarios = OnboardingScenarioLoader.loadScenarios()
         isLoading = false

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1024, height=1024">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1024px;
+    height: 1024px;
+    background: #131313;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  }
+
+  .icon-container {
+    position: relative;
+    width: 1024px;
+    height: 1024px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Subtle radial glow behind the brackets */
+  .glow-bg {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 255, 65, 0.06) 0%, transparent 70%);
+  }
+
+  /* Corner brackets */
+  .bracket {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+  }
+  .bracket::before,
+  .bracket::after {
+    content: '';
+    position: absolute;
+    background: rgba(0, 255, 65, 0.35);
+  }
+
+  .bracket.tl { top: 180px; left: 180px; }
+  .bracket.tl::before { top: 0; left: 0; width: 120px; height: 2px; }
+  .bracket.tl::after { top: 0; left: 0; width: 2px; height: 120px; }
+
+  .bracket.tr { top: 180px; right: 180px; }
+  .bracket.tr::before { top: 0; right: 0; width: 120px; height: 2px; }
+  .bracket.tr::after { top: 0; right: 0; width: 2px; height: 120px; }
+
+  .bracket.bl { bottom: 180px; left: 180px; }
+  .bracket.bl::before { bottom: 0; left: 0; width: 120px; height: 2px; }
+  .bracket.bl::after { bottom: 0; left: 0; width: 2px; height: 120px; }
+
+  .bracket.br { bottom: 180px; right: 180px; }
+  .bracket.br::before { bottom: 0; right: 0; width: 120px; height: 2px; }
+  .bracket.br::after { bottom: 0; right: 0; width: 2px; height: 120px; }
+
+  /* Central bug icon — stylized curly braces */
+  .bug-symbol {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .brace {
+    font-size: 280px;
+    font-weight: 200;
+    color: #00FF41;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(0, 255, 65, 0.4), 0 0 80px rgba(0, 255, 65, 0.15);
+    letter-spacing: -12px;
+  }
+
+  .fix-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #00FF41;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.6), 0 0 40px rgba(0, 255, 65, 0.3);
+    margin: 0 4px;
+  }
+
+  /* Tiny version label */
+  .version {
+    position: absolute;
+    bottom: 220px;
+    font-size: 24px;
+    letter-spacing: 6px;
+    color: rgba(132, 150, 126, 0.5);
+    font-weight: 400;
+  }
+</style>
+
+</head>
+<body>
+  <div class="icon-container">
+    <div class="glow-bg"></div>
+    <div class="bracket tl"></div>
+    <div class="bracket tr"></div>
+    <div class="bracket bl"></div>
+    <div class="bracket br"></div>
+    <div class="bug-symbol">
+      <span class="brace">{</span>
+      <div class="fix-dot"></div>
+      <span class="brace">}</span>
+    </div>
+    <div class="version">EGOFIX</div>
+  </div>
+</body>
+</html>

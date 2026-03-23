@@ -187,15 +187,35 @@ struct SettingsView: View {
 
             Spacer()
 
-            Text(timeString.wrappedValue)
-                .font(EgoTheme.mono())
-                .foregroundColor(EgoTheme.green)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(EgoTheme.surface)
-                .overlay(Rectangle().stroke(EgoTheme.border, lineWidth: 1))
+            DatePicker(
+                "",
+                selection: Binding<Date>(
+                    get: { dateFromTimeString(timeString.wrappedValue) },
+                    set: { timeString.wrappedValue = timeStringFromDate($0) }
+                ),
+                displayedComponents: .hourAndMinute
+            )
+            .labelsHidden()
+            .colorScheme(.dark)
+            .frame(width: 100)
         }
         .padding(.vertical, 8)
+    }
+
+    private func dateFromTimeString(_ str: String) -> Date {
+        let parts = str.split(separator: ":")
+        guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]) else {
+            return Date()
+        }
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
+        components.hour = h
+        components.minute = m
+        return Calendar.current.date(from: components) ?? Date()
+    }
+
+    private func timeStringFromDate(_ date: Date) -> String {
+        let components = Calendar.current.dateComponents([.hour, .minute], from: date)
+        return String(format: "%02d:%02d", components.hour ?? 21, components.minute ?? 0)
     }
 
     // MARK: - Replay Onboarding

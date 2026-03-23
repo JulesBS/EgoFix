@@ -58,27 +58,28 @@ struct FixActiveView: View {
                     }
                 }
 
-                // Prompt (revealed with animation)
-                Text(fix.prompt)
-                    .font(.system(size: 18, weight: .light, design: .monospaced))
-                    .foregroundColor(EgoTheme.textPrimary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .opacity(promptRevealed ? 1 : 0)
-                    .offset(y: promptRevealed ? 0 : 8)
-
-                // Inline comment
-                if let comment = fix.inlineComment {
-                    Rectangle()
-                        .fill(EgoTheme.borderSubtle)
-                        .frame(height: 0.5)
-                        .padding(.vertical, 12)
-                        .accessibilityHidden(true)
-
-                    Text("// \(comment)")
-                        .font(EgoTheme.mono(.caption))
-                        .foregroundColor(EgoTheme.textMuted)
+                // Prompt + inline comment — hidden when interaction view shows its own
+                if !hasInteractionSection {
+                    Text(fix.prompt)
+                        .font(.system(size: 18, weight: .light, design: .monospaced))
+                        .foregroundColor(EgoTheme.textPrimary)
                         .fixedSize(horizontal: false, vertical: true)
                         .opacity(promptRevealed ? 1 : 0)
+                        .offset(y: promptRevealed ? 0 : 8)
+
+                    if let comment = fix.inlineComment {
+                        Rectangle()
+                            .fill(EgoTheme.borderSubtle)
+                            .frame(height: 0.5)
+                            .padding(.vertical, 12)
+                            .accessibilityHidden(true)
+
+                        Text("// \(comment)")
+                            .font(EgoTheme.mono(.caption))
+                            .foregroundColor(EgoTheme.textMuted)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .opacity(promptRevealed ? 1 : 0)
+                    }
                 }
             }
             .padding(24)
@@ -90,7 +91,7 @@ struct FixActiveView: View {
             interactionSection
 
             // Education section
-            if educationTeaser != nil || educationDeepDive != nil {
+            if educationTeaser != nil {
                 educationSection
             }
 
@@ -102,6 +103,14 @@ struct FixActiveView: View {
             withAnimation(.easeOut(duration: 0.4).delay(0.3)) {
                 promptRevealed = true
             }
+        }
+    }
+
+    /// Whether the interaction section renders its own prompt (to avoid duplication)
+    private var hasInteractionSection: Bool {
+        switch fix.interactionType {
+        case .counter, .substitute, .body, .abstain: return true
+        default: return false
         }
     }
 

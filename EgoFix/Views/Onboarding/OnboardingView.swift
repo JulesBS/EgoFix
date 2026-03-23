@@ -67,6 +67,11 @@ struct OnboardingView: View {
                         }
                     )
                     .transition(.opacity)
+                } else {
+                    // Fallback: reframe missing — skip forward to avoid blank screen
+                    Color.clear.onAppear {
+                        viewModel.advanceFromReframe(index)
+                    }
                 }
 
             case .reveal:

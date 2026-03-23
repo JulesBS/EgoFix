@@ -596,6 +596,10 @@ final class TodayViewModel: ObservableObject {
             // Track progression
             progressTracker?.recordFixCompletion()
 
+            // Schedule notifications for tomorrow
+            await scheduleMorningNotification()
+            await scheduleAntiNotificationIfEligible()
+
             // Prepare done state data
             doneStatusLine = doneStatusMessage(for: outcome)
             weeklySummary = await calculateWeeklySummary()
@@ -614,8 +618,11 @@ final class TodayViewModel: ObservableObject {
         }
     }
 
-    /// Legacy — kept for backward compatibility but no longer called.
     func transitionToDone() {
+        state = .doneForToday
+    }
+
+    func dismissDebrief() {
         state = .doneForToday
     }
 
@@ -651,13 +658,12 @@ final class TodayViewModel: ObservableObject {
         // Detect if user has seen this fix before
         Task { await checkIfReturningFix(fixId: fix.id) }
 
-        // Immediate types (timed/quiz/scenario) — use in-app interaction flow
-        if immediateInteractionTypes.contains(fix.interactionType) {
-            return .fixAvailable(completion, fix)
-        }
-
-        // Day-long fix flow: briefing → active → check-in
+        // Already accepted — route based on type
         if completion.fixAcceptedAt != nil {
+            // Immediate types go to in-app interaction
+            if immediateInteractionTypes.contains(fix.interactionType) {
+                return .fixAvailable(completion, fix)
+            }
             // Already accepted — restore education + mission end date
             Task { await restoreEducationForActiveFix(fix: fix) }
             missionEndDate = progressTracker?.windDownDateToday()
@@ -735,8 +741,12 @@ final class TodayViewModel: ObservableObject {
         // Schedule wind-down notification (replaces mid-day + evening)
         await scheduleWindDownNotification(for: fix)
 
-        // Always go straight to active (education is inline now)
-        state = .fixActive(completion, fix)
+        // Route: immediate types go to fixAvailable, day-long to fixActive
+        if fix.interactionType.isImmediate {
+            state = .fixAvailable(completion, fix)
+        } else {
+            state = .fixActive(completion, fix)
+        }
 
         // Sync widget to active mission state
         sharedStorage.updateForMissionActive(
@@ -751,39 +761,7 @@ final class TodayViewModel: ObservableObject {
         )
     }
 
-    /// User taps "Check in" from fixActive state.
-    func beginCheckIn() {
-        guard let completion = currentCompletion, let fix = currentFix else { return }
-        state = .checkIn(completion, fix)
-    }
-
-    /// Transition to debrief after completion, or skip debrief if no content.
-    func transitionToDebrief() async {
-        if let debrief = await generateDebrief() {
-            state = .debrief(debrief)
-        } else {
-            state = .doneForToday
-        }
-    }
-
-    /// Dismiss debrief and move to done-for-today.
-    func dismissDebrief() {
-        state = .doneForToday
-    }
-
-    private func generateDebrief() async -> DebriefContent? {
-        guard let debriefService = debriefService else { return nil }
-        guard let fix = currentFix,
-              let bug = try? await bugRepository.getById(fix.bugId),
-              let user = try? await userRepository.get() else { return nil }
-
-        return await debriefService.generateDebrief(
-            bugSlug: bug.slug,
-            bugLabel: bug.slug,
-            userId: user.id,
-            lastOutcome: lastOutcome ?? .applied
-        )
-    }
+    // beginCheckIn, transitionToDebrief, generateDebrief removed — dead code
 
     // MARK: - Fix Notifications
 
@@ -792,7 +770,6 @@ final class TodayViewModel: ObservableObject {
         let status = await notificationService.checkPermission()
         guard status == .authorized else { return }
 
-        // Schedule at wind-down time
         let windDown = progressTracker?.parseTimeString(progressTracker?.windDownTime ?? "21:00")
         let hour = windDown?.hour ?? 21
         let minute = windDown?.minute ?? 0
@@ -801,9 +778,47 @@ final class TodayViewModel: ObservableObject {
         let fixNumber = String(format: "%04d", hash % 10000)
 
         do {
-            try await notificationService.scheduleEveningCheckIn(
+            try await notificationService.scheduleWindDownNotification(
+                fixNumber: fixNumber,
+                hour: hour,
+                minute: minute,
                 identifier: "fix_winddown_\(fix.id.uuidString)"
             )
+        } catch { }
+    }
+
+    /// Schedule morning notification for tomorrow's fix
+    private func scheduleMorningNotification() async {
+        let notificationService = NotificationService.shared
+        let status = await notificationService.checkPermission()
+        guard status == .authorized else { return }
+
+        let morning = progressTracker?.parseTimeString(progressTracker?.morningNotificationTime ?? "08:00")
+        let hour = morning?.hour ?? 8
+        let minute = morning?.minute ?? 0
+
+        let hash = abs(currentFix?.id.hashValue ?? 0)
+        let fixNumber = String(format: "%04d", abs(hash) % 10000)
+
+        do {
+            try await notificationService.scheduleMorningNotification(
+                fixNumber: fixNumber,
+                hour: hour,
+                minute: minute
+            )
+        } catch { }
+    }
+
+    /// Schedule anti-notification if streak qualifies
+    private func scheduleAntiNotificationIfEligible() async {
+        guard progressTracker?.antiNotificationsEnabled == true else {
+            NotificationService.shared.cancelAntiNotification()
+            return
+        }
+        guard currentStreak >= 7 else { return }
+
+        do {
+            try await NotificationService.shared.scheduleAntiNotification()
         } catch { }
     }
 
