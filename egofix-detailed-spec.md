@@ -1,7 +1,18 @@
 # EgoFix — Detailed Specification
 
-> This is the detailed technical reference. CLAUDE.md is the quick-start guide.
-> When they conflict, CLAUDE.md wins — it has the latest decisions.
+> **⚠️ PARTIALLY STALE — CLAUDE.md is the source of truth.**
+> This spec was written before the Mission System redesign (March 2026).
+> Key differences from current code:
+> - Interaction types: spec lists 6, code has 14 (observation, abstain, substitute, journal, reversal, predict, body, audit added)
+> - State machine: spec shows old flow (fixEducation → checkIn → completed → debrief). Current flow: fixBriefing → fixActive → doneForToday (9 states, no checkIn/completed/debrief)
+> - Crash button: removed. Crashes captured via 2-step outcome ("Tried, couldn't")
+> - Morning briefing: now shows teaser (bug/type/severity), NOT the prompt. Prompt revealed on ACCEPT MISSION.
+> - Education: now two-tier (teaser always visible + expandable deepDive), inline on active screen
+> - Notifications: morning + wind-down (configurable) + anti-notification. No mid-day reminder.
+> - Widget: 4 mission states (waiting/active/checkIn/done). Live Activity capped at 7h.
+> - Debug Log: collectible education entries saved on FixCompletion.
+>
+> **When in doubt, read CLAUDE.md — it matches the code.**
 
 ---
 

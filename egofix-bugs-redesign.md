@@ -22,6 +22,8 @@ With only 5 bugs and limited interaction types, fixes start to blur together. "D
 
 Seven bugs. Each represents a distinct ego strategy — a different way the mind protects its sense of self. Minimal overlap, distinct fix spaces, psychologically grounded.
 
+> **Note:** The nicknames below ("The Corrector", etc.) are descriptive labels for this document only. In the app, bugs display by slug (e.g., `need-to-be-right`). See CLAUDE.md: "No character nicknames. The slug IS the display name."
+
 Users pick 1–3 to focus on. The app never shows all 7 at once during onboarding (overwhelming). Instead: show 5 most common, with "show more" for the remaining 2.
 
 ### 1. The Corrector
