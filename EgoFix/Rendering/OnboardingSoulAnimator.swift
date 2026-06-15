@@ -23,6 +23,9 @@ struct CubeAnimState {
     var stateTimer: Float
     var targetColor: Int = 0          // 0=white, 1=green, 2=red
     var flickerClock: Float = 0
+    /// Resting mood biasing idle flicker: 0=quiet, 1=present, 2=loud.
+    /// Drives the Living Soul home — idle cubes reflect real bug state.
+    var mood: Int = 1
     var spinSpeeds: SIMD3<Float>
 
     // Snapshot for split transitions
@@ -134,6 +137,28 @@ class OnboardingSoulAnimator {
             cubeStates[i].stateTimer = 0.3
             cubeStates[i].flickerClock = 0
         }
+    }
+
+    // MARK: - Living Soul: persistent bug-driven state
+
+    /// Sets each cube's resting "mood" so idle orbit flicker reflects real bug state.
+    /// `moods[i]` is 0=quiet, 1=present, 2=loud, ordered by canonical bug index.
+    /// This is what turns the orbiting cubes into a live mirror of the user: a quiet
+    /// bug breathes green occasionally; a loud bug agitates red.
+    func setBugMoods(_ moods: [Int]) {
+        for (i, m) in moods.enumerated() where i < cubeStates.count {
+            cubeStates[i].mood = max(0, min(2, m))
+        }
+    }
+
+    /// Acknowledges an applied fix: the bug's cube pulses calm green and settles.
+    func applyFixReaction(cubeIndex: Int) {
+        setCubeFlickerTarget(indices: [cubeIndex], color: 1)
+    }
+
+    /// A crash on a bug: its cube flares red.
+    func crashReaction(cubeIndex: Int) {
+        setCubeFlickerTarget(indices: [cubeIndex], color: 2)
     }
 
     // MARK: - Frame update
@@ -252,7 +277,7 @@ class OnboardingSoulAnimator {
         switch cubeStates[i].flickerState {
         case .off:
             if cubeStates[i].stateTimer <= 0 {
-                cubeStates[i].targetColor = 1 + Int.random(in: 0...1) // green or red
+                cubeStates[i].targetColor = idleColor(forMood: cubeStates[i].mood)
                 cubeStates[i].flickerState = .flickeringOn
                 cubeStates[i].stateTimer = 0.15 + Float.random(in: 0...0.2)
                 cubeStates[i].flickerClock = 0
@@ -264,7 +289,7 @@ class OnboardingSoulAnimator {
             applyCubeColor(ci, material: mat, light: light)
             if cubeStates[i].stateTimer <= 0 {
                 cubeStates[i].flickerState = .on
-                cubeStates[i].stateTimer = 2.0 + Float.random(in: 0...4)
+                cubeStates[i].stateTimer = onDuration(forMood: cubeStates[i].mood)
                 applyCubeColor(cubeStates[i].targetColor, material: mat, light: light)
             }
 
@@ -281,9 +306,39 @@ class OnboardingSoulAnimator {
             applyCubeColor(ci, material: mat, light: light)
             if cubeStates[i].stateTimer <= 0 {
                 cubeStates[i].flickerState = .off
-                cubeStates[i].stateTimer = 1.5 + Float.random(in: 0...4)
+                cubeStates[i].stateTimer = offDuration(forMood: cubeStates[i].mood)
                 applyCubeColor(0, material: mat, light: light)
             }
+        }
+    }
+
+    // MARK: - Mood-driven idle timing
+
+    /// Color a resting cube flickers to, biased by mood.
+    /// Quiet bugs breathe green; loud bugs mostly flare red; present is mixed.
+    private func idleColor(forMood mood: Int) -> Int {
+        switch mood {
+        case 0: return 1                                      // quiet → green
+        case 2: return Int.random(in: 0...3) == 0 ? 1 : 2     // loud → mostly red
+        default: return 1 + Int.random(in: 0...1)             // present → mixed
+        }
+    }
+
+    /// How long a cube holds its color once lit (loud lingers, quiet is brief).
+    private func onDuration(forMood mood: Int) -> Float {
+        switch mood {
+        case 0: return 1.0 + Float.random(in: 0...1.5)
+        case 2: return 2.5 + Float.random(in: 0...4)
+        default: return 2.0 + Float.random(in: 0...4)
+        }
+    }
+
+    /// How long a cube stays dark between flickers (loud is restless, quiet is calm).
+    private func offDuration(forMood mood: Int) -> Float {
+        switch mood {
+        case 0: return 3.0 + Float.random(in: 0...4)
+        case 2: return 0.4 + Float.random(in: 0...1.2)
+        default: return 1.5 + Float.random(in: 0...4)
         }
     }
 
